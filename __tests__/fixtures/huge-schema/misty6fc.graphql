@@ -1,0 +1,114 @@
+type jumbo6d7 {
+  midst81a: ID!
+  curry6fc: ID!
+  after0f9: which9a9
+  while805: String
+  neverf23: String
+}
+
+input zowie8d9 {
+  midst81a: ID!
+}
+
+input quirkcec {
+  worth4ed: ID!
+}
+
+input sincebed {
+  curry6fc: ID!
+  after0f9: muddy5f1
+  while805: String
+  fraud7ea: under87a
+}
+
+input under87a {
+  neverf23: ID!
+}
+
+input yowza071 {
+  midst81a: ID!
+}
+
+input yahoo2f9 {
+  midst81a: ID!
+  curry6fc: ID!
+  after0f9: muddy5f1!
+  while805: String
+}
+
+type crook3d8 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  lumpy224: jumbo6d7
+}
+
+type whinef6f @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  lumpy224: madlyf8a
+}
+
+type madlyf8a {
+  cloakc33: fooey3b3 @deprecated
+}
+
+type fooey3b3 {
+  after0f9: belowc0f
+  snakedaf: wortha2d
+}
+
+type belowc0f {
+  midsta2d: which9a9
+}
+
+type wortha2d {
+  curlyc61: which9a9
+}
+
+type Query {
+  after3cc(worth668: zowie8d9!): moist4d8
+  marrye60(worth668: quirkcec!): hence561
+}
+
+type Mutation {
+  meaty929(worth668: sincebed!): whilef96
+  crazy3cb(worth668: yahoo2f9!): fooey862
+  whoop3d5(worth668: yowza071!): freshb05
+}
+
+type moist4d8 {
+  lumpy224: jumbo6d7!
+}
+
+type hence561 {
+  lumpy224: jumbo6d7!
+}
+
+type whilef96 {
+  lumpy224: jumbo6d7!
+}
+
+type fooey862 {
+  lumpy224: jumbo6d7!
+}
+
+type freshb05 {
+  midst81a: ID!
+}
+
+scalar dimlyf7b
+
+scalar timesabb
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+input muddy5f1 {
+  sadly44d: dimlyf7b!
+  chiefea7: timesabb!
+}
+
+type which9a9 {
+  sadly44d: dimlyf7b!
+  chiefea7: timesabb!
+}

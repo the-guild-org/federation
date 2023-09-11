@@ -1,0 +1,593 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible", "@override"]) {
+  query: Query
+  mutation: Mutation
+}
+
+directive @extends on INTERFACE | OBJECT
+
+directive @external(reason: String) on FIELD_DEFINITION | OBJECT
+
+directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+
+directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+
+directive @override(from: String!) on FIELD_DEFINITION
+
+directive @provides(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+
+type barge0fe @key(fields: "where46e") {
+  where46e: String
+  trail84e: String @external
+}
+
+enum whosec2c {
+  first056
+  slicee5f
+}
+
+type plate86e @extends @key(fields: "adornea4 whose18d") {
+  adornea4: smalld4d! @external
+  whose18d: smallcd5
+  fooeya1c(young7fc: since055): throb93f
+}
+
+type yowza033 @extends @key(fields: "adornea4 fooey29e trail84e") {
+  adornea4: smalld4d! @external
+  fooey29e: String! @external
+  trail84e: yowza5b1! @external
+}
+
+enum yowza5b1 {
+  sadlya29
+  dozenc62
+  fight092
+  rowdy287
+  yahooc7a
+  cheapd51
+  among3ab
+  yowza668
+  whose24c
+  yowzab03
+  sensef61
+  until3fa
+  chiefb3d
+  zowie361
+  while769
+  hence04b
+  metro6d8
+  lanai8be
+}
+
+scalar smalld4d
+
+type madly4e3 @key(fields: "since9b7 { adornea4 whose18d } thick5ed { adornea4 }") {
+  since9b7: [plate86e!]!
+  glass900: plate86e @shareable
+  thick5ed: plate86e @shareable
+  shyly67d(young7fc: since055, never480: never288!): madly4e3!
+}
+
+enum spike788 {
+  sadlya29
+  count7c2
+  dozenc62
+  staffd67
+  young582
+  since385
+  whilecc6
+  rowdy287
+  zowie480
+  yahoo852
+  cheapd51
+  among3ab
+  aforefbf
+  silly57e
+  abaft15d
+  yowza668
+  clangb86
+  until3fa
+  colon6b4
+  wetlycf4
+  chiefb3d
+  zowie361
+  while769
+  hence04b
+  metro6d8
+  valuee3f
+  yahoo1cd
+  dirty89e
+  badly91c
+  lanai8be
+}
+
+type whose401 {
+  yowza2dc: Boolean!
+  skullb36: Boolean!
+  never814: retch9cb
+  until432: retch9cb
+  rigid037: whose07b
+  shawldbe: whose07b
+  which423: whose07b
+}
+
+type zowieb0a {
+  favorc0a: [givenc6d!]
+  delve521: givenc6d
+  fooeyfc9: yowza466 @deprecated(reason: "")
+  where3e4: givenc6d
+  gussy4f6: [givenc6d!]
+  wedge7f4: [givenc6d!]
+  aforedf5: givenc6d
+}
+
+type yowza466 {
+  until0ee: whose07b
+  stone357: whose07b
+  aboutcfd: whose07b
+}
+
+type trulycb6 {
+  often457: Float
+  hovel35e: Float
+  never814: retch9cb
+  until432: retch9cb
+}
+
+type circae2f {
+  chirp459: whose07b
+  yowzae35: whose07b
+  yahoo91e: whose07b
+  minus674: whose07b @deprecated(reason: "")
+  snare00b: whose07b @deprecated(reason: "")
+  endow4f3: whose07b @deprecated(reason: "")
+  fatala9e: whose07b
+  dimly27f: whose07b
+  jaded0fc: whose07b
+  locale40: whose07b
+  leave48d: whose07b
+  usher6f8: whose07b
+  sheepd91: whose07b
+  alerte69: whose07b
+  draft1c0: whose07b
+  yowza700: whose07b @deprecated(reason: "")
+  sprat2bf: whose07b @deprecated(reason: "")
+  asideaf2: whose07b @deprecated(reason: "")
+  clearcb7: whose07b @deprecated(reason: "")
+  madly1b2: whose07b @deprecated(reason: "")
+  shylyf38: whose07b
+}
+
+type throb93f {
+  favorc0a: circae2f
+  amass28d: [whose07b!]
+  where80c: zowieb0a
+  whisk0a5: trulycb6
+  worthddd: whose07b
+  fooey18b: whose07b
+  clingceb: whose07b
+  zowief53: [toast5e4!]
+  rigid037: whose07b
+  sadly495: whose07b
+  whilee40: sinceedf
+  shyly14b: [shock23e!]
+  teachc79: towera37
+  pulse616: whose07b
+  awarebae: whose07b
+  build2ff: [toast5e4!]
+}
+
+type hence698 {
+  afterf00: String
+  where46e: String
+  rigid037: whose07b
+  sadlya5e: [String!]
+  fresh228: Float
+  whose342: String
+  prunec4a: Float
+  whose393: String
+  minusbbb: Float
+}
+
+type towera37 {
+  zowie054: [hence698!]
+  favorc0a: [hence698!]
+  afterc87: [hence698!]
+  sinceec3: [hence698!]
+}
+
+type freak791 {
+  dimly61b: Boolean!
+  badlyd60: Boolean!
+  pintoc25: Boolean!
+}
+
+type sinceedf {
+  quote792: String
+  yowza360: String
+  where46e: String
+  badly79c: [yowza4e4!]
+}
+
+type yowza4e4 {
+  quote792: String
+  yowza360: String
+  seize765: String
+  zowie806: String
+  where46e: String
+}
+
+type shock23e {
+  yowza2dc: Boolean!
+  often457: Float
+  skullb36: Boolean!
+  until71a: [whose401!]
+  rigid037: whose07b
+  which423: whose07b
+}
+
+type wharf9ca @extends @key(fields: "adornea4") {
+  vital7d7: smalld4d! @external
+  adornea4: smalld4d! @external
+  rigid037(under3a7: since055): freak791! @requires(fields: "vital7d7")
+}
+
+input yowza062 {
+  where46e: String
+  abaft48a: [yowzabf2!]
+  given957: above41b
+  underbbc: [yowzabf2!]
+  oddlye7e: [joint942!]
+}
+
+type after9f2 {
+  hencebcb: whose07b
+  badly460: whose07b
+  pulse616: whose07b
+  these81a: whose07b
+}
+
+type round756 implements givenc6d {
+  favorc0a: often009
+  fooey29e: String!
+  fooeyd9f: [givenc6d!]
+  rigid037: whose07b
+  trail84e: String!
+}
+
+type often009 {
+  pesky8ef: Float
+  chirp459: whose07b
+  yowzae35: whose07b
+  yahoo91e: whose07b
+  minus674: whose07b @deprecated(reason: "")
+  snare00b: whose07b @deprecated(reason: "")
+  endow4f3: whose07b @deprecated(reason: "")
+  blessbd8: whose07b
+  grown3ec: whose07b @deprecated(reason: "")
+  hence635: whose07b
+  trulyfc4: whose07b
+  coast94b: whose07b
+  fatala9e: whose07b
+  dimly27f: whose07b
+  jaded0fc: whose07b
+  locale40: whose07b
+  shyly2a3: whose07b
+  hence129: whose07b
+  madly762: whose07b
+  abaft9f7: whose07b
+  store3d3: whose07b
+  leave48d: whose07b
+  usher6f8: whose07b
+  sheepd91: whose07b
+  alerte69: whose07b
+  draft1c0: whose07b
+  oddlya46: whose07b
+  zowie8a0: whose07b
+  never78e: whose07b
+  round381: whose07b
+  tummye8b: whose07b
+  yowza700: whose07b @deprecated(reason: "")
+  sprat2bf: whose07b @deprecated(reason: "")
+  asideaf2: whose07b @deprecated(reason: "")
+  clearcb7: whose07b @deprecated(reason: "")
+  madly1b2: whose07b @deprecated(reason: "")
+  shylyf38: whose07b
+}
+
+interface givenc6d {
+  favorc0a: often009
+  fooey29e: String!
+  rigid037: whose07b
+  trail84e: String!
+}
+
+scalar spookc51
+
+type undere71 {
+  shelf891: whose07b
+  trail84e: String
+}
+
+type untilffb {
+  yowzab83: whose07b
+  until784: whose07b
+  champ890: Float
+  zowiede8: [undere71!]
+  layer6d8: whose07b
+  after2db: whose07b
+  solid657: whose07b
+  yowzaad9: [diner300!]
+  briefb67: whose07b
+  sadly44d: whose07b
+  index3d5: joint1ae
+  after3d0: String
+  whosea88: whose07b
+}
+
+type noisy3be {
+  thongf57: untilffb
+}
+
+type whose2eb @key(fields: "wriste37 shyly5db since9b7 { adornea4 whose18d } aside50a { adornea4 } thick5ed { adornea4 }") {
+  aside50a: [plate86e!]!
+  since9b7: [plate86e!]!
+  glass900: plate86e @shareable
+  shyly5db: spike788
+  wriste37: String! @external
+  fooeya1c(young7fc: since055): throb93f
+  thick5ed: plate86e @shareable
+  shyly67d(young7fc: since055, never480: never288!): madly4e3!
+}
+
+type diner300 {
+  arraya76: Float!
+  trail84e: String!
+}
+
+type afore43d {
+  rigid037: joint1ae
+}
+
+type Mutation {
+  youngdef(yahoob5b: String, until877: Float, yahoo609: String): naive8cd!
+  zowie305(yahoocc1: String, until877: Float, zowiee5f: String, yahoo609: String): naive8cd!
+}
+
+enum never288 {
+  wheref49
+  often0be
+  faulta82
+}
+
+type circa3d0 @key(fields: "madlybd2") {
+  powerf43: String @external
+  yowza57c: String @external
+  madlybd2: String
+  madly738(young7fc: yowza062): after9f2 @requires(fields: "yowza57c powerf43")
+  fooeya1c(young7fc: yowza062): throb93f @requires(fields: "yowza57c powerf43")
+}
+
+type dimlyf57 @key(fields: "yahoo45c whose18d") {
+  rifleba6(young7fc: after844): noisy3be
+  whose18d: smallcd5
+  yahoo45c: since841!
+  fooeya1c(young7fc: after844): thumpb15
+}
+
+scalar smallcd5
+
+scalar since841
+
+type which47c @key(fields: "seize765 whose18d") {
+  seize765: String!
+  whose18d: smallcd5
+  fooeya1c(young7fc: after844): afore43d
+}
+
+type among79f @key(fields: "seize765 whose18d") {
+  seize765: String!
+  whose18d: smallcd5
+  fooeya1c(young7fc: after844): zowie983
+}
+
+type thumpb15 {
+  whered59: throb93f
+  snare5d2: [yowza047!]
+  rigid037: joint1ae
+}
+
+type beach049 @key(fields: "seize765 trail84e whose18d") {
+  seize765: String!
+  whose18d: smallcd5
+  fooeya1c(young7fc: after844): zowie983
+  trail84e: String!
+}
+
+type zowie983 {
+  rigid037: joint1ae
+}
+
+type yowza047 {
+  shelf891: joint1ae
+  befog5e3: String
+  hence3b6: String
+}
+
+type whose07b {
+  shelf891: Float
+  floorc5d: Boolean
+  superce2: String
+  chief886(yahoocc1: String): String
+  circa390: Boolean!
+  which538: String
+  hence7bb: String!
+  since020: Float
+}
+
+type naive8cd {
+  fooey3e5: Float!
+  wetly0c1: String!
+}
+
+input since055 {
+  often457: Float
+  stand735: String
+  yahoo4a9: String
+  hovel35e: Float
+  yahoocc1: String!
+  never814: Float
+  where46e: String!
+  birchb5c: [String!]
+  neverea4: spookc51
+  abaft48a: [yowzabf2!]
+  given957: above41b
+  underbbc: [yowzabf2!]
+  madlyc91: spookc51
+  yowza946: Boolean
+  oddlye7e: [joint942!]
+}
+
+input after844 {
+  yahoo4a9: String
+  hovel35e: Float
+  yahoocc1: String!
+  neverea4: spookc51
+  abaft48a: [yowzabf2!]
+  given957: above41b
+  goosee74: shyly9cc
+  yowza946: Boolean
+}
+
+type retch9cb {
+  chief886: String
+  patch579: String
+  yowza633: String
+  often286: Float
+}
+
+type joint1ae {
+  legalff2: whose07b
+  fatala9e: whose07b
+  jumpy6d2: whose07b
+  jaded0fc: whose07b
+  large8ed: whose07b
+  since020: whose07b
+  shylyf38: whose07b
+}
+
+type since9c5 @key(fields: "seize765 trail84e whose18d") {
+  seize765: String!
+  whose18d: smallcd5
+  fooeya1c(young7fc: after844): afore43d
+  trail84e: String!
+}
+
+type Query
+
+type wetly948 @key(fields: "madlybd2") {
+  recur12b: String @external
+  tauntc02: String @external
+  zowie555: String @external
+  powerf43: String @external
+  yowza57c: String @external
+  madlybd2: String
+  fooeyfc9: plate86e
+  fooeya1c(young7fc: yowza062): givenc6d @requires(fields: "thick5ed { where46e trail84e } zowie555 tauntc02 recur12b yowza57c powerf43")
+  thick5ed: barge0fe! @external
+}
+
+type yowzab51 @extends @key(fields: "adornea4") {
+  vital7d7: smalld4d! @external
+  adornea4: smalld4d! @external
+  supere4a: yowza033! @external
+  yahoo45c: since841 @external
+  fooeya1c(young7fc: since055): givenc6d @requires(fields: "zowie51a yahoo45c vital7d7 wherefd4 supere4a { fooey29e trail84e }")
+  wherefd4: smalld4d! @external
+  zowie51a: smalld4d! @external
+}
+
+type sidle3da implements givenc6d {
+  favorc0a: often009
+  fooey29e: String!
+  rigid037: whose07b
+  trail84e: String!
+}
+
+enum above41b {
+  flaky84c
+  zowieb65
+  sadlyfcf
+  yowza4de
+  erasec98
+}
+
+type peskya84 @key(fields: "madlybd2") {
+  powerf43: String @external
+  yowza57c: String @external
+  madlybd2: String
+  badly61d: [String!] @external
+  fooeya1c(young7fc: yowza062): throb93f @requires(fields: "yowza57c powerf43 badly61d trail84e")
+  trail84e: String @external
+}
+
+type whirr189 @key(fields: "badly61d powerf43") {
+  powerf43: String!
+  badly61d: [String!]
+  shyly67d(young7fc: yowza062, never480: never288!): whirr189!
+}
+
+type never54a @key(fields: "placef5e") {
+  placef5e: String @external
+  fooeya1c(young7fc: yowza062): throb93f
+}
+
+input shyly9cc {
+  weird5bd: String
+  untilb1f: Float
+  slimy0f4: String
+  rustyb44: String
+  petty31d: Float
+  ready859: String
+  badly5b7: Float
+  maybe4f0: String
+  madlyc91: spookc51
+  untilc4e: [yowzabf2!]
+}
+
+input yowzabf2 {
+  oftend70: String
+  about6e9: String!
+  where5b0: String
+  until877: String
+}
+
+type toast5e4 {
+  seize765: String
+  fairy559: whose07b
+  virus36d: whose07b
+  trail84e: String
+  shylyf38: whose07b
+  minusbbb: Float
+}
+
+input joint942 {
+  where46e: String!
+  often286: String!
+}
+
+scalar roundd32
+
+scalar federation__FieldSet
+
+scalar link__Import
+
+enum link__Purpose {
+  EXECUTION
+  SECURITY
+}

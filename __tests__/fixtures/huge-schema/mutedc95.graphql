@@ -1,0 +1,271 @@
+enum oddlyd3e {
+  tired210
+  yowzabde
+  yahoo5e3
+}
+
+type sunny85c {
+  bravea4e: ID!
+  where335: [since631!]!
+  whosee2b: since631
+  crawl621: Boolean!
+  hencef4f: unify0b1
+  abaftdd9: Boolean!
+  crown8f7: String
+  yummy209: fooeye7b
+  yahoo8ce: oddlyd3e
+}
+
+type glassaf4 {
+  fullydd9: String
+  flick089: String!
+  yowzaa4d: String!
+}
+
+enum worth8a8 {
+  flume9ee
+  sinced55
+}
+
+input which629 {
+  grasseb7: ID!
+  which2b0: Boolean!
+}
+
+type afore64e {
+  still876: String!
+}
+
+enum loose3e3 {
+  purse812
+  hence8e6
+  loads42f
+}
+
+input often8d8 {
+  grasseb7: ID!
+  which85e: loose3e3!
+  lousef34: String
+}
+
+type after305 {
+  still876: String!
+}
+
+enum daily9c7 {
+  shyly0a1
+  while7de
+}
+
+type since631 {
+  grasseb7: ID!
+  whose965: Boolean!
+  shyly83f: Boolean!
+  rainyb57: String!
+  emcee2fe: String
+  asidec42: unify0b1
+  yummy209: where60e!
+  enter023: worth8a8
+  truly689: sadly1d5!
+  devil5bc: feastb40
+  after3c6: glassaf4!
+}
+
+enum sadly1d5 {
+  bossyc46
+  zowie497
+  trulyb0e
+  alongbda
+  offer8bb
+  stoolca2
+  whose66a
+  routede8
+}
+
+enum where60e {
+  badly25f
+  avertb1d
+  yahoo788
+}
+
+type feastb40 {
+  yahoo87b: exile0cd
+  abovee1c: zowieffb!
+}
+
+input oddly34e {
+  grasseb7: ID!
+  allow1b3: ID!
+}
+
+type slingb4a {
+  still876: String!
+}
+
+input chuck1f0 {
+  grasseb7: ID!
+  allow1b3: ID!
+}
+
+type rapidb66 {
+  still876: String!
+}
+
+enum zowieffb {
+  bossyc46
+  lemure3d
+  right679
+  zowie064
+  alder8df
+  yowzab50
+  given866
+  sitar5c5
+  whiche7b
+  often7e2
+  times6ae
+  fooeyd4e
+}
+
+input blockfb7 {
+  fooey918: ID!
+  zestyda4: daily9c7!
+  zowie608: String!
+}
+
+type strutcce {
+  still876: daily6dd
+}
+
+type daily6dd {
+  fooey918: ID
+  zestyda4: daily9c7
+  zowie608: String
+  joint2d0: Boolean
+  since1e7: Boolean
+  dimly9df: Boolean
+}
+
+input clone94c {
+  grasseb7: ID!
+  batch826: spice921
+  shyly059: [bully995!]
+  color351: String
+  where71c: String
+  where8de: spice921
+  milkye8d: spice921
+  daily80a: spice921
+}
+
+type worth355 {
+  still876: String!
+}
+
+enum bully995 {
+  sadly1ed
+  which65d
+  yowzaa7c
+  fooey682
+  shawlcef
+  liver7c7
+}
+
+enum spice921 {
+  oftend6f
+  zowie7dd
+}
+
+input jointd13 {
+  grasseb7: ID!
+  fooey64d: where60e!
+  color351: String!
+  daily1b5: unify0b1!
+}
+
+type friskf54 {
+  still876: String!
+}
+
+input wortha28 {
+  grasseb7: ID!
+  emcee2fe: String!
+}
+
+type naive717 {
+  still876: String!
+}
+
+input fooeyf23 {
+  grasseb7: ID!
+}
+
+type until595 {
+  still876: sunny85c
+}
+
+input where7cd {
+  fooey918: ID!
+  zestyda4: daily9c7!
+  husky80f: [aware853]!
+}
+
+type yowza7ab {
+  still876: badlyc6e
+}
+
+type badlyc6e {
+  fooey918: ID
+  zestyda4: daily9c7
+  husky80f: [aware853] @deprecated(reason: "")
+  fullydd9: String
+}
+
+enum aware853 {
+  dimlydea
+  yahoo1fd
+  sinced55
+}
+
+type outdoc34 {
+  grasseb7: ID!
+  whichc72: String!
+  roundeae: String!
+  deter8a2: Int!
+  liner276: unify0b1!
+  times12c: unify0b1!
+}
+
+input fooeyc18 {
+  grasseb7: ID!
+  deter8a2: Int!
+}
+
+type where0b5 {
+  still876: outdoc34
+}
+
+type Mutation {
+  applybb2(worth668: which629!): afore64e!
+  above6af(worth668: often8d8!): after305!
+  given6e4(worth668: oddly34e!): slingb4a
+  scrap85d(worth668: chuck1f0!): rapidb66
+  fooey339(worth668: wortha28!): naive717
+  mochi2f1(worth668: clone94c!): worth355
+  yowza286(worth668: blockfb7!): strutcce
+  under34c(worth668: blockfb7!): strutcce
+  mistyd5e(worth668: jointd13!): friskf54
+}
+
+type Query {
+  since144(worth668: where7cd!): yowza7ab
+  after9bd(worth668: fooeyf23!): until595!
+  yowzad44(worth668: fooeyc18!): where0b5
+}
+
+enum fooeye7b {
+  sinced55
+  flume9ee
+}
+
+scalar exile0cd
+
+scalar unify0b1

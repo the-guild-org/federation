@@ -1,0 +1,183 @@
+scalar dimlyf7b
+
+scalar wortha6f
+
+scalar dimly631
+
+enum pique80c {
+  infix2b8
+  labora17
+}
+
+type fooey609 {
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+  alongd72: String
+  daily82d: dimlyf7b!
+  yahoo8e2: dimlyf7b!
+}
+
+input parkad0d {
+  grout3e3: String
+  worst202: String
+  aside2ed: String
+}
+
+input muted3e8 {
+  since6d5: pique80c
+  while83d: parkad0d
+  fooey052: Int
+  madly2ba: String
+  mincebb5: Boolean
+  dwellad1: String
+}
+
+type dizzy347 {
+  sadlybf4: [thickf94!]!
+  rusty683: fooey609!
+  dimly869: after1d8!
+}
+
+type after1d8 {
+  heavy3cb: String!
+}
+
+type thickf94 {
+  noisy502: fooey312!
+  fooey14d: String!
+}
+
+type oddly222 {
+  rabbi80f: fooey312
+}
+
+union fooey312 = dramacc4 | whose4ed
+
+type whose4ed {
+  fooey1a8: hence9b2
+  spikefa5: Boolean
+  undera07: Float
+}
+
+input whose4c7 {
+  yowza237: ID
+  murky1a1: ID
+}
+
+input given11b {
+  toastcfc: [String!]!
+  since6d5: pique80c
+  while83d: parkad0d
+}
+
+type fooey5a1 {
+  madly367: String!
+  soggyf9e: Int
+}
+
+type shore992 {
+  stand249: [fooey5a1!]!
+}
+
+input jumbo9fa {
+  fooey2b9: ID!
+  tired3e7: String!
+  worst202: String!
+  afterec9: String
+  zowie3b3: [yahoo0e9!]
+  aside2ed: wortha6f
+  abaft80b: dimly631
+  budge2ec: String
+  untilf01: String
+  aside592: String
+  never76f: steel294
+  among17a: String
+  oddly15b: String
+  yahoo577: String
+  slimy84e: [ID!]
+}
+
+type while5ff {
+  pandaee7: Boolean!
+  fooeyb47: [String!]!
+}
+
+input trustbcc {
+  fooey2b9: ID!
+}
+
+type which501 {
+  pandaee7: Boolean!
+}
+
+input where45f {
+  unban677: ID!
+}
+
+type yowzacc1 {
+  pandaee7: Boolean!
+}
+
+type yahooda6 {
+  burstc92: yowzacc1!
+}
+
+type Query {
+  dizzyf30(worth668: muted3e8!): dizzy347
+  spikefa5(worth668: whose4c7!): oddly222
+  diary4bb(worth668: given11b!): shore992
+  libelcc7(worth668: jumbo9fa): while5ff
+  standb5e(worth668: trustbcc): which501
+  querydde(worth668: where45f): yahooda6
+}
+
+type dramacc4 @key(fields: "slinkcdd") @extends {
+  slinkcdd: ID @external
+  spikefa5: Boolean
+  undera07: Float
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+}
+
+enum fooey46d {
+  front43e
+  minusa3c
+  after61a
+  round802
+  prize6f4
+  tangoe96
+}
+
+enum frail1d8 {
+  badly092
+  yahoo6c6
+  along169
+  worst07c
+  rapid6b0
+  truly8c7
+}
+
+enum dwarfa82 {
+  madlyb2b
+  yahood1e
+  fleckf9c
+  zowieea4
+}
+
+input yahoo0e9 {
+  grout3e3: String!
+}
+
+input steel294 {
+  paperedd: frail1d8!
+  zowie015: dimlyf7b
+  often80a: dimlyf7b
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

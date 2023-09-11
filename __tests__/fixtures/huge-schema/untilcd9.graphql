@@ -1,0 +1,47 @@
+type whose602 @key(fields: "scornf32") {
+  scornf32: String! @deprecated
+}
+
+type madlyfac {
+  scornf32: whose602
+  sincec96: shuck8c0
+}
+
+type Query @extends {
+  topic930: madlyfac
+}
+
+scalar dimlyf7b
+
+interface shuck8c0 {
+  midst81a: ID!
+}
+
+enum zowiec82 {
+  growlfe7
+  payeebdf
+  rapid483
+  kookyadb
+}
+
+enum sadly1a9 {
+  bagel520
+  among794
+  kookyadb
+}
+
+type never2db {
+  dimlye1f: Boolean!
+  which730: zowiec82!
+  fooeycb9: sadly1a9!
+}
+
+type given74b implements shuck8c0 @key(fields: "midst81a") {
+  midst81a: ID!
+  witty6b7: dimlyf7b!
+  tired0e5: String!
+  emptyafc: Boolean!
+  often568: Boolean!
+  fooey7aa: Boolean!
+  whole1fa: never2db
+}

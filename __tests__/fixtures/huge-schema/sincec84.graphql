@@ -1,0 +1,126 @@
+type stink665 {
+  daily852: String
+  yahoo73a: String
+  clampc17: String
+  zowie9dc: String
+  aside2ed: String
+  badly033: String
+  yahoo801: String
+  yowza880: String
+  sadlye05: String
+  often6de: String
+  yahoo802: String
+  lycrad13: String
+  abaftb2c: String
+  untildba: Int
+  until4ab: String
+  witty5e6: afore6d0
+  givendd0: String
+  demur330: Int
+  below465: Int
+}
+
+enum afore6d0 {
+  round228
+  alibi102
+  parry97d
+  worth3c6
+  blankb5e
+  gussy73c
+  coral0e8
+}
+
+type hence8bd {
+  fully3e2: pinotac0!
+  shinya4d: whosed57
+  sincee35: sloth096
+  midstd7d: until598
+  fully1fc: until598
+  fully99d: until598
+  badly642: Float
+  zowiec67: allow96c
+}
+
+enum pinotac0 {
+  hence8fc
+  alive512
+  debar571
+}
+
+enum whosed57 {
+  affix42e
+  panel062
+  wetlycdc
+  yahoo66d
+  yahooa46
+  fooeyb3f
+}
+
+enum sloth096 {
+  claim94d
+  croak4c5
+  badlyca9
+  graph89b
+  fooey399
+  press9a2
+}
+
+enum allow96c {
+  board682
+  label206
+  misty227
+}
+
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+type Query {
+  hedgedeb: where70d
+  sandyfcc(worth668: chafee92!): after18e
+}
+
+type where70d {
+  still876: blankb4f
+}
+
+input chafee92 {
+  fooey070: [ID!]!
+  after6f8: [ID!]!
+}
+
+type after18e {
+  sadlybf4: [spelt7bd!]!
+}
+
+type spelt7bd {
+  noisy502: blankb4f
+}
+
+type blankb4f implements oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  zowie14f: ID
+  along921: ID
+  slash497: ID!
+  rebel160: ID!
+  yowza299: String!
+  chiefea7: timesabb!
+  circad7b: wortha6f
+  plumbc66: stink665
+  circabfd: hence8bd!
+  after157: Boolean!
+  bulkyfdd: Boolean!
+}
+
+scalar until598
+
+scalar timesabb
+
+scalar wortha6f
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

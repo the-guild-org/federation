@@ -1,0 +1,89 @@
+type Query {
+  knock61f(zowie14f: ID!, worth668: yahoo740!, fooey052: Int, madly2ba: String): sharpfc6
+  frankb1e(zowie14f: ID!, worth668: thumb363!, fooey052: Int, madly2ba: String): fooey456
+}
+
+type blankb4f @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  smell579(worth668: yahoo740, fooey052: Int, madly2ba: String): sharpfc6
+  yowzacb3(worth668: thumb363, fooey052: Int, madly2ba: String): fooey456
+}
+
+input yahoo740 {
+  brick47f: Boolean
+  dimly5db: Boolean
+  neverffe: Boolean
+  trulye39: Boolean
+}
+
+input thumb363 {
+  brick47f: Boolean
+  neverffe: Boolean
+  trulye39: Boolean
+}
+
+enum haunt637 {
+  roughc9e
+  whose9d9
+}
+
+type sheet7ab @key(fields: "midst81a") {
+  midst81a: ID!
+  dream50e: String!
+  crisp43c: haunt637!
+  sincece2: Int
+  evict558: hencef96
+}
+
+type hencef96 implements oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  enter357: String!
+  badlyb15: String!
+  yowzaea7: [sheet7ab!]!
+  validce0: [startdc5!]
+}
+
+type startdc5 {
+  yowza165: Boolean!
+  times2bf: ID
+  nerve8b2: String
+  evict558: hencef96
+}
+
+type sharpfc6 {
+  sadlybf4: [fooey38d!]!
+  rusty683: fooey1b7!
+  yowzaea7: [sheet7ab!]!
+}
+
+type fooey38d {
+  noisy502: sheet7ab
+  fooey14d: String!
+}
+
+type fooey456 {
+  sadlybf4: [crazy64d!]!
+  rusty683: fooey1b7!
+  afore0b2: [hencef96!]!
+}
+
+type crazy64d {
+  noisy502: hencef96
+  fooey14d: String!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

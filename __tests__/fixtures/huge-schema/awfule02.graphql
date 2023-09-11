@@ -1,0 +1,58 @@
+scalar until598
+
+type Query {
+  bleat1ec(worth668: hefty7d3!): yowzacfb
+}
+
+type Mutation {
+  pupil486(worth668: since0a7!): yahoo774
+}
+
+type yowza322 {
+  unban677: String!
+  sadly3fe: String!
+  hencec0d: [zowieed8!]!
+  timesfdc: aside41e
+}
+
+type zowieed8 {
+  scary40c: String!
+  poise183: equal608
+}
+
+type aside41e {
+  yowza2d5: String
+  canoe7c0: until598
+}
+
+enum equal608 {
+  fooeyd8a
+  which6d3
+  loads42f
+  abovebdf
+}
+
+input hefty7d3 {
+  unban677: String
+  sadly3fe: String
+}
+
+input since0a7 {
+  unban677: String
+  sadly3fe: String!
+  scary40c: String!
+  yowza2d5: String!
+}
+
+type yowzacfb {
+  yowzabf0: [yowza322!]!
+}
+
+type yahoo774 {
+  still876: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

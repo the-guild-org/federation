@@ -1,0 +1,110 @@
+type hyenaa5e @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+extend type hyenaa5e {
+  baggy484: [yowza52e!]!
+}
+
+type Query {
+  afterd7c: madlyada
+}
+
+type Mutation {
+  untilc4f(worth668: dimly450!): sadlya6a
+  offer0ce(worth668: alongc2d!): green326
+  sadly348(worth668: below9b1!): hence182
+}
+
+union yowza52e = oddly521
+
+type madlyada {
+  still876: [yowza52e!]!
+}
+
+type hence182 {
+  still876: [yowza52e!]!
+}
+
+type sadlya6a {
+  still876: [yowza52e!]!
+}
+
+type green326 {
+  still876: [ID!]!
+}
+
+enum givend4c {
+  roast75f
+  image5ab
+  pricefa8
+}
+
+enum start32f {
+  belch132
+  aspiccbb
+}
+
+type oddly521 {
+  midst81a: ID!
+  yummy209: start32f!
+  spicy766: String!
+  fooeyec6: givend4c!
+  quilte88: Boolean!
+}
+
+input dimly450 {
+  until966: octeta0d
+}
+
+input alongc2d {
+  until966: quiltc76
+}
+
+input below9b1 {
+  underbed: wrestcfd
+  zowiee97: below2cb
+  fooey6d9: wreck7e4
+  aboutacf: midstd84
+  where8fd: worth6b0
+}
+
+input octeta0d {
+  spicy766: String!
+  yummy209: start32f!
+  fooeyec6: givend4c!
+  yowza995: [String!]!
+}
+
+input wrestcfd {
+  midst81a: String!
+  spicy766: String!
+  fooeyec6: givend4c!
+}
+
+input quiltc76 {
+  midst81a: String!
+}
+
+input midstd84 {
+  midst81a: String!
+}
+
+input worth6b0 {
+  midst81a: String!
+}
+
+input below2cb {
+  midst81a: String!
+  yowza995: [String!]!
+}
+
+input wreck7e4 {
+  midst81a: String!
+  yowza995: [String!]!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

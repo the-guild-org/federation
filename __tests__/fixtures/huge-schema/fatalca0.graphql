@@ -1,0 +1,62 @@
+input aboutdbc {
+  rally1ff: ID!
+  small9f5: offer357!
+  where335: [forgo15d!]!
+  dread810: rough80b!
+  lankyc69: rough80b!
+  yowza1bb: yahoo570!
+  manor701: String!
+  afterec9: String
+  grout3e3: shylyad2
+}
+
+type young046 {
+  forgo53d: moralaf0
+}
+
+extend type Mutation {
+  brood991(worth668: aboutdbc!): young046
+}
+
+input close248 {
+  rally1ff: ID!
+  small9f5: offer357!
+  where335: [forgo15d!]!
+}
+
+type yowza5fd {
+  forgo53d: moralaf0
+}
+
+type Mutation {
+  until856(worth668: close248!): yowza5fd
+}
+
+input offer357 {
+  times2bf: ID
+  zowie608: fooeya96
+}
+
+input forgo15d {
+  zowie608: fooeya96!
+}
+
+input shylyad2 {
+  afterec9: String
+  occur1db: whose5ae
+}
+
+input whose5ae {
+  while04b: Float!
+  omega6be: Float!
+}
+
+type moralaf0 {
+  oddlydb5: String!
+}
+
+scalar rough80b
+
+scalar yahoo570
+
+scalar fooeya96

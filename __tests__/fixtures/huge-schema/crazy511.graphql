@@ -1,0 +1,84 @@
+type Mutation {
+  shoot784(worth668: whose403!): zowie851
+  blind75c(worth668: often136!): since149
+}
+
+input whose403 {
+  about13f: String!
+  short97b: String!
+  brief00e: String!
+  hairyc8d: aside6bb!
+  photo122: slink30e
+  urbanf04: Int
+  basicf38: String
+}
+
+enum aside6bb {
+  cower39d
+  hencec4c
+  sadly00c
+}
+
+enum slink30e {
+  fooey68a
+  womanaed
+  framebc1
+  daily36d
+  prowl311
+  alongbda
+}
+
+type zowie851 {
+  hairyc8d: aside6bb!
+}
+
+input often136 {
+  flirt459: hence8f3!
+  rumordfb: String!
+  nevera33: yahoo7c9
+  range3f2: String
+  sincec5d: String
+  close425: [String]
+  hoist674: [String]
+  worth81e: String
+  basicf38: String
+}
+
+enum hence8f3 {
+  zowiec0f
+  stunt5e4
+  along489
+  above4fd
+}
+
+enum since86d {
+  tangoe96
+  front43e
+  minusa3c
+  after61a
+  round802
+  prize6f4
+  whoseb61
+  yodel393
+}
+
+input yahoo7c9 {
+  minus3d8: String
+  preen0cd: String
+  roostf11: String
+  wetlyca9: String
+  madly3b3: String
+  emcee2ca: String
+  clampc17: String
+  aside2ed: String
+  hairye5d: String!
+  tired70f: String
+}
+
+type since149 {
+  flirt459: hence8f3!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

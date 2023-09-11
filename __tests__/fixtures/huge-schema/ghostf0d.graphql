@@ -1,0 +1,83 @@
+schema {
+  query: Query
+}
+
+scalar unify0b1
+
+scalar wortha6f
+
+type minusa61 {
+  yowza299: String!
+  quake984: unify0b1!
+}
+
+type worth524 {
+  yowza2d5: String!
+  yummy209: truly951
+}
+
+enum truly951 {
+  given846
+  among57a
+  repay2f3
+  yowza0e1
+  aside89d
+  yahooba5
+  where112
+  while263
+}
+
+type yowza746 {
+  yowza299: String!
+  yowza2d5: Int!
+  blindea7: worth524
+  afterec9: String
+}
+
+type below142 {
+  until24d: String!
+  demobbc6: yowza746!
+}
+
+type truly186 {
+  yowza8ba: Int!
+  deterf15: String!
+  mealy6b7: [below142!]!
+  month9b2: ID!
+  fooeyb47: [String!]
+  yahoo520: String!
+}
+
+type hence8b5 {
+  yahoo92e: ID
+  couch398: [minusa61!]!
+  minus501: truly186!
+  glass2b6: wortha6f
+  mixerb9a: wortha6f
+}
+
+enum until4f2 {
+  zowie896
+  crookebe
+  irony185
+}
+
+enum whichec2 {
+  zowiea04
+  nevere73
+}
+
+input stake4fd {
+  yahoo998: until4f2!
+  stake5c3: String!
+  abaft6c7: String!
+  month9b2: ID
+  truth863: Boolean!
+  whilef7f: whichec2!
+  canon167: [String!]!
+  couch398: [String!]!
+}
+
+type Query {
+  zowieb3a(worth668: stake4fd): hence8b5
+}

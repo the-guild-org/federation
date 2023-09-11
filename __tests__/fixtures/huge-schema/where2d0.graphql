@@ -1,0 +1,63 @@
+type Query {
+  among903(worth668: mixed9b4): yahoob07
+}
+
+input mixed9b4 {
+  while871: String!
+  whichbdc: String!
+  midsta2d: Int!
+  truly3e8: Int!
+}
+
+type yahoob07 {
+  given95a: [which6a9!]!
+  rusty683: yowza6ff!
+  where88c: joint49f!
+}
+
+type yowza6ff {
+  abovea30: Int!
+  soggyf9e: Int!
+  where46f: Int!
+  madly54b: Int!
+}
+
+type which6a9 {
+  decay64d: freak945!
+  majorb19: worth78e!
+  wholef64: minorab4!
+}
+
+type joint49f {
+  while871: [fooey0a2!]!
+  whichbdc: [faintdb3!]!
+}
+
+type fooey0a2 {
+  majorb19: worth78e!
+  hence519: String!
+}
+
+type faintdb3 {
+  wholef64: minorab4!
+  crate089: String!
+}
+
+enum worth78e {
+  sallyf33
+  untilb3b
+  dailya21
+}
+
+enum minorab4 {
+  prize6f4
+  front43e
+  minusa3c
+  after61a
+  round802
+  tangoe96
+}
+
+type freak945 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+}

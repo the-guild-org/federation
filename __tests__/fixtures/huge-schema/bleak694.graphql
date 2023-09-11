@@ -1,0 +1,127 @@
+type whichcf2 {
+  cheat609: yahooda4!
+  badly298: Int!
+  shylye96: String
+  undereed: Int!
+}
+
+type blood7ae {
+  dimly680: ID
+  gaffe96c: Boolean
+  whose6f3: whichcf2
+}
+
+type dramacc4 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  truly22b(round3fe: whosef74!): blood7ae
+}
+
+enum yahooda4 {
+  flume9ee
+  sinced55
+  sadly2ed
+}
+
+enum whosef74 {
+  quake86e
+  fooeya55
+}
+
+input zowie0db {
+  cheat609: yahooda4!
+  badly298: Int!
+  shylye96: String
+  undereed: Int
+}
+
+input abaftdf3 {
+  unban677: ID!
+  round3fe: whosef74
+  cheat609: yahooda4!
+  badly298: Int!
+  shylye96: String
+  undereed: Int
+  minus147: String
+}
+
+input woozy8b4 {
+  unban677: ID!
+  round3fe: whosef74
+  minus147: String
+}
+
+input misty12c {
+  unban677: ID!
+  round3fe: whosef74
+  cheat609: yahooda4
+  badly298: Int
+  shylye96: String
+  undereed: Int
+  minus147: String
+}
+
+input hence1c9 {
+  unban677: ID!
+  prize29d: ID!
+  minus147: String
+}
+
+type untileac {
+  unban677: ID!
+  gaffe96c: Boolean!
+  cheat609: yahooda4!
+  badly298: Int!
+  shylye96: String
+  undereed: Int!
+}
+
+type tepee4c8 {
+  unban677: ID!
+  gaffe96c: Boolean!
+}
+
+type llamaf96 {
+  unban677: ID!
+  cheat609: yahooda4!
+  badly298: Int!
+  shylye96: String
+  undereed: Int!
+}
+
+type oddly4c3 {
+  still876: untileac!
+}
+
+type knock74c {
+  still876: tepee4c8!
+}
+
+type whilec5e {
+  still876: llamaf96!
+}
+
+type yowza53c {
+  still876: yahoo98f!
+}
+
+type yahoo98f {
+  unban677: ID!
+  prize29d: ID!
+  gaffe96c: Boolean!
+}
+
+type Mutation {
+  taperd5f(worth668: abaftdf3!): oddly4c3
+  fully3ec(worth668: woozy8b4!): knock74c
+  yahooeab(worth668: misty12c!): whilec5e
+  ariseddf(worth668: hence1c9!): yowza53c
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

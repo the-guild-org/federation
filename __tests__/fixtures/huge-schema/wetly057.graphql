@@ -1,0 +1,60 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.1", import: ["@composeDirective", "@key"])
+
+extend schema @link(url: "https://specs.apollo.dev/link/v1.0")
+
+type Query {
+  fooey765(worth668: wetlyac1!): zowie5f5
+  daily024: crush928
+}
+
+type whose708 @key(fields: "midst81a") {
+  midst81a: ID!
+  yowza299: String
+  oddly07d: String
+  shylya28: under8a7
+  hence401: oftenfc0
+}
+
+type oftenfc0 {
+  tinge627: Int
+  moist7ca: Int
+  untilada: Int
+  yahoo60a: Int
+}
+
+enum under8a7 {
+  yahoo649
+  trawl632
+  dirty1d0
+  snarf205
+}
+
+input wetlyac1 {
+  badly17c: [ID!]!
+}
+
+type zowie5f5 {
+  yowzabf0: [afore7cf]!
+}
+
+type afore7cf {
+  merry54f: String!
+  fooey058: whose708!
+}
+
+type crush928 {
+  guilt1e9: peonyfe9
+  inlay75b: yowzab67
+  oddlyb0f: [String!]
+  muted6cc: String
+  pedaldc2: String
+}
+
+type peonyfe9 {
+  staid7db: [String!]!
+}
+
+type yowzab67 {
+  yahoof47: String!
+}

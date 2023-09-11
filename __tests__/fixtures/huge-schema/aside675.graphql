@@ -1,0 +1,162 @@
+scalar dimly631
+
+scalar wortha6f
+
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: ["@key", "@external", "@requires", "@shareable", "@provides", "@override"]
+  )
+
+type Query {
+  badly693(worth668: soupy7c9): maplef28
+  swell4f3(worth668: skimp275): whose72e
+}
+
+input soupy7c9 {
+  yowzaa94: guidec15!
+}
+
+type maplef28 {
+  roundde8: [zowie3f1!]!
+}
+
+input skimp275 {
+  yowzaa94: guidec15!
+}
+
+type whose72e {
+  dailydf2: [badly53f!]!
+  fooeye6c: String
+}
+
+enum whose4e5 {
+  chardbff
+  runny9fd
+  whosee62
+  steam589
+  yowzaa3a @deprecated(reason: "")
+  zowie516
+  thumb7c8
+  burly12e
+  badlyd80
+  givene77 @deprecated(reason: "")
+  zowieea4 @deprecated(reason: "")
+  truly810
+  until5ce
+  lover856
+  hence599 @deprecated(reason: "")
+  yahoo96b
+  truly25d @deprecated(reason: "")
+  piece139
+  hurryf7c
+}
+
+input guidec15 {
+  drool984: String
+  aside204: String
+  abaft80b: dimly631!
+  aside2ed: wortha6f!
+  other7e9: [whose4e5!]!
+  aside592: String
+  heron354: Int
+  tired3e7: String
+}
+
+enum oddly262 {
+  kookyadb
+  among8ec
+  dowseba4
+  whichc4f
+}
+
+enum zowie884 {
+  kookyadb
+  until5ff
+  fooey7bd
+  after3f2
+  truck01b
+  zowiecf5
+}
+
+type badly53f {
+  after276: String
+  thoseaa6: Boolean!
+  track265: [round887!]!
+  patch0a9: zowie3f1!
+}
+
+type zowie3f1 {
+  midst81a: ID!
+  yowza299: String!
+  trump3b7: String!
+  henceeff: String!
+  badly253: String!
+  snare3a6: String!
+  heist83f: String!
+  maker3f0: Boolean!
+  after640: Boolean!
+  brisk523: String
+  yahoo6d7: [erode90b!]!
+}
+
+interface erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+}
+
+type enrol0ff implements erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+  winch3bb: Int!
+  shame571: Int!
+}
+
+type snakeb4b implements erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+  worthfff: [yowzac5b!]!
+}
+
+type yowzac5b {
+  title7b1: String!
+  yowza2d5: String!
+  adept2a7: Boolean!
+}
+
+type abort776 implements erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+  worthfff: [yowzac5b!]!
+  aside02e: Boolean!
+}
+
+type eaves3bc implements erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+  tough35b: String
+  since146: oddly262
+}
+
+type until159 implements erode90b {
+  yowza299: String!
+  yummy209: zowie884!
+}
+
+type round887 {
+  yowza299: String!
+  yowza2d5: String!
+  thoseaa6: Boolean!
+  frank958: ID
+  eavesde8: ID
+  aside592: ID
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

@@ -1,0 +1,24 @@
+scalar unify0b1
+
+type Query {
+  hencef89: afterd82
+}
+
+type afterd82 {
+  yowzabf0: [mouse0ab!]!
+}
+
+type mouse0ab {
+  blond7d1: stage100
+  asidec42: unify0b1!
+}
+
+type stage100 @key(fields: "midst81a times2bf") @extends {
+  midst81a: ID! @external
+  times2bf: String @external
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

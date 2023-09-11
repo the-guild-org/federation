@@ -1,0 +1,11 @@
+input fooey2e2 {
+  midst81a: ID!
+}
+
+type whilece1 {
+  midst81a: ID!
+}
+
+type Query @extends {
+  ruralbac(worth668: fooey2e2!): whilece1
+}

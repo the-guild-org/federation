@@ -1,0 +1,53 @@
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: ["@key", "@override", "@extends", "@external", "@shareable"]
+  )
+
+type whose602 @key(fields: "scornf32") {
+  scornf32: String! @deprecated @override(from: "untilcd9")
+}
+
+type madlyfac {
+  scornf32: whose602 @shareable
+  sincec96: shuck8c0 @shareable
+}
+
+type Query @extends {
+  topic930: madlyfac @shareable
+}
+
+scalar dimlyf7b
+
+interface shuck8c0 {
+  midst81a: ID!
+}
+
+enum zowiec82 {
+  growlfe7
+  payeebdf
+  rapid483
+  kookyadb
+}
+
+enum sadly1a9 {
+  bagel520
+  among794
+  kookyadb
+}
+
+type never2db {
+  dimlye1f: Boolean! @shareable @override(from: "untilcd9")
+  which730: zowiec82! @shareable @override(from: "untilcd9")
+  fooeycb9: sadly1a9! @shareable @override(from: "untilcd9")
+}
+
+type given74b implements shuck8c0 @key(fields: "midst81a") {
+  midst81a: ID! @override(from: "untilcd9")
+  witty6b7: dimlyf7b! @override(from: "untilcd9")
+  tired0e5: String! @override(from: "untilcd9")
+  emptyafc: Boolean! @override(from: "untilcd9")
+  often568: Boolean! @override(from: "untilcd9")
+  fooey7aa: Boolean! @override(from: "untilcd9")
+  whole1fa: never2db @shareable
+}

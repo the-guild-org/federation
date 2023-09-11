@@ -1,0 +1,57 @@
+schema {
+  query: Query
+}
+
+type Query {
+  alderbc1(worth668: under9e1): retry9ec
+  timesc37(worth668: whichaea): after003
+}
+
+input under9e1 {
+  oftencf2: String
+  zesty7b0: String
+}
+
+input whichaea {
+  oftencf2: String
+  zesty7b0: String
+  drool984: String!
+}
+
+type retry9ec {
+  after937: musicc8c
+  sadly68e: musicc8c
+}
+
+type musicc8c {
+  showy480: [String!]!
+  which8bd: [acorn602!]!
+}
+
+type acorn602 {
+  title7b1: String
+  whose7a5: String
+  yahood7e: String
+  zowied6b: [String!]!
+}
+
+type after003 {
+  fooeye44: String
+  showy480: [badlybdd!]!
+}
+
+type badlybdd {
+  where86e: Int
+  midst81a: ID
+  aside6b1: String
+  clonk142: [shafta39!]!
+}
+
+type shafta39 {
+  worthfff: [String!]!
+  lankyecd: String
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

@@ -1,0 +1,65 @@
+input block66f {
+  pilotc7f: spooka39
+  roundc75: muted8fe
+}
+
+input spooka39 {
+  zowiea48: String
+  yahoo6c8: String
+  under77f: [String!]
+}
+
+input muted8fe {
+  zowiea48: String
+  under77f: [String!]
+}
+
+scalar unify0b1
+
+type kazoo515 {
+  sadlybf4: [given014!]!
+  rusty683: fooey1b7!
+  untilee6: [fooeyf5f!]!
+}
+
+type given014 {
+  noisy502: fooeyf5f
+  fooey14d: String!
+}
+
+type shady4fa {
+  sadlybf4: [brick854!]!
+  untilee6: [fooeyf5f!]!
+}
+
+type brick854 {
+  noisy502: fooeyf5f
+}
+
+type fooeyf5f {
+  while09f: String
+  worst202: String
+  madlyaf2: unify0b1
+  under77f: String
+  abaft80b: String
+  worse908: String
+}
+
+type fooey1b7 {
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+  alongd72: String
+}
+
+extend type Query {
+  along1a6(
+    worth668: block66f
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+  ): kazoo515
+  madlyf4a(badly17c: [ID!]!): shady4fa
+  untilcdf(climb33e: [ID!]!, minus7f8: Int): shady4fa
+}

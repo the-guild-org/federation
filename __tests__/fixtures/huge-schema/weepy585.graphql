@@ -1,0 +1,55 @@
+type Query {
+  wheref16(worth668: above173!): henceb5b
+}
+
+input above173 {
+  blurt1c6: String!
+}
+
+type henceb5b {
+  usage415: Boolean!
+}
+
+type Mutation {
+  badlyfd2(worth668: yowza8d0!): briskc17
+  joint4fa(worth668: ruddyb5f!): colond00
+}
+
+input yowza8d0 {
+  blurt1c6: String!
+  minus147: String!
+}
+
+type briskc17 {
+  afterfd4: shyly918
+}
+
+type shyly918 {
+  emcee2fe: String!
+  oftenfa9: String!
+  which27f: Int!
+  fooey138: String!
+}
+
+enum badly400 {
+  zowie064
+  sitar5c5
+  along32c
+}
+
+input ruddyb5f {
+  bagele57: ID!
+  whichd4b: ID
+  blurt1c6: String!
+  sleet0c6: badly400!
+  minus147: String!
+}
+
+type colond00 {
+  oddly793: Boolean
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

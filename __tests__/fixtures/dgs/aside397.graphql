@@ -1,0 +1,59 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible"]) {
+  query: Query
+}
+
+directive @extends on INTERFACE | OBJECT
+
+directive @external(reason: String) on FIELD_DEFINITION | OBJECT
+
+directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+
+directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+
+directive @provides(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+
+enum whosec2c {
+  first056
+  slicee5f
+}
+
+type plate86e @extends @key(fields: "adornea4") {
+  adornea4: smalld4d! @external
+  attic76e(afteread: String, clamp48d: merry98b): haunte5e
+}
+
+scalar smalld4d
+
+type haunte5e {
+  swiftbdc: Boolean
+}
+
+enum yahoo73c {
+  whose4aa
+  alive170
+  crickebd
+}
+
+type Query
+
+input merry98b {
+  rigid037: Float!
+  along562: yahoo73c!
+}
+
+scalar roundd32
+
+scalar federation__FieldSet
+
+scalar link__Import
+
+enum link__Purpose {
+  EXECUTION
+  SECURITY
+}

@@ -1,0 +1,44 @@
+type Mutation {
+  fullyddb(worth668: alertd27!): preen536
+}
+
+input alertd27 {
+  givenba6: String!
+}
+
+type preen536 {
+  still876: untilc82
+}
+
+type untilc82 {
+  ripene14: String!
+  yowza2d5: Int
+  chiefea7: timesabb
+}
+
+scalar timesabb
+
+type Query {
+  swampbcf: choke108
+}
+
+type choke108 {
+  knock2fe: drain7c4
+}
+
+type drain7c4 {
+  aside522: String!
+  afoul8e6: Int
+  outdo385: String
+  chiefea7: String!
+  relay9c3: String!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

@@ -1,0 +1,54 @@
+scalar chafeb78
+
+type Query {
+  yowza5bb(worth668: until8c2!): until18c
+}
+
+input until8c2 {
+  witty6b7: ID!
+  murky1a1: ID!
+  zowiea48: String!
+  aside2ed: String!
+  weirddd0: String!
+  yahoo92e: String!
+  yahoo5e0: ID
+}
+
+type until18c {
+  serum1eb: whileb0f!
+  quill085: round3ff!
+}
+
+type whileb0f {
+  sincedb9: Boolean!
+  cheap4e7: Boolean!
+  sincebc4: [often567!]!
+}
+
+type round3ff {
+  where343: Boolean!
+  virus57d: Boolean!
+  bastea0c: Int
+  zowie2b5: chafeb78
+  shylyf5a: chafeb78
+}
+
+type often567 {
+  sincea4e: String
+  beechb50: String
+  oddlyb4f: String
+  munch8d1: chafeb78!
+  after5a7: chafeb78!
+  sinceace: String
+  aboutbd5: String
+  glassa9c: String
+  whichf83: chafeb78
+  thosec7f: chafeb78
+  minus401: Int!
+  sinced42: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

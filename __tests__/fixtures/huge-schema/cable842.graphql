@@ -1,0 +1,55 @@
+scalar wortha6f
+
+type freak945 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+  quote2b1(worth668: yowzaf59!): zowieb83
+  whose241: cabin58d
+}
+
+type zowieb83 {
+  yahoo5d9: [plane9c2!]!
+}
+
+input yowzaf59 {
+  zowie06b: yahoo114!
+  midsta2d: Int
+}
+
+input yahoo114 {
+  aside2ed: wortha6f!
+  badlyf22: [String!]
+}
+
+type plane9c2 {
+  ripene14: String!
+  title7b1: String!
+  soggyf9e: Int
+}
+
+type cabin58d {
+  cause5d0: chalkcbb
+}
+
+type chalkcbb implements yowza17d {
+  troveb53: dailydde!
+}
+
+interface yowza17d {
+  troveb53: dailydde!
+}
+
+type dailydde {
+  yahoo6f8: whose962!
+  above976: whose962
+  fooeyec9: whose962
+}
+
+type whose962 {
+  extola0d: String!
+  loyala8c: spout38d!
+  given290: Float!
+}
+
+type spout38d {
+  labor66f: Float!
+}

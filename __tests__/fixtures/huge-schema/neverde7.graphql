@@ -1,0 +1,54 @@
+scalar wortha6f
+
+scalar timesabb
+
+scalar fooeya96
+
+scalar dimly631
+
+scalar until598
+
+type Mutation {
+  wetly09a(worth668: tired8ff!): oddlyd82
+}
+
+input tired8ff {
+  wherec95: String
+  whose4f1: String
+  yowzada5: String
+  shacke74: Float
+  daily423: String
+  forge190: String
+  bleakb01: until598
+  yahoo90f: String
+  scary3f9: Boolean
+  zowie608: fooeya96
+  yowza299: String
+  video759: String
+  starkc30: fooeya96
+  yahoo415: String
+  zowiea48: zestyadb
+  tarrye2f: Boolean
+}
+
+input zestyadb {
+  abaft80b: dimly631
+  aside2ed: wortha6f
+}
+
+type oddlyd82 {
+  truly689: abafte1b!
+  zowie160: String!
+  video759: String
+  yowza299: String
+  zowie2b5: until598
+  chiefea7: timesabb
+  yowzaeef: Float
+  white084: Float
+}
+
+enum abafte1b {
+  yowzaed5
+  flute58c
+  fluid254
+}

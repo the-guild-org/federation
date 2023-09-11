@@ -1,0 +1,42 @@
+enum forgede5 {
+  erasea8a
+  zowieac9
+  yahood1e
+}
+
+type Query {
+  among7df(worth668: sweetf34!): yowza04a
+}
+
+input yahoo5c6 {
+  tight639: ID!
+  unban677: ID!
+}
+
+input sweetf34 {
+  shylybc4: [yahoo5c6!]!
+}
+
+type yowza04a {
+  yowzabf0: [round0c6!]!
+}
+
+type round0c6 {
+  tight639: ID!
+  truly689: String
+  never118: resetfb2
+}
+
+type resetfb2 {
+  kebab10c: String
+  emcee2fe: String
+  scentdef: forgede5
+  rigid3b7: chafeb78
+}
+
+scalar chafeb78
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

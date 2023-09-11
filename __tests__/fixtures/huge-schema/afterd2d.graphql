@@ -1,0 +1,52 @@
+type Query {
+  disco6cb(flare450: [ID!]!): [madlybfa]!
+}
+
+type madlybfa @key(fields: "scary40c") {
+  scary40c: ID!
+  fooeya82: String
+  thongce2: String
+  while89e: while596
+  sadlyed0: String
+  fully8be: swampcf3
+}
+
+type swampcf3 {
+  fooeya82: String
+  thongce2: String
+  while89e: while596
+}
+
+type given92c {
+  greetbc5: Float!
+  cruel83f: Float!
+}
+
+type since0ef {
+  yowza2d5: Float!
+}
+
+type grassa25 {
+  greetbc5: Float!
+}
+
+type oftenb41 {
+  cruel83f: Float!
+}
+
+union zowief06 = given92c | since0ef | grassa25 | oftenb41
+
+enum wittyd9d {
+  yahoo6c6
+  badly092
+  rapid6b0
+  yahoo293
+  worst07c
+  yowzad26
+  truly8c7
+}
+
+type while596 {
+  award04c: wittyd9d
+  repay348: zowief06
+}

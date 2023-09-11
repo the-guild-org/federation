@@ -1,0 +1,153 @@
+input until304 {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+}
+
+type hence394 {
+  sadlybf4: [sweatec7!]!
+  rusty683: fooey1b7!
+}
+
+type sweatec7 {
+  noisy502: zowie522
+  fooey14d: String!
+}
+
+input detere7e {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  fifth3a5: String
+}
+
+type stakea59 {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  fifth3a5: String
+  soggy38e: whileeaa!
+}
+
+input afore2fd {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  fifth3a5: String
+}
+
+type madlyb5e {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  fifth3a5: String
+  soggy38e: whileeaa!
+}
+
+input totalaaf {
+  until756: [zowie8ca!]!
+}
+
+input zowie8ca {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  fifth3a5: String
+}
+
+type drivefeb {
+  until756: [stakea59!]!
+}
+
+input loverae3 {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+}
+
+type zowie522 {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  soggy38e: whileeaa!
+}
+
+type whileeaa {
+  yowza2d5: String
+}
+
+input which2b5 {
+  until756: [yahoo24e!]!
+}
+
+input yahoo24e {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+  soggy38e: round28d!
+}
+
+input round28d {
+  yowza2d5: String
+}
+
+type larchfac {
+  until756: [zowie522!]!
+}
+
+input gleanc9c {
+  until756: [after82b!]!
+}
+
+input after82b {
+  spork69f: amber562!
+  swishc4b: String
+  fooeye4c: String!
+  bijoudd3: String!
+  smartecb: String!
+}
+
+type bleep4e6 {
+  until756: [zowie522!]!
+}
+
+type Query {
+  underd63(worth668: loverae3!): zowie522
+  yahoo4e4(fooey052: Int, madly2ba: String, worth668: until304!): hence394
+  yahoo932(worth668: detere7e!): stakea59
+}
+
+type Mutation {
+  cornyf44(worth668: which2b5!): larchfac
+  hence267(worth668: gleanc9c!): bleep4e6
+  movie22c(worth668: afore2fd): madlyb5e
+  until898(worth668: totalaaf): drivefeb
+}
+
+enum amber562 {
+  superbe1
+  yahoofaa
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

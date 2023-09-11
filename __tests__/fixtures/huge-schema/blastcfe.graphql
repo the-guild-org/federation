@@ -1,0 +1,58 @@
+scalar until598
+
+type Query @extends {
+  drive3e7(zowie9dc: front43f!, yahoo616: clearcdf): until879 @deprecated(reason: "")
+  minus453(flume0d1: [front43f!]!, yahoo616: clearcdf): until879
+  knowna21(flare450: [ID!]!): [cycle927]
+}
+
+type Mutation @extends {
+  round847(worth668: fooey250!): yowza5aa
+}
+
+type until879 {
+  abovea30: Int!
+  drive3e7: [cycle927]
+  whered5a: String
+}
+
+type cycle927 @key(fields: "murky1a1") {
+  murky1a1: ID! @deprecated(reason: "")
+  zowie9dc: front43f!
+  whose6ae: until598!
+  aside838: until598
+  zowie857: until598
+  rabbi80f: hence9b2!
+}
+
+input clearcdf {
+  whered5a: String
+  midsta2d: Int
+}
+
+input fooey250 {
+  murky1a1: ID!
+  zowie9dc: front43f!
+}
+
+type yowza5aa {
+  wheref28: cycle927!
+}
+
+enum front43f {
+  spikeb9b @deprecated(reason: "")
+  swank1c4
+  zowie561
+  times7ca
+  which7fb
+  hence0a8 @deprecated(reason: "")
+  hence4c2
+  white050 @deprecated(reason: "")
+  shyly22b
+  adminef8
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+  wheref28: cycle927
+}

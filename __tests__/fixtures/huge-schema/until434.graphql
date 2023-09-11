@@ -1,0 +1,27 @@
+enum above7b8 {
+  yowza2ff
+  yahoofe9
+  fudge514
+  belowa3e
+}
+
+type grant770 {
+  proofa41: String
+  aside2ed: String
+  stageecd: Boolean
+  given45a: above7b8
+  yowza880: String
+}
+
+type Query {
+  proofa41: grant770
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

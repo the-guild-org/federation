@@ -1,0 +1,26 @@
+scalar rough80b
+
+input fooey3cd {
+  murky1a1: ID!
+  bumpyc9e: String!
+  dimly201: Boolean!
+  pesky68b: rough80b!
+  carolb39: Boolean!
+}
+
+type strutc1b {
+  zowie62d: Boolean!
+}
+
+type beachc97 {
+  still876: strutc1b!
+}
+
+type Mutation {
+  whichc21(worth668: fooey3cd!): beachc97
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

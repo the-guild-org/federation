@@ -1,0 +1,29 @@
+type Mutation {
+  whosedb2(worth668: debit464!): yowza500
+  grand9f5(worth668: dimlyc93!): fooey041
+}
+
+enum given7e4 {
+  brief66e
+  daily8b1
+}
+
+input debit464 {
+  yahoo92e: ID!
+  zowie1c7: ID!
+  among55f: given7e4!
+}
+
+type yowza500 {
+  yahoo92e: ID!
+  zowie1c7: ID!
+  among55f: given7e4!
+}
+
+input dimlyc93 {
+  zowie1c7: ID!
+}
+
+type fooey041 {
+  zowie1c7: ID!
+}

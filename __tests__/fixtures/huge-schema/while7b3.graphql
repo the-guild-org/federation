@@ -1,0 +1,122 @@
+type Query {
+  curryf6f(worth668: while358!): after668
+  oftena01(worth668: after2f7!): dimly29c
+  roundfa4(worth668: grantebc!): yahoo6c8
+}
+
+type Mutation {
+  noisy5ec(worth668: orbit97e!): until2fb
+  batch962(worth668: nerve636!): rural0f7
+  dimlya26(worth668: daily603!): hairyc73
+}
+
+type sauce14d @key(fields: "midst81a") {
+  midst81a: ID!
+  witty6b7: Int!
+  zowie14f: Int!
+  while805: String!
+  oddlycbe: String!
+  choke87a: String!
+}
+
+input while358 {
+  badly17c: [ID!]!
+}
+
+type panda0ca {
+  merry54f: String!
+  yowzaf35: sauce14d!
+}
+
+type after668 {
+  yowzabf0: [panda0ca!]!
+}
+
+input wetly8e9 {
+  witty6b7: Int!
+  zowie14f: Int!
+  while805: String!
+  choke87a: String!
+}
+
+input orbit97e {
+  yowzaf35: wetly8e9!
+}
+
+type until2fb {
+  yowzaf35: sauce14d!
+}
+
+type chaosc5e @key(fields: "midst81a") {
+  midst81a: ID!
+  witty6b7: Int!
+  zowie14f: Int!
+  while805: String!
+  oddlycbe: String!
+  oddly4bb: String!
+  choke87a: String!
+}
+
+input after2f7 {
+  badly17c: [ID!]!
+}
+
+type weepy5c1 {
+  merry54f: String!
+  levelec5: chaosc5e!
+}
+
+type dimly29c {
+  yowzabf0: [weepy5c1!]!
+}
+
+input abafta42 {
+  witty6b7: Int!
+  zowie14f: Int!
+  while805: String!
+  oddly4bb: String!
+  choke87a: String!
+}
+
+input nerve636 {
+  levelec5: abafta42!
+}
+
+type rural0f7 {
+  levelec5: chaosc5e!
+}
+
+type fooey197 @key(fields: "midst81a") {
+  midst81a: ID!
+  place6cd: ID!
+  braai901: Int!
+  oddlycbe: String!
+  align0ae: String!
+}
+
+input grantebc {
+  badly17c: [ID!]!
+}
+
+type which1b8 {
+  merry54f: String!
+  mourn571: fooey197!
+}
+
+type yahoo6c8 {
+  yowzabf0: [which1b8!]!
+}
+
+input tromp251 {
+  place6cd: ID!
+  braai901: Int!
+  align0ae: String!
+}
+
+input daily603 {
+  mourn571: tromp251!
+}
+
+type hairyc73 {
+  mourn571: fooey197!
+}

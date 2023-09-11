@@ -1,0 +1,104 @@
+schema {
+  query: Query
+}
+
+scalar until598
+
+type Query {
+  alpha686(worth668: scope508!): yowza987
+  sinceaa0(
+    worth668: under658!
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+  ): fooey5af
+}
+
+input scope508 {
+  witty6b7: ID!
+  zowie06b: worthb8d
+}
+
+input worthb8d {
+  wheree35: [ID!]
+  messy33f: [ID!]
+  yahoo234: Boolean
+  faint4a0: until598
+  beret026: after6a4
+}
+
+input under658 {
+  limitadb: until598
+  lumpy192: Boolean
+  aware0ad: Boolean
+}
+
+type yowza987 {
+  yowzabf0: [sinceab2!]!
+}
+
+type sinceab2 {
+  bogusd82: ID
+  afore3f4: ID
+  zowie14f: ID
+  chant2b0: Int
+  sadly3fe: Int
+  witty6b7: ID
+  aside2ed: String
+  minus147: String
+  impel5a2: String
+  zowie857: until598!
+  which85e: priore26
+  exalt9f5: [after6a4!]!
+}
+
+type priore26 {
+  fooey614: Boolean
+  slime099: until598
+  mushyd4b: [since2f7!]!
+}
+
+type since2f7 {
+  quickdd2: String
+  which85e: String
+  after686: until598
+  minus147: String
+}
+
+enum after6a4 {
+  nutty357
+  prizecde
+}
+
+type fooey5af {
+  sadlybf4: [venueb38!]!
+  rusty683: fooey1b7!
+  essayc27: [henced60!]!
+}
+
+type venueb38 {
+  noisy502: henced60
+  fooey14d: String!
+}
+
+type henced60 {
+  salad9d3: until598!
+  rabbi80f: hence9b2
+  badly474: String
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

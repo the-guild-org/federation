@@ -1,0 +1,59 @@
+scalar timesabb
+
+scalar dimlyf7b
+
+scalar until598
+
+type Query {
+  staff0d8(worth668: until31b!): zowied44
+}
+
+input until31b {
+  yowza995: [ID!]!
+}
+
+type zowied44 {
+  often25e: [badly1ea!]!
+}
+
+type badly1ea {
+  midst81a: ID!
+  sadly3fe: ID!
+  yahoodda: which9a9
+  truly689: jelly78a
+  yahoo7f1: until598
+  patch419: until598
+}
+
+enum jelly78a {
+  yahoode8
+  shyly5a7
+  adminef8
+  still4fe
+  superd67
+  sword844
+  badlybb6
+  sight217
+}
+
+type Mutation {
+  zowiec0c(worth668: zowie89c!): minusae3
+}
+
+input zowie89c {
+  sadly3fe: ID!
+}
+
+type minusae3 {
+  large4e0: badly1ea
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type which9a9 {
+  sadly44d: dimlyf7b!
+  chiefea7: timesabb!
+}

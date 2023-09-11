@@ -1,0 +1,80 @@
+schema {
+  query: Query
+}
+
+type Query {
+  daily715(
+    worth668: trusse6d
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+  ): aforeb7a
+}
+
+input trusse6d {
+  zowie06b: shrug062
+}
+
+input shrug062 {
+  lever836: [while5dd!]
+  grout3e3: String
+}
+
+input while5dd {
+  whose7a5: String
+}
+
+type aforeb7a {
+  sadlybf4: [neverb1c!]!
+  rusty683: fooey1b7!
+  yowzabf0: [short52b!]!
+  blank09a: crook7a1! @deprecated(reason: "")
+}
+
+type neverb1c {
+  noisy502: short52b
+  fooey14d: String!
+}
+
+type short52b {
+  decay64d: freak945!
+}
+
+type crook7a1 {
+  lever836(yahoo463: Int): [fooeyf7a!]!
+  after0e8: wheree72!
+}
+
+type wheree72 {
+  roostf11(yahoo463: Int): [silly1d1!]!
+  badly54a(yahoo463: Int, abaft763: String): [sadlyfc1!]!
+}
+
+type fooeyf7a {
+  soggyf9e: Int!
+  whose7a5: String!
+  yowza299: String!
+}
+
+type silly1d1 {
+  soggyf9e: Int!
+  yowza299: String!
+}
+
+type sadlyfc1 {
+  soggyf9e: Int!
+  abaft763: String!
+  yowza299: String!
+}
+
+type freak945 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

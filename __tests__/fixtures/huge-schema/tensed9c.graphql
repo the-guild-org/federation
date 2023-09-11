@@ -1,0 +1,226 @@
+input majord0c {
+  flicka38: cornyd66!
+  congab0f: fooeybf1!
+}
+
+input cornyd66 {
+  whose4ab: String
+  surgee47: String
+  aside2ed: wortha6f!
+  badlyd8b: chafeb78!
+  along620: chafeb78!
+}
+
+type testy8df {
+  begin4b6: [metrocd8!]!
+  amongfd5: [demurfc3!]!
+  dailyae8: [worth958!]!
+}
+
+type metrocd8 implements neverc9e {
+  roostf11: String!
+  fleshd70: Int!
+  loosecdf: Int!
+  after2b5: Float!
+  yowzaadc: Float!
+}
+
+type demurfc3 implements neverc9e {
+  roostf11: String!
+  wetlyca9: String!
+  fleshd70: Int!
+  loosecdf: Int!
+  after2b5: Float!
+  yowzaadc: Float!
+}
+
+type worth958 implements neverc9e {
+  roostf11: String!
+  wetlyca9: String!
+  clampc17: String!
+  fleshd70: Int!
+  loosecdf: Int!
+  after2b5: Float!
+  yowzaadc: Float!
+  whose072: Float!
+  daily0f1: Float!
+}
+
+interface neverc9e {
+  fleshd70: Int!
+  loosecdf: Int!
+  after2b5: Float!
+  yowzaadc: Float!
+}
+
+type tiger1b3 {
+  shylydf8: [clean695!]!
+}
+
+type clean695 {
+  yahoo96c: String!
+  humor476: Int!
+  untilae6: unify0b1!
+}
+
+type which1a4 {
+  knownd44: [whose082!]!
+}
+
+type whose082 {
+  fooey731: yahoo275!
+  humor476: Int!
+}
+
+input madly50f {
+  hence0bb: String!
+}
+
+type wetly214 {
+  badly28f: String
+}
+
+type timesf89 {
+  oftenc5d: Float!
+  gummy9de: chafeb78!
+}
+
+input whoseb70 {
+  roostf11: String
+  wetlyca9: String
+  madly3b3: String
+  emcee2ca: String
+  clampc17: String
+  aside2ed: wortha6f!
+  fullyd0d: chafeb78!
+}
+
+type along876 {
+  tough82e: Int!
+  fleshd70: Int!
+  belowd77: Int!
+  shyly1b5: stale041!
+}
+
+type stale041 {
+  claim73e: Int!
+  givenfda: Int!
+}
+
+type mighta1a {
+  hence67c: [until730!]!
+}
+
+type until730 {
+  given95a: Float!
+  hence213: Float!
+  loosecdf: Float!
+  after2b5: Float!
+  yowzaaed: chafeb78!
+}
+
+type adept3a2 {
+  yowzaadc: Float!
+}
+
+enum fooeybf1 {
+  front43e
+  minusa3c
+  prize6f4
+}
+
+type yahoo55f {
+  yowza552: [salad834!]!
+}
+
+type salad834 {
+  stoneafc: String!
+  fetch2c3: Int!
+}
+
+type yahoo067 {
+  fooeyc83: [testyf00!]!
+}
+
+type testyf00 {
+  grout3e3: String!
+  fetch2c3: Int!
+}
+
+type hencee84 {
+  fetch2c3: Int!
+  tigerd06: Int!
+}
+
+type wetly35c {
+  oddly12d: [whilebe0!]!
+}
+
+type whilebe0 {
+  fooey893: Int!
+  fetch2c3: Int!
+}
+
+type after0ee {
+  knownd44: [lobby413!]!
+}
+
+type lobby413 {
+  fooey731: yahoo275!
+  fetch2c3: Int!
+}
+
+type Query {
+  whose501(worth668: underfdc!): along876
+  while446(worth668: underfdc!): which1a4
+  often25b(worth668: underfdc!): tiger1b3
+  yahoo55f(worth668: underfdc!): mighta1a
+  smith8f4(worth668: majord0c!): testy8df
+  minuseb3(worth668: whoseb70!): timesf89
+  about262(worth668: madly50f!): wetly214
+  yowza175(worth668: underfdc!): adept3a2
+  timesac9(worth668: underfdc!): yahoo55f
+  where646(worth668: underfdc!): wetly35c
+  fooey116(worth668: underfdc!): after0ee
+  snarl5cb(worth668: underfdc!): yahoo067
+  wristec8(worth668: underfdc!): hencee84
+}
+
+input underfdc {
+  whose4ab: String
+  surgee47: String
+  while04b: Float
+  omega6be: Float
+  roostf11: String
+  wetlyca9: String
+  madly3b3: String
+  emcee2ca: String
+  buddy6ff: String
+  aside2ed: wortha6f!
+  badlyd8b: chafeb78!
+  along620: chafeb78!
+  round1ad: Float
+  sheardf1: whileeea
+}
+
+enum whileeea {
+  place549
+  given4ce
+}
+
+scalar wortha6f
+
+scalar chafeb78
+
+scalar unify0b1
+
+type yahoo275 {
+  yowza880: String!
+  merryeaf: String!
+  untilae6: unify0b1!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

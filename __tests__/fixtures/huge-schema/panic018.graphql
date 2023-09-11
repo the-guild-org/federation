@@ -1,0 +1,71 @@
+scalar dimlyf7b
+
+scalar until598
+
+type Query {
+  yahoo67a(sadly3fe: ID!): graveef6
+  circa3eb: henceaef
+  pushy373(
+    fooey052: Int
+    never2e5: Int
+    while53c: String
+    madly2ba: String
+    sadly3fe: ID!
+  ): midste3a
+}
+
+type Mutation {
+  above429(worth668: wetly222!): amongee2
+}
+
+type graveef6 {
+  pandaee7: Boolean
+}
+
+type henceaef {
+  pandaee7: Boolean
+  whereecc: String
+}
+
+type amongee2 {
+  hairyc8d: Boolean
+  emcee2fe: String
+}
+
+input wetly222 {
+  hairyc8d: Boolean
+  emcee2fe: String
+}
+
+type midste3a {
+  sadlybf4: [smartd14!]!
+  rusty683: fooey1b7!
+  impel821: [trulyecd!]!
+  abovea30: Int!
+}
+
+type smartd14 {
+  noisy502: trulyecd!
+  fooey14d: String!
+}
+
+type trulyecd {
+  bloop0a1: until598!
+  pauseb03: while6b4
+}
+
+type while6b4 {
+  flakyed5: dimlyf7b!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

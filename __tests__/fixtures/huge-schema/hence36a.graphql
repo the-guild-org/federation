@@ -1,0 +1,124 @@
+schema {
+  query: Query
+}
+
+type Query {
+  about29d(worth668: under9c3!): wetly907 @deprecated(reason: "")
+  phase2e9(worth668: yowza971!): truly1d1 @deprecated(reason: "")
+  clean908(worth668: morphd50!): awarde32 @deprecated(reason: "")
+  zowie7a3(worth668: since6f2): fraud3dc @deprecated(reason: "")
+  whichf7b(worth668: blendfae): whiledf5 @deprecated(reason: "")
+  oddlye84(worth668: frameae5): carrye6d @deprecated(reason: "")
+  oddly754(worth668: [oftenbde!]!): [spork7b7]
+  fudge155(worth668: [alongd92!]!): [fully527]
+}
+
+input since6f2 {
+  after4e8: [under9c3!]!
+}
+
+input under9c3 {
+  amongb47: ID
+  minus1db: ID!
+  below869: ID!
+}
+
+type wetly907 {
+  still876: faintf3e
+}
+
+input alongd92 {
+  amongb47: ID
+  below869: ID
+}
+
+type faintf3e {
+  shylyf3a: Float!
+  shove71a: Boolean!
+}
+
+input yowza971 {
+  amongb47: ID
+  below869: ID
+}
+
+type truly1d1 {
+  still876: storme9c
+}
+
+input morphd50 {
+  amongb47: ID
+}
+
+type awarde32 {
+  still876: storme9c
+}
+
+type storme9c {
+  aforee09: Int
+  yowzab79: Boolean!
+  zowie9dc: larged12
+}
+
+enum larged12 {
+  other3a7
+  kazoo83a
+  curly542
+}
+
+type purge9f7 {
+  amongb47: ID
+  minus1db: ID
+  below869: ID
+  shylyf3a: Float
+  shove71a: Boolean
+}
+
+type fraud3dc {
+  still876: [purge9f7]
+}
+
+type brownf8b {
+  below869: ID
+  badly6f0: storme9c
+}
+
+input blendfae {
+  yowza995: [yowza971!]!
+}
+
+type whiledf5 {
+  still876: [brownf8b]
+}
+
+type fully527 {
+  below869: ID
+  amongb47: ID
+  badly6f0: storme9c
+}
+
+input frameae5 {
+  above2ea: [morphd50!]!
+}
+
+type carrye6d {
+  still876: [fully527]
+}
+
+input oftenbde {
+  amongb47: ID
+  minus1db: ID!
+  below869: ID!
+}
+
+type spork7b7 {
+  amongb47: ID
+  minus1db: ID
+  below869: ID
+  feinta73: faintf3e
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

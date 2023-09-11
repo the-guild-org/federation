@@ -1,0 +1,35 @@
+type Mutation {
+  ferryf4d(worth668: whose06a!): yowza402
+}
+
+input whose06a {
+  yummy209: nifty356!
+  about022: daily3a0!
+}
+
+enum nifty356 {
+  asidee54
+  humorbaf
+}
+
+input daily3a0 {
+  which165: [afterc64!]!
+  shame1ef: Boolean
+}
+
+input afterc64 {
+  focusbb7: fresh1aa!
+  short86e: String!
+}
+
+type yowza402 {
+  yahoo92e: String!
+  yahoo641: String!
+}
+
+enum fresh1aa {
+  among97e
+  stufff46
+  hence992
+  unclef15
+}

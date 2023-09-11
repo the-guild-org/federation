@@ -1,0 +1,69 @@
+type Query {
+  troop980: round57a
+}
+
+type Mutation {
+  zowie3b7(wetly54e: String!): scene292
+  bijoube2(wetly54e: String!): roundb26
+}
+
+type roundb26 {
+  often896: String
+}
+
+type scene292 {
+  often896: String
+}
+
+type after9bd {
+  blisse8b: String
+  until3c7: String
+}
+
+type round516 {
+  afterf65: String
+}
+
+type round57a {
+  until2d9(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): cheapcef
+  hovel932(
+    hence249: String!
+    fully8af: String!
+    abaft80b: String!
+    madly17c: String!
+    awfula2e: String
+  ): after9bd
+  unfit3b4: String
+  after08c: round516
+}
+
+type cheapcef {
+  sadlybf4: [dimlyb9f!]!
+  rusty683: fooey1b7!
+}
+
+type dimlyb9f {
+  noisy502: lodge83d!
+  fooey14d: String!
+}
+
+type lodge83d {
+  blisse8b: ID!
+  wetly54e: ID!
+  fooeyd35: String!
+  hence48e: String!
+  since06e: Int!
+  untild4f: String
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

@@ -1,0 +1,100 @@
+scalar fooeya96
+
+type Query {
+  singe1e6(worth668: aside4c9!): known59b
+  reply58e: stiff8fd
+  untileeb(worth668: regalc32!): basicae0
+}
+
+type Mutation {
+  whiteb62(worth668: wordycca!): under045
+  plate236(worth668: moral0cf!): clerk713
+  stash68a(worth668: arrow32b!): awareff8
+  black0b6(worth668: midst267!): below908
+  worth9dd(worth668: roundcea!): madly911
+}
+
+input aside4c9 {
+  unban677: ID!
+}
+
+type known59b {
+  unban677: ID!
+  knock404: [dimly43b!]!
+}
+
+type dimly43b {
+  witty6b7: String!
+  zowie608: fooeya96!
+}
+
+input wordycca {
+  unban677: ID!
+  yahoocee: [fooeya96!]!
+}
+
+type under045 {
+  still876: Boolean!
+}
+
+type stiff8fd {
+  emcee2fe: String
+}
+
+input moral0cf {
+  rally1ff: ID!
+}
+
+type clerk713 {
+  owner5f4: Boolean!
+}
+
+type orderb2a {
+  witty6b7: String!
+  graft5d0: String!
+  emcee2fe: String!
+}
+
+input regalc32 {
+  unban677: ID!
+}
+
+type basicae0 {
+  yahoo6e3: [orderb2a!]!
+}
+
+input arrow32b {
+  unban677: ID!
+  emcee2fe: String!
+}
+
+type awareff8 {
+  owner5f4: Boolean!
+}
+
+input midst267 {
+  unban677: ID!
+}
+
+type below908 {
+  owner5f4: Boolean!
+}
+
+input dimly169 {
+  scary40c: String!
+  yowza2d5: String
+}
+
+input roundcea {
+  unban677: ID!
+  about597: [dimly169!]!
+}
+
+type madly911 {
+  owner5f4: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

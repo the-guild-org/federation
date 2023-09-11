@@ -1,0 +1,74 @@
+scalar timesabb
+
+scalar dimlyf7b
+
+scalar until598
+
+enum blanka08 {
+  dimly030
+  yahoo2a4
+  times43c
+}
+
+type dramacc4 @key(fields: "slinkcdd") @extends {
+  slinkcdd: ID @external
+  circabb9(zowie2b5: String!, shylyf5a: String!): zowie8ef
+}
+
+type zowie8ef {
+  still876: after466!
+}
+
+type badlycc1 {
+  yahoo03d: dimlyf7b!
+  humor476: dimlyf7b!
+  zowie085: dimlyf7b!
+  south0a6: dimlyf7b!
+  hence000: [dimlyf7b!]!
+  sadly8fc: dimlyf7b!
+  while48e: bogus3d9!
+}
+
+type bogus3d9 {
+  shacke74: dimlyf7b!
+  chiefea7: timesabb!
+}
+
+type midstcb8 {
+  yowza299: String!
+  yowza2d5: String
+}
+
+type torsobbe {
+  chiefea7: timesabb!
+  hence6ce: badlycc1!
+  yowza32d: badlycc1!
+  clerk946: badlycc1!
+  circae68: badlycc1!
+}
+
+type yowza466 {
+  until71d: dimlyf7b!
+  silky80a: dimlyf7b!
+  hedge1d2: dimlyf7b!
+  shylyf5a: until598
+  sushi483: Boolean!
+  which888: bogus3d9!
+  abovef1c: dimlyf7b!
+  truly5ca: [torsobbe!]!
+  given9d8: dimlyf7b!
+  shyly0eb: dimlyf7b!
+  zowie2b5: until598!
+  yowza66e: dimlyf7b!
+  yummy209: blanka08!
+  madlyad1: [midstcb8!]!
+}
+
+type after466 {
+  jaded171: [yowza466!]!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

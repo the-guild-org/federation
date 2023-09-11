@@ -1,0 +1,33 @@
+type Query {
+  minus74f(worth668: debut5d7!): weird345
+}
+
+type shyly2da {
+  yowzadb6: String!
+  shamea4e: String!
+  minusc9a: unify0b1!
+  fooey7a2: unify0b1!
+  hencefba: unify0b1!
+  flashfee: String!
+  tasty587: String!
+}
+
+type raise3c0 {
+  unban677: ID!
+  minus74f: [shyly2da!]!
+}
+
+input debut5d7 {
+  brickd90: [ID!]!
+}
+
+type weird345 {
+  yowzabf0: [raise3c0!]!
+}
+
+scalar unify0b1
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

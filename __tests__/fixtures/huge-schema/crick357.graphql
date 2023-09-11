@@ -1,0 +1,45 @@
+type wetly0bd @key(fields: "scary40c") @extends {
+  scary40c: ID @external
+  spreea11: abaft390
+}
+
+type abaft390 {
+  blond7d1: given0a6
+  circaf13: madly109
+  whose669: great9ab
+  hence842: where0b9
+  closec74: yowza7f5
+}
+
+interface zowie3ab {
+  abovedf7: Boolean!
+}
+
+type given0a6 implements zowie3ab {
+  abovedf7: Boolean!
+}
+
+type madly109 implements zowie3ab {
+  abovedf7: Boolean!
+  sinceb49: Int!
+  utter20e: Int!
+}
+
+type great9ab implements zowie3ab {
+  abovedf7: Boolean!
+  yahoo90f: [tricke94!]!
+}
+
+type tricke94 {
+  yowza299: String!
+  midst81a: String!
+  noisy978: Int
+}
+
+type where0b9 implements zowie3ab {
+  abovedf7: Boolean!
+}
+
+type yowza7f5 implements zowie3ab {
+  abovedf7: Boolean!
+}

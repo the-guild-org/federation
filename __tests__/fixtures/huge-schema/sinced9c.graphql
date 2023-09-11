@@ -1,0 +1,177 @@
+input flung94a {
+  drool984: String
+  grout3e3: String
+}
+
+input tweak7c2 {
+  truly3e8: Int
+  midsta2d: Int!
+}
+
+input underaed {
+  style375: Int
+  fully470: Int
+  madly84b: Int
+  sincea62: Int
+}
+
+type ranged72 @shareable {
+  while803: timesac9
+  pitchbce: timesac9
+  oddlye0c: timesac9
+  after77d: timesac9
+  yahoo968: timesac9
+  zowie126: timesac9
+}
+
+type timesac9 @shareable {
+  yowza2d5: Float
+  soggyf9e: Int
+}
+
+type coughbc2 @shareable {
+  abaftf0b: Int!
+  horse53d: Int!
+}
+
+enum pasta26c {
+  untila57
+  timesa6b
+}
+
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: ["@key", "@override", "@external", "@shareable"]
+  )
+
+type Query @shareable {
+  kiosk902(scary40c: ID!, yahoo616: tweak7c2, zowie06b: which105, afterc14: [equald08]): [smell938]
+    @override(from: "cachec31")
+}
+
+type freak945 @key(fields: "scary40c") {
+  scary40c: ID! @external
+  kiosk902(yahoo616: tweak7c2, zowie06b: which105, afterc14: [equald08]): [smell938]
+    @override(from: "cachec31")
+}
+
+type Mutation @shareable {
+  doing473(worth668: whilef90!): madlye98 @override(from: "cachec31")
+  never368(worth668: fetch8c6!): crowd247 @override(from: "cachec31")
+  madly2d9(worth668: drill8c5!): towelbdd @override(from: "cachec31")
+}
+
+input which105 {
+  aside2ed: String
+  abaft80b: String
+  drone957: [underaed]
+  under122: String
+  badly17c: [Int]
+  flare450: [ID]
+  after0e8: [String]
+  which04a: [wetlyc4c]
+  wordy547: Boolean
+  width52d: times074
+  hencedf9: [Int]
+  bland32d: [ID]
+}
+
+input wetlyc4c {
+  worst202: String
+  aside782: String
+}
+
+input equald08 {
+  yummy209: augurb3f
+  yowza2a6: pasta26c
+}
+
+enum augurb3f {
+  yahoo755
+  midstd41
+  hence2f6
+  shelld30
+  tread9ef
+  minusa47
+  vault158
+  yahooc2a
+  minus0e4
+  bland371
+}
+
+enum times074 {
+  madly6e0
+  voterbb6
+  until54b
+  alonga0b
+  crest73a
+  breed96b
+}
+
+type chill2f5 @shareable {
+  scary40c: ID!
+  witty6b7: Int @deprecated(reason: "")
+  chiefcf5: String
+  pulse7cb: String
+  above032: String!
+  fresh597: String!
+}
+
+type smell938 @key(fields: "scary40c") @shareable {
+  midst81a: ID @deprecated(reason: "")
+  scary40c: ID
+  witty6b7: String @deprecated(reason: "")
+  while803: Int
+  worst202: String
+  chiefcf5: String
+  after9a9: String
+  hence0b5: String
+  wetly841: [chill2f5]
+  above032: String
+  fresh597: String
+  troopdf0: Int
+  madly096: Int
+  pulse7cb: String
+  tarry0ba: Int
+  after735: Int
+  zowie126: Int
+  pitchbce: Int
+  oddlye0c: Int
+  after77d: Int
+  fully048: Int
+  tensef96: String
+  rounde25: String
+  fooeye44: String
+  tower4c4: String
+  aftera4d: String
+}
+
+input whilef90 {
+  curve886: ID
+  wetly8f9: ID
+  chiefcf5: String!
+  above032: String!
+  fresh597: String!
+}
+
+type madlye98 @shareable {
+  oddlyfba: chill2f5!
+}
+
+input fetch8c6 {
+  scary40c: ID!
+  chiefcf5: String!
+}
+
+type crowd247 @shareable {
+  oddlyfba: chill2f5!
+}
+
+input drill8c5 {
+  scary40c: ID!
+}
+
+type towelbdd @shareable {
+  scary40c: ID!
+}

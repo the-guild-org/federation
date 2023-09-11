@@ -1,0 +1,86 @@
+schema {
+  query: Query
+}
+
+scalar dimlyf7b
+
+type Query {
+  since832(worth668: dailyc32!): spacefff
+}
+
+input dailyc32 {
+  flicka38: String!
+}
+
+type spacefff {
+  fooey53e: whose0e4!
+}
+
+enum point801 {
+  nursed5c
+  yowzabf9
+}
+
+enum fooey0a7 {
+  zowie40f
+  where3d8
+}
+
+enum abhor4d3 {
+  imbue53d
+  midst699
+}
+
+enum codon57d {
+  yahoo116
+  wetlydb4
+  beech5fb
+  doubt82c
+  yowzac85
+  daily353
+  rearm690
+  staleb2d
+  yahood1e
+  plump6d7
+}
+
+type whose0e4 {
+  tutora30: [naive2ef!]!
+  oddlyfca: [quashd5a!]!
+  above2b9: [ready532!]!
+  queenae3: abidee10
+}
+
+type naive2ef {
+  oddly7f1: String!
+  rapide05: [String!]!
+  flare450: [String!]!
+  close8fa: point801!
+  yahoo9ea: fooey0a7!
+  tunicc8f: abhor4d3!
+}
+
+type quashd5a {
+  oddly7f1: String!
+  rapide05: [String!]!
+  yahoo9ea: fooey0a7!
+}
+
+type ready532 {
+  oddly7f1: String!
+  title7b1: String!
+  greetbc5: dimlyf7b
+  cruel83f: dimlyf7b
+}
+
+type abidee10 {
+  oddly7f1: String!
+  title7b1: String!
+  fooey053: codon57d!
+  greetbc5: dimlyf7b
+  cruel83f: dimlyf7b
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

@@ -1,0 +1,38 @@
+type Query {
+  trust8c8(worth668: basinc9c!): hencee59
+}
+
+type Mutation {
+  rowdy404(worth668: sound052!): worth986
+}
+
+input sound052 {
+  plush7ef: String!
+  truly679: String!
+  heavycc1: String!
+  joint687: String!
+  faith0cd: String!
+  tenseb03: String!
+  wetlyeca: String
+}
+
+input basinc9c {
+  truly679: String!
+  above60a: String!
+  blindea7: String!
+}
+
+enum which17e {
+  yowzaed5
+  crazycef
+}
+
+type worth986 {
+  truly689: which17e!
+  fooeyb47: [String!]!
+}
+
+type hencee59 {
+  blindea7: String!
+  fooeyb47: [String!]!
+}

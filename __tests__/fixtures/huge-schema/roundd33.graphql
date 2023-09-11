@@ -1,0 +1,89 @@
+type Query {
+  beard445(worth668: dimlyf2b!): floora09
+}
+
+input dimlyf2b {
+  worth612: [ID!]!
+  third0a3: Boolean
+}
+
+type floora09 {
+  yowzabf0: [since137]!
+}
+
+type since137 {
+  amongd02: ID!
+  otter4f2: badly606!
+  augurd89: while1d9!
+  round9f5: String
+}
+
+type badly606 {
+  whose00a: ID
+  miter03b: ID
+  yahoo701: until598
+  zowiea48: String
+  rabbi80f: sadly328
+  plane8a9: quietad1!
+  wound7d8: whose651
+  fully4f6: exileadf
+  yowzafe3: wetly1f1
+}
+
+type wetly1f1 {
+  while285: String
+  gianta29: String
+}
+
+type sadly328 {
+  zowie14f: ID
+  chant2b0: ID
+  afore3f4: dimlyf7b
+  murky1a1: ID
+  heist3b5: ID
+}
+
+type quietad1 {
+  yahooc5b: String!
+  larva4e0: String!
+}
+
+type whose651 {
+  truly9ad: String
+  emcee2fe: String
+  zowie608: fooeya96
+  yowza363: String
+  witty6b7: ID
+  above032: wortha6f @deprecated(reason: "")
+  scentdef: String
+  rigid3b7: chafeb78
+  kebab10c: String
+}
+
+type exileadf {
+  heist3b5: ID
+}
+
+type while1d9 {
+  truly689: worth3fd!
+}
+
+enum worth3fd {
+  truly422
+  shadyb8f
+  scent3ca
+}
+
+schema {
+  query: Query
+}
+
+scalar wortha6f
+
+scalar fooeya96
+
+scalar dimlyf7b
+
+scalar until598
+
+scalar chafeb78

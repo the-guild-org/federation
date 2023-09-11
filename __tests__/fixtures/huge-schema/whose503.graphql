@@ -1,0 +1,27 @@
+schema {
+  query: Query
+}
+
+type Query {
+  fooeyf15(worth668: whilec4a!): yowza29f
+}
+
+input whilec4a {
+  trackea8: String
+  cross94c: [String!]
+}
+
+type yowza29f {
+  trackea8: String
+  ruddy5d3: [grimy364!]
+  price900: String
+}
+
+type grimy364 {
+  which319: String
+  zowie2a2: String
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

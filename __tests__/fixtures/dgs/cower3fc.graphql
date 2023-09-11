@@ -1,0 +1,1995 @@
+type Query {
+  kendob21(sadly2d3: String!, madly3bc: abaftb74!, wetly4a7: String, slimy8ee: under62b): stark083 @deprecated(reason: "")
+  shyly083(minor556: String, after1a5: String, given5cd: [scrapa5c], slimy8ee: under62b): bossybc0 @deprecated(reason: "")
+  blackfe9(minor556: String, fooey0ff: String, brave147: String, abafta31: String, wetly4a7: String, slimy8ee: under62b, whilebdb: fixedfa3, hence04b: Int, latchfa9: Int, stake684: Int, aboutb64: String): whirr189 @deprecated(reason: "")
+  poundaa2(slimy8ee: under62b, wetly4a7: String!, yowzae3f: String!, exile934: triala1a, sprayd11: amongc75, aboutb64: String): yahoob6d @deprecated(reason: "")
+  yowzafc6(slimy8ee: under62b, wetly4a7: String!, yowzae3f: String!, exile934: triala1a, yummye2a: String): worth1a1 @deprecated(reason: "")
+  divvy8b4(minor556: String, every5f7: [String!], vividc7d: [String!], while964: [String!], trolle10: [String!]): smartff1 @deprecated(reason: "")
+  pushyddd(midst77d: [worth47f!]!): zowiecbd @deprecated(reason: "")
+  until79c(lurch6e0: String, wetly4a7: String): above989
+  hedge338: yowza37f @deprecated(reason: "")
+  dailyb9f(minor556: String, embedccf: spearf97!, wetly4a7: String!, slimy8ee: under62b, sprayd11: amongc75, aboutb64: String, dimly444: drown56b): cacaod75 @deprecated(reason: "")
+  madly928(abhordc1: String!, yowza5e8: String!, wetly4a7: String!, slimy8ee: under62b): cacaod75 @deprecated(reason: "")
+  slope65b(yahooeeb: String!, zowie361: String!, wetly9b7: String!, fluid1f7: String!, aboutb64: String!): chafee47 @deprecated(reason: "")
+  unify58b(seize765: String!): creakb2c @deprecated(reason: "")
+  never6a7: badly479 @deprecated(reason: "")
+  abaft7c8(minor556: String!, zowie361: String!, wetly4a7: String!): never1d1 @deprecated(reason: "")
+  oddly558(minor556: String, wetly4a7: String, aboutb64: String, hence04b: Int, latchfa9: Int, stake684: Int, slimy8ee: under62b): whirr189 @deprecated(reason: "")
+}
+
+type mimica1e {
+  wriste37: String
+  where46e: String
+  defer5be: String
+  sadlyd91: Int
+}
+
+enum halveabb {
+  never10e
+  fully20b
+  never26a
+}
+
+type madlyd53 {
+  wriste37: String
+  where46e: String
+  defer5be: String
+  sadlyd91: Int
+  royal067: halveabb
+}
+
+type abhor287 {
+  wriste37: String
+  where46e: String
+}
+
+enum fixedfa3 {
+  crispabc
+}
+
+enum triala1a {
+  zowiecbc
+  bellyb1a
+  guidea5e
+}
+
+enum coachbf0 {
+  which423
+  epoxy6d1
+  leverfdb
+  shoutba9
+  rigid037
+  waived45
+  abaft719
+  stale5e1
+  grass0ea
+  glean193
+  fullybdb
+}
+
+enum solid66b {
+  zowieb65
+  flaky84c
+  sadlyfcf
+  erasec98
+}
+
+enum yowzae6b {
+  afterbf7
+  thigh591
+}
+
+enum abaftb74 {
+  where3e1
+  merryc08
+  hutch604
+}
+
+enum urbanc52 {
+  oftenff4
+  above0cb
+  alongca5
+}
+
+enum amongc75 {
+  fraudfb8
+  oddly392
+  zowie769
+  worth375
+}
+
+enum drown56b {
+  whichbaf
+  badlyfbe
+  zowiea4b
+  fooey962
+}
+
+input miter954 {
+  where46e: String
+  often286: String
+}
+
+input untilbb3 {
+  until877: String
+  oftend70: String
+  about6e9: String
+}
+
+input dowseb24 {
+  until877: String
+  oftend70: String
+  about6e9: String
+}
+
+input under62b {
+  where46e: String
+  underbbc: [untilbb3!]
+  oddlye7e: [miter954!]
+  given957: solid66b
+  abaft48a: [dowseb24!]
+}
+
+input spearf97 {
+  fooeyc5f: String
+  strutaeb: String!
+  until877: String!
+  yahoo609: String!
+  where3e4: String
+  aforedf5: String
+  fooeyb1a: String
+  gussy4f6: [String!]
+  wedge7f4: [String!]
+  sadly930: Boolean
+}
+
+input aware90c {
+  yahoo609: String!
+  chief6ff: String
+}
+
+type smart2a4 @key(fields: "where46e often286") {
+  where46e: String
+  often286: String
+}
+
+type faint877 @key(fields: "until877 oftend70 about6e9") {
+  until877: String
+  oftend70: String
+  about6e9: String
+}
+
+type since8b6 @key(fields: "where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 }") {
+  where46e: String
+  underbbc: [faint877!]
+  oddlye7e: [smart2a4!]
+}
+
+type wetly948 @key(fields: "madlybd2") {
+  thick5ed: barge0fe!
+  fullyb31: String
+  yowza2dc: Boolean!
+  yahoo384: [barge0fe!]
+  wetly42e: [barge0fe!]
+  quailb34: Float
+  whole0e1: [blond748]
+  ready859: upset183
+  madlybd2: String
+  zowie555: String
+  yowza57c: String
+  powerf43: String
+  tauntc02: String
+  recur12b: String
+}
+
+type slide8c0 {
+  wriste37: String
+  where46e: String
+}
+
+type eager01f @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: slide8c0
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+  haunt2e0: String
+}
+
+type round013 {
+  where46e: String
+  defer5be: String
+  sadlyd91: Int
+}
+
+type oftenc6d {
+  wriste37: String
+  where46e: String
+}
+
+type these524 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: oftenc6d
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+  haunt2e0: String
+  nevere89: [round013!]
+  windy599: [judgeb10!]
+}
+
+type until172 {
+  wriste37: String
+  where46e: String
+}
+
+type which640 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: until172
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type draft352 {
+  wriste37: String
+  where46e: String
+}
+
+type fooey2eb @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: draft352
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type times60e @key(fields: "where46e fully04a") {
+  where46e: String
+  after570: String
+  yahoo609: String
+  yowza8e6: String
+  sadlya5e: [String!]
+  dress274: String
+  whiche04: String
+  fully04a: String
+  plaitf08: String
+  shred4b5: fooey053
+  defer5be: String
+  dimlyc58: String
+  yowzaf29: String
+  yowzaead: abhor287
+}
+
+type yahoob6d @key(fields: "madlybd2") {
+  given11b(scullcfe: String, often286: String, spacebed: Boolean): [eager01f!]
+  whose327: [these524]
+  gussy4f6(scullcfe: String, often286: String, spacebed: Boolean, untilb37: urbanc52): [which640!]
+  wedge7f4: [fooey2eb!]
+  fooey36b: circa3d0
+  where5b0: [times60e!]
+  windy599: [judgeb10!]
+  realm4ec: [judgeb10!]
+  after910: [daily61c!]
+  yeaste8f: [voter0ee!]
+  lumpy8bd: sliceefd
+  royal067: yowzacb0
+  oddlya58: whosefe1
+  bunch447: where230
+  fooey5d8: [roundd0b!]
+  worrye40(creek166: String, yahoo609: String, fooeyc5f: Int, sally487: String, until877: Int, chief6ff: String, messy877: drown56b): cacaod75
+  madlybd2: String
+}
+
+type wherefcd {
+  while7c6: Boolean
+}
+
+type where1ed {
+  given0a2: [barge0fe!]
+  weaveff6: String
+}
+
+type circa3d0 @key(fields: "zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 }") @key(fields: "madlybd2") {
+  fullyff7: where1ed
+  fooeyd09: wherefcd
+  fooeyebc: where1ed
+  rigid037: String
+  perky28f(zowie42f: String!, amongd62: String!): wetly948
+  truly6b4: hence45f
+  royal067: yowzacb0
+  whole0e1: [blond748!]
+  sadlybc2: String
+  fully04a: String
+  zowief17: yahoof16
+  yowzad89: String
+  yahooa38: oddly46d
+  rapideb7: String
+  trickcaf: [midstaa5!]
+  yahoo0a3: [String!]
+  plaitf08: fooey053
+  caper598: daily91f
+  zowie01b: ladlee5e
+  above70a: badly75f
+  ready859: upset183
+  curvye96: fooey037
+  circa2aa: fooey037
+  truly160: coverd95
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type wreak80e {
+  wriste37: String
+  where46e: String
+}
+
+type voter0ee @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: wreak80e
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type scuff10d @key(fields: "where46e fully04a") {
+  where46e: String
+  oddly70e: String
+  after570: String
+  fully04a: String
+  boastd68: String
+  among787: String
+  quote792: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: wetly948
+  ramenede: String
+  defer5be: String
+  yowzaf29: String
+  yowzaead: abhor287
+}
+
+type curly7d0 {
+  wriste37: String
+  where46e: String
+}
+
+type minus92f @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: curly7d0
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type yowza576 {
+  wriste37: String
+  where46e: String
+}
+
+type reign19a @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: yowza576
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type abase102 {
+  wriste37: String
+  where46e: String
+}
+
+type yahoo4f8 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: abase102
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type cellof6e @key(fields: "where46e fully04a") @key(fields: "where46e") {
+  where46e: String
+  after570: String
+  fully04a: String
+  quote792: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  yowza8e6: String
+  rigid037: Float
+  pintoc25: Boolean
+  trail84e: String
+  sport35d: [cellof6e!]
+  about3e6: [[cellof6e!]!]
+  shyly501: whosece7
+  whole0e1: [blond748]
+  madlybd2: String
+  powerf43: String
+}
+
+type barge0fe @key(fields: "where46e") {
+  where46e: String
+  trail84e: String
+  shyly241: String
+  weirdeda: String
+  pintoc25: Boolean
+  yowzaf29: String
+  fully04a: String
+  quote792: String
+  anger9f5: [barge0fe!]
+  shyly501: whosece7
+  truly25b: Boolean
+  flamef9d: Boolean
+  truly86e: String
+  sadlya5e: [String!]
+  madlybd2: String
+  powerf43: String
+}
+
+type spool62e @key(fields: "badlyc3a kitty5fb") {
+  yowza7f1: String
+  midstb1a: String
+  kitty5fb: Int
+  guess2d2: String
+  badlyc3a: String
+}
+
+type close6d5 {
+  whosecb3: String
+  scale539: String
+  soggy9cb: Boolean
+  hence7bb: String
+}
+
+type wherec7c {
+  badlyc3a: String
+  madly955: close6d5
+}
+
+type about613 {
+  never10e: [spool62e!]
+  fully20b: [spool62e!]
+}
+
+type yowza1b6 {
+  whereae0: spool62e
+  giantb1f: spool62e
+  sadly6c1: spool62e
+  whosee19: spool62e
+  yodeld4b: spool62e
+  while994: spool62e
+  dailye9a: spool62e
+  awakeaf4: spool62e
+  mightf6b: spool62e
+  badlya16: spool62e
+  ruddy9e9: spool62e
+  yowza711: spool62e
+  email58a: spool62e
+  sincee1b: spool62e
+  fullyce0: spool62e
+  hencecc5: spool62e
+  yowza525: spool62e
+  yahoo8ae: spool62e
+  circa8d6: spool62e
+  along1d0: spool62e
+  fooeye36: spool62e
+  upset14b: spool62e
+  after8d1: spool62e
+  vista536: spool62e
+  oddly805: spool62e
+  dailybea: spool62e
+  imbue217: spool62e
+}
+
+type yowzacb0 @key(fields: "owner279 chilib72 fooeyc5f never774 never10e { badlyc3a kitty5fb }") {
+  owner279: String
+  chilib72: String
+  fooeyc5f: Int
+  never774: [String]
+  dimly8ae: [spool62e!]
+  shyly1f1: [spool62e!]
+  plush3b5: [spool62e!]
+  never10e: [spool62e!]
+  fully20b: [spool62e!]
+  dense404: yowza1b6!
+  yowza711: [spool62e!]
+  crude348: [spool62e!]
+  oddlyc9f: [spool62e!]
+  where3e4: [spool62e!]
+  hencec1c: about613!
+  which4be: about613!
+  oftenb41: [wherec7c!]
+  roundd2f: [spool62e!]
+}
+
+type raisee8e {
+  where46e: String
+  quote792: String
+  often286: String
+  patch579: String
+}
+
+type hence45f {
+  yowzafa6: [raisee8e!]
+  unzip60f: [raisee8e!]
+  sadlyb5f: String
+}
+
+type whirr189 @key(fields: "badly61d powerf43") {
+  badly61d: [String!]
+  powerf43: String!
+  cause1ea: [String!]
+  razor173(trail84e: String, seize765: String, creek166: String): [peskya84!]
+}
+
+enum oftena13 {
+  until008
+  stoolcf5
+  strut05d
+}
+
+type right6dc {
+  badlyc3a: String!
+  trail84e: oftena13!
+}
+
+type peskya84 @key(fields: "madlybd2") {
+  wriste37: String
+  seize765: String
+  trail84e: String
+  wagon007: String
+  fully04a: String
+  chafefbf: String
+  belowe0e: String
+  oddly0a6: genie1b1
+  yowza8f9: [Int!]
+  never2c7: [blond748!]
+  midst3cb(roundae1: Boolean): [judgeb10]
+  windy599: [judgeb10]
+  quote792: String
+  lumpy8bd: [loyalb69!]
+  cause1ea: [String!]
+  razor173(trail84e: String, seize765: String): [peskya84]
+  abate60a: Int
+  since25c: [right6dc]
+  oddlya58: whosefe1
+  curvye96: fooey037
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+  badly61d: [String!]
+}
+
+type loyalb69 {
+  never624: Int
+  hence95b: Int
+  minus855: Int
+  afored7e: Int
+  blitz7bc: Int
+  shady9a7: Int
+  prime97f: Int
+  yowza522: Int
+  pettye64: Int
+  dress274: String
+  whiche04: String
+  among787: String
+  since684: String
+  ramenede: String
+  dimlyc58: String
+  plaitf08: String
+  shred4b5: fooey053
+  caper598: daily91f
+  zowie01b: ladlee5e
+  above70a: badly75f
+  defer5be: String
+  dimlyaff: String
+  badlyfc9: String
+  underc46: Float
+  truly6b4: hence45f
+  zowief17: yahoof16
+  comiccf8: [agiled98]
+  canal35f: [besete94]
+  young186: about555
+}
+
+enum fully186 {
+  remit50a
+  after448
+}
+
+type zowie6a6 {
+  where46e: String
+  trail84e: String
+  rigid037: Int
+}
+
+type blond748 @key(fields: "rigid037 often7b6 badly305 stand735") {
+  superce2: String
+  fooey675: String
+  rigid037: Float
+  shoutba9: Float
+  which423: Float
+  epoxy6d1: Float
+  often286: Float
+  legalff2: String
+  neverad4: String
+  rough408: String
+  amongf09: Float
+  crazy341: String
+  afterf4b: fully186
+  erodea1a: [zowie6a6!]
+  chilia6a: String!
+  often7b6: Int
+  sinced9d: Int
+  badly305: String
+  stand735: String
+  midstec2: Float
+  avoid215: String
+}
+
+type genie1b1 {
+  fully04a: String
+  until877: Int
+  shade584: String
+  yahoo0a3: [String!]
+  neverdb2: String
+  whosebad: oddly46d
+  fullyb31: String
+  ready859: upset183
+  royal067(cheep759: [String], alonga5c: [Int]): yowzacb0
+  untild18: wetly1cc
+}
+
+type oddly46d {
+  oftend70: String
+  where5b0: String
+  truly811: String
+  yowzae8f: String
+  sadly185: String
+  until22e: String
+  cheapf08: String
+  where3e4: String
+  carryfae: String
+  fooeyb1a: String
+  enjoydba: String
+  until877: Int
+  dimly24d: trialb22
+  strutaeb: String
+  gussy4f6: [String!]
+  chief6ff: String
+  wedge7f4: [String!]
+  zowiee5f: String
+  yahoo609: String
+  owner279: String
+  zowie2b2: String
+  rapideb7: String
+  which4dd: String
+  snarl920: String
+}
+
+input scrapa5c {
+  seize765: String
+  trail84e: String
+}
+
+type flour05a {
+  trail84e: String
+  seize765: String
+  fully04a: String
+  zowie806: String
+  never2c7: [blond748]
+}
+
+type close747 {
+  trail84e: String
+  seize765: String
+  fully04a: String
+}
+
+type peacec68 {
+  trail84e: String
+  fully04a: String
+  yahoo1e0: [flour05a!]
+}
+
+type yowza693 {
+  trail84e: String
+  fully04a: String
+  yahoo1e0: [close747!]
+}
+
+type bossybc0 {
+  never2cc: [yowza693]
+  under154: [peacec68]
+}
+
+type misty06c {
+  where46e: String
+  badly43a: String
+  fully04a: String
+  yowzaa4a: Int
+  wetly013: Int
+  trail84e: String
+  untilf16: [yahoo789]
+}
+
+type fooeye7a {
+  where46e: String
+  fully04a: String
+  yowzaa4a: Int
+  wetly013: Int
+  trail84e: String
+  untilf16: [yahoo789]
+}
+
+type yahoo789 {
+  badlyc3a: String
+}
+
+type smartff1 {
+  fooey229: [misty06c]
+  wherefb7: [fooeye7a]
+}
+
+enum yahoo953 {
+  truly6b4
+  yahooe6a
+  midst2e4
+  since621
+  snack143
+  until876
+  tunic8b4
+  story72e
+  fooey2cf
+  blunt685
+  since9d9
+  madly87f
+  circadd6
+  lover9c7
+  whose96c
+  untilcbd
+  lightaca
+  fullyf3f
+  minus6a3
+  yowza10a
+}
+
+type ouncee07 @key(fields: "often286") {
+  where46e: String
+  patch579: String
+  often286: String
+  quote792: String
+  trail84e: String
+  madly6e3: String
+  dimly8cb: String
+  mealyae4: yahoo953
+}
+
+type which93c {
+  seize765: String
+  yowza40e: String
+  metal6ef: [ouncee07]
+}
+
+type madly295 {
+  fooeya4d: String
+  where4d6: String
+  quote792: String
+  where1a1: Boolean
+  frank157: [which93c]
+}
+
+type yahoof16 @key(fields: "sadlyb5f where374 { often286 }") {
+  where374: ouncee07
+  above2f5: madly295
+  sadlyb5f: String
+  zowie610: String
+  swear440: String
+  along6d8: [String]
+}
+
+type worth1a1 @key(fields: "madlybd2") @key(fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 boxer271 plonk194 fooeyc5f until877 round05b gussy4f6 { where46e fully04a } wedge7f4 { where46e fully04a } windy599 { where46e fully04a } royal067 { never10e { badlyc3a kitty5fb } } fooey36b { zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 } } where5b0 { where46e fully04a } truly811 { where46e fully04a } sadly185 { where46e fully04a } sadlybc2 { fully04a } never2c7 { rigid037 often7b6 badly305 stand735 } trainefc") {
+  slimy8ee: since8b6!
+  wetly4a7: String!
+  zowie2b2: String
+  strutaeb: String
+  boxer271: String!
+  plonk194: String!
+  fooeyc5f: Int!
+  round05b: String!
+  trainefc: String
+  until877: Int
+  sadlybc2: worthb3c!
+  where3e4: eager01f!
+  aforedf5: these524
+  gussy4f6: [which640!]!
+  wedge7f4: [fooey2eb!]!
+  where5b0: times60e!
+  truly811: scuff10d!
+  yowzae8f: minus92f!
+  sadly185: voter0ee!
+  cheapf08: reign19a!
+  yahoo572: yahoo4f8!
+  fooeyb1a: daily61c
+  never2c7: [blond748]
+  royal067: yowzacb0
+  windy599: [judgeb10!]
+  realm4ec: [judgeb10!]
+  fooey36b: circa3d0
+  lumpy8bd: sliceefd
+  below011: sliceefd
+  oddlya58: whosefe1
+  bunch447: where230
+  worrye40(creek166: String, yahoo609: String, fooeyc5f: Int, sally487: String, until877: Int, chief6ff: String, messy877: drown56b): cacaod75
+  madlybd2: String
+}
+
+type worthb3c @key(fields: "fully04a") {
+  where46e: String
+  quote792: String
+  fully04a: String
+}
+
+type dimly9ea {
+  where46e: String
+  young7fc: zowie63f
+}
+
+type zowie854 {
+  rightcdf: String
+  toughfdd: [yowza188!]
+}
+
+type yowza188 {
+  where46e: String
+  yahoo1e0: [String!]
+}
+
+type mecca1b8 {
+  sadly185: coachbf0
+  paused5f: coachbf0
+  metal6ef: midstbb7
+  badlya16: coachbf0
+}
+
+type midstbb7 {
+  gussy4f6: coachbf0
+  wedge7f4: coachbf0
+  whose327: coachbf0
+  given11b: coachbf0
+}
+
+type madly772 {
+  since6c3: zowie854!
+  wetlyc64: String
+  yowza4cf: mecca1b8
+  yahoocc1: String!
+  epoxy4be: String!
+  yahoo578: [String!]
+  creek166: String!
+  young7fc: zowie63f
+  scalp2c5: [dimly9ea!]
+  round9fd: [whichc64]
+}
+
+enum falseb7f {
+  shylyc98
+  skullb36
+  clack754
+}
+
+scalar zowie99e
+
+type zowiecbd {
+  circa59c: String!
+  until43d: falseb7f
+  witty5b0: String!
+  rigida5f: madly772
+  waiveec9: triala1a!
+  whose94f: zowie99e
+  forcec84: zowie99e
+}
+
+input worth47f {
+  wriste37: String
+  often286: String
+}
+
+type sadlyb7d {
+  often162: String!
+  strutaeb: String!
+  venti543: String!
+  whileb22: String!
+  creek166: String
+}
+
+input doubt90d {
+  wriste37: String
+  often286: String
+}
+
+type chafee47 {
+  rigida5f: sadlyb7d
+}
+
+input below103 {
+  wriste37: String
+  often286: String
+}
+
+type yowzae67 {
+  yahoocc1: String
+  skullb36: Boolean
+}
+
+type above989 {
+  yahoob5b: String!
+  truckda1: [String]
+  round9fd: [whichc64]
+  since6c3: zowie854!
+  wetlyc64: String
+  yahoo578: [yowzae67!]
+}
+
+type untilf88 {
+  where46e: String
+  often286: String
+}
+
+type fooeyb81 {
+  stand735: yowzae6b
+  under154: [untilf88]
+}
+
+type whichc64 {
+  along562: String
+  skullb36: Boolean
+  waiveec9: triala1a!
+  creek166: String
+  yowza4cf: mecca1b8
+  neveref9: Boolean
+  slate553: Boolean
+  brisk529: Boolean
+  given957: solid66b
+  after00b: [yowzae6b]
+  fooey266: String
+  until790: [fooeyb81]
+  yahoodc0: Boolean
+  elbowe6c: [String]
+}
+
+type judgeb10 @key(fields: "where46e fully04a") {
+  where46e: String
+  fully04a: String
+  quote792: String
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  niece94b: [String!]
+  pintoc25: Boolean
+  yowzaf29: String
+  badly5f2: Int
+  madlybd2: String
+  powerf43: String
+}
+
+type sliceefd {
+  corny72b: Int
+  never624: Int
+  hence95b: Int
+  minus855: Int
+  afored7e: Int
+  blitz7bc: Int
+  shady9a7: Int
+  prime97f: Int
+  yowza522: Int
+  pettye64: Int
+  dress274: String
+  whiche04: String
+  among787: String
+  since684: String
+  ramenede: String
+  dimlyc58: String
+  plaitf08: String
+  shred4b5: fooey053
+  caper598: daily91f
+  zowie01b: ladlee5e
+  above70a: badly75f
+  defer5be: String
+  dimlyaff: String
+  badlyfc9: String
+  underc46: Float
+  comiccf8: [agiled98]
+  canal35f: [besete94]
+  young186: about555
+  yowzafa6: Boolean
+}
+
+type midstaa5 @key(fields: "seize765") {
+  where46e: String!
+  zowie806: String!
+  seize765: String!
+  yowza360: String!
+  quote792: String!
+}
+
+type wetly1cc {
+  sadly27a: String
+  fooey223: String
+}
+
+type fooey053 @key(fields: "seize765") {
+  seize765: String
+  fully04a: String
+}
+
+type ladlee5e @key(fields: "seize765") {
+  seize765: String
+  fully04a: String
+}
+
+type daily91f @key(fields: "seize765") {
+  seize765: String
+  fully04a: String
+}
+
+type badly75f @key(fields: "seize765") {
+  seize765: String
+  fully04a: String
+}
+
+type agiled98 {
+  wriste37: String
+  often286: String
+  patch579: String
+  fully04a: String
+}
+
+type whosece7 {
+  shoutba9: Float
+  below0e5: Float
+  midstec2: Float
+  zowie845: String
+  avoid215: String
+  swiftdfd: String
+  epoxy6d1: Float
+  flank1e9: String
+  fooey383: Float
+  rustyc8c: String
+  superce2: String
+  afterf4b: String
+  stale5e1: Float
+  whose71f: String
+  abaft719: Float
+  round2f1: String
+}
+
+type where738 {
+  wriste37: String
+  fully04a: String
+  quote792: String
+  trail84e: String
+  often286: Float
+  zowiee46: Float
+  yahoocbc: String
+  fight882: whereca6
+}
+
+type whereca6 {
+  rigid037: Float
+  oddly762: Float
+  legalff2: String
+  avoid215: String
+  quote792: String
+  seize765: String
+  trail84e: String
+  fully04a: String
+}
+
+type whosefe1 {
+  fully04a: String
+  fraud975: String
+  chafefbf: String
+  truly39b: where738
+  dimly28a: where738
+  sadlybc2: where738
+  voter2b4: where738
+  thickccb: where738
+  badlya16: where738
+  until8bd: where738
+  sadly185: where738
+}
+
+type where230 {
+  badly50f: Boolean!
+  circa559: String
+}
+
+type besete94 {
+  wriste37: String
+  often286: String
+  patch579: String
+  fully04a: String
+  hence7bb: String
+  yowza5cf: String
+}
+
+type upset183 {
+  occur6da: String
+  fullyb31: String
+  throbf08: String
+  plonk194: String
+  round05b: String
+  fooeyc5f: Int
+}
+
+type sincedad {
+  where46e: String
+  fully04a: String
+  trail84e: String
+}
+
+type bread575 {
+  yahoo11b: Float
+  yahoo49c: Float
+  southf61: Float
+  superce2: String
+  wetly23b: Float
+  rough177: Float
+  tough648: Float
+  oddlyfe4: Float
+  jumbo898: Float
+  wetly17a: Float
+  prose8d5: Float
+  among202: Float
+  minusbbb: Float
+}
+
+type minus396 {
+  shelf891: Float
+  where46e: String
+  fresh228: String
+  prunec4a: String
+  whose393: String
+  minusbbb: String
+  legalff2: String
+  trail84e: String
+  sadlya5e: [String]
+  afterf00: String
+}
+
+type jolly772 {
+  often6b2: Float
+  where46e: String
+}
+
+type whilea95 {
+  where46e: String
+  rigid037: Float
+  legalff2: String
+  trail84e: String
+  midstec2: Float
+  avoid215: String
+  shylyf38: Float
+  first877: String
+}
+
+type midst290 {
+  whose393: String
+  below3a7: Float
+}
+
+type award66e {
+  oddly3df: Int
+  mixedaf6: String
+  rigid037: Float
+  legalff2: String
+  which423: Float
+  neverad4: String
+}
+
+type fullyd49 {
+  skullb36: Int
+  yahoo1e0: [award66e]
+}
+
+type served68 {
+  where46e: String
+  fully04a: String
+  trail84e: String
+  rigid037: Float
+  legalff2: String
+  midstec2: Float
+  avoid215: String
+  shylyf38: Float
+  first877: String
+}
+
+type fooey037 {
+  where46e: String
+  quote792: String
+  rigid037: Float
+  below0e5: Float
+  zowie845: String
+  whose696: Float
+  grass809: String
+  zowie5de: Float
+  while912: String
+  midstec2: Float
+  avoid215: String
+  shylyf38: Float
+  first877: String
+  oddly060: Float
+  madly183: String
+  after5f4: Float
+  since9ff: String
+  hence3c7: Float
+  tiara6c8: String
+  legalff2: String
+  which423: Float
+  neverad4: String
+  above2f5: bread575
+  fooey670: [minus396]
+  beastd14: [minus396]
+  aforeab0: [minus396]
+  relax527: [whilea95]
+  whose73b: [midst290]
+  never814: fullyd49
+  often457: fullyd49
+  truly160: coverd95
+  fooey18b: served68
+  maybe2bf: Float
+  yowzacdc: String
+}
+
+type ensue684 {
+  where46e: String
+  fully04a: String
+  trail84e: String
+  midstec2: Float
+  giant4f6: String
+  rigid037: Float
+  legalff2: String
+}
+
+type coverd95 {
+  after836: Float
+  gator422: Float
+  minusd61: String
+  since37a: String
+  where3e4: ensue684
+  aforedf5: ensue684
+  wedge7f4: [ensue684!]
+  gussy4f6: [ensue684!]
+}
+
+type yowza37f {
+  clump720(creek166: String): [hedge33b!]
+  click084(creek166: String!): [until82b!]
+  metal6ef(creek166: String!, yahoocc1: String!, until877: Int!, truly39b: Int!, untilb37: urbanc52): [fooey861!]
+}
+
+type until82b {
+  yahoo609: String
+}
+
+type hedge33b {
+  ready859: upset183
+  yahoo609: String
+  until877: Int!
+  strutaeb: String!
+  fully617: String
+}
+
+type fooey861 @key(fields: "fooey29e") {
+  trail84e: String!
+  fooey29e: String!
+  fully04a: String
+  yowzaead: abhor287
+  sadlya5e: [String!]
+  dwarfd41: madlyd53
+  madly6e3: mimica1e
+  madlybd2: String
+  powerf43: String
+}
+
+type never402 {
+  wriste37: String
+  yahoo1e0: [String!]
+}
+
+type yowza490 {
+  wriste37: String
+  often286: String
+}
+
+type gleam5b6 {
+  where46e: String
+  often286: String
+}
+
+type zowie63f {
+  where46e: String
+  yowza2dc: Boolean
+  oddlye7e: [gleam5b6!]
+  dimly8a5: [never402!]
+}
+
+type proveeb2 {
+  oddly70e: String
+  untile32: String
+  boxer271: String
+  where46e: String
+  fully04a: String
+  quote792: String
+  wetly587: Int
+  cheap6c4: Float
+}
+
+type wetly1b1 {
+  whose240: [zowie63f!]
+  tight7e9: [proveeb2!]
+}
+
+type gradecfd {
+  shylyf25: String
+  timesad2: String
+  flint913: String
+  straw54a: String
+  which13d: Int
+  fully267: Int
+  fooey460: String
+  about61c: String
+  yowzaa85: String
+  wherea90: String
+  fullyc8a: Int
+  mushy086: Boolean
+  along512: Boolean
+  snarf044: Boolean
+}
+
+type after3e9 {
+  slickb5a: Float
+  trickd46: String
+  rearm4e5: Float
+  until876: Float
+  never6af: String
+  dinercd2: Float
+  above032: Float
+  fully580: String
+  times205: Float
+  spratf10: String
+  since9d9: Float
+  tight8fd: String
+  untilcbd: Float
+  chestf92: String
+  zowie8ed: Boolean
+}
+
+type shade783 {
+  slickb5a: Float
+  trickd46: String
+  rearm4e5: Float
+  until876: Float
+  never6af: String
+  dinercd2: Float
+  greenc96: Float
+  zowie0cc: String
+  groan9b9: Float
+  shyly6a1: String
+  sincebbf: Float
+  agent82f: String
+  madly3d3: Float
+  scary0eb: String
+  giant967: Float
+  madly930: String
+  oftenf4b: Float
+  judge1cd: String
+  sadlyeda: Float
+  mixedb22: String
+  whiche0a: Float
+  spoon9f8: String
+  minus4e5: Float
+  wheref22: String
+  timera3b: Float
+  curryb69: String
+  since9d9: Float
+  tight8fd: String
+  untilcbd: Float
+  chestf92: String
+  zowie8ed: Boolean
+}
+
+type stark083 @key(fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 sadly2d3 madly3bc royal067 { never10e { badlyc3a kitty5fb } }") {
+  slimy8ee: since8b6!
+  wetly4a7: String!
+  aforee26: String!
+  sadly2d3: String!
+  strutaeb: String
+  yowza668: Int!
+  spille4e: String!
+  madly3bc: String!
+  dolor352: String
+  sadlybc2: worthb3c!
+  royal067: yowzacb0
+  where3e4: eager01f!
+  aforedf5: these524
+  truly811: scuff10d!
+  where5b0: times60e!
+  yowzae8f: minus92f!
+  cheapf08: reign19a!
+  sadly185: voter0ee!
+  yahoo572: yahoo4f8!
+  gussy4f6: [which640!]!
+  windy599: [judgeb10!]
+  realm4ec: [judgeb10!]
+  wedge7f4: [fooey2eb!]!
+  fooey36b: never54a!
+  lumpy8bd: sliceefd
+  oddlya58: whosefe1
+  since44d: gradecfd
+  whosea48: Boolean
+  murky734: after3e9
+  yowzafa6: shade783
+}
+
+type never54a @key(fields: "zowief17 { where374 { often286 } sadlyb5f }") @key(fields: "placef5e") {
+  fully04a: String
+  zowief17: yahoof16
+  plaitf08: fooey053
+  caper598: daily91f
+  zowie01b: ladlee5e
+  above70a: badly75f
+  trickcaf: [midstaa5!]
+  curvye96: aftereb2
+  placef5e: String
+  zowie555: String
+}
+
+type which45f {
+  minusbbb: Float
+  soliddef: Float
+  tough648: Float
+  jumbo898: Float
+  wetly17a: Float
+  superce2: String
+}
+
+type aside090 {
+  where46e: String
+  rigid037: Float
+}
+
+type clumpfbc {
+  often457: Int
+  rigid037: Float
+  since8b3: Float
+  legalff2: String
+  oddly3df: Int
+  cablee0c: String
+  mixedaf6: String
+  neverad4: String
+  which423: Float
+  relax527: [aside090]
+  above2f5: which45f
+}
+
+type since82e {
+  yahoo1e0: [clumpfbc]
+  skullb36: Int
+}
+
+type pluckec7 {
+  skullb36: Int
+}
+
+type aftereb2 {
+  rigid037: Float
+  since8b3: Float
+  superce2: String
+  legalff2: String
+  never814: since82e
+  often457: pluckec7
+  where46e: String
+  quote792: String
+}
+
+type cacaod75 {
+  yahoo384: [barge0fe!]
+  wetly42e: [barge0fe!]
+  often419: [String]
+  ready859: upset183
+  curvye96: fooey037
+  rigida5f: yahoob6d
+  spear2d2: worth1a1
+  remix297: upset183
+}
+
+type roundd0b {
+  blushf0f: String!
+  chain7ba: String!
+  windy599: [judgeb10!]
+}
+
+type yowzacca @key(fields: "where46e") {
+  where46e: String
+  fully04a: String
+  trail84e: String
+  thick5ed: Boolean
+  madlybd2: String
+  powerf43: String
+}
+
+type belowc43 {
+  wriste37: String
+  where46e: String
+}
+
+type daily61c @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+  where46e: String
+  chilib72: String
+  fooeyc5f: Int
+  zowie2b2: String
+  until877: Int
+  yahoo572: Int
+  trail84e: String
+  rigid037: Float
+  which423: Float
+  after570: String
+  yahoo609: String
+  while73e: Boolean
+  thick5ed: Boolean
+  doing980: Boolean
+  sport35d: [cellof6e!]
+  whose93b: [[cellof6e!]!]
+  belowe0e: String
+  yowza8e6: String
+  dwarfd41: madlyd53
+  sadlya5e: [String!]
+  quote792: String
+  fully04a: String
+  yowzaead: belowc43
+  yahoo0a3: [String!]
+  zowie806: String
+  shyly241: String
+  weirdeda: String
+  whose14d: String
+  silkyaad: String
+  perky28f: [wetly948!]
+  pintoc25: Boolean
+  group2c3: Boolean
+  yowzaf29: String
+  whole0e1: [blond748]
+  madly6e3: mimica1e
+  sadlyd91: Int
+  tableadb: Boolean
+  shyly501: whosece7
+  paint97a: sincedad
+  yowzafb1: [yowzacca]
+  flamef9d: Boolean
+  truly86e: String
+  zowiea33: Boolean
+  skullb36: Boolean
+  zowie555: String
+  madlybd2: String
+  yowza57c: String
+  powerf43: String
+}
+
+type clerk527 {
+  seize765: String
+  where46e: String
+  while73e: String
+  often286: Float
+}
+
+type about555 {
+  since57d: String
+  young186: String
+  elide070: [clerk527!]!
+}
+
+type while0d3 {
+  seize765: String!
+  where46e: String
+  yahoo578: [String!]!
+  aboutc90: [String!]!
+}
+
+type creakb2c @key(fields: "seize765") {
+  seize765: String!
+  until22e: while0d3!
+}
+
+type badly479 {
+  eager5c3: [while0d3!]
+}
+
+type henceb87 {
+  spoof245: String!
+  creek166: String!
+  zowieada: [wetly791]
+}
+
+type wetly791 {
+  where46e: String!
+  oftend70: String!
+  until877: String!
+  ready859: aftera8a!
+  wetly42e: [barge0fe]
+  yahoo384: [barge0fe]
+}
+
+type aftera8a {
+  occur6da: String!
+  fullyb31: String!
+  throbf08: String
+  fooeyc5f: Int!
+}
+
+type never1d1 {
+  rigida5f: henceb87
+}
+
+type trialb22 {
+  after061: coastb28
+  glazec9d: [coastb28!]
+}
+
+type coastb28 {
+  where46e: String
+  while7c7: Int
+}

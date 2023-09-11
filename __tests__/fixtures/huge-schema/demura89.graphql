@@ -1,0 +1,35 @@
+type Query {
+  peachf2a(worth668: yahoofcf!): jumpy0f4
+}
+
+input yahoofcf {
+  below7e5: [dailyc8a!]!
+}
+
+type jumpy0f4 {
+  dream50e: leavec93!
+  salsaf44: unify0b1
+}
+
+enum dailyc8a {
+  novel108
+  which6ce
+  wetly159
+  hence186
+  yowzaef5
+  fooeyed5
+}
+
+enum leavec93 {
+  yahoo9ef
+  wetlya8e
+  curvyd5d
+  where5d4
+}
+
+scalar unify0b1
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

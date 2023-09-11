@@ -1,0 +1,206 @@
+scalar rough80b
+
+scalar tract3bf
+
+scalar yahoo570
+
+scalar unify0b1
+
+type fooey1b7 {
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+  alongd72: String
+}
+
+input bleep5ed {
+  north011: [ID!]!
+  worth409: zowie034!
+  while0c2: tract3bf!
+  value317: madlyad5!
+  filchff8: yahoo570!
+}
+
+input until820 {
+  midst81a: ID!
+  worth409: zowie034!
+}
+
+input daily5b5 {
+  midst81a: ID!
+  while0c2: tract3bf!
+}
+
+input among5a0 {
+  midst81a: ID!
+  value317: madlyad5!
+}
+
+input zowie26b {
+  midst81a: ID!
+  filchff8: yahoo570!
+}
+
+type bumpye76 {
+  still876: inputf71!
+}
+
+type after012 {
+  midst81a: ID!
+}
+
+type yahoobc2 {
+  midst81a: ID!
+}
+
+type dimly0d8 {
+  midst81a: ID!
+}
+
+type prime364 {
+  midst81a: ID!
+}
+
+extend type Mutation {
+  midst058(worth668: bleep5ed!): bumpye76
+  belowe49(worth668: until820!): after012
+  cadet5d2(worth668: daily5b5!): yahoobc2
+  yowzaef1(worth668: among5a0!): dimly0d8
+  kendo0b7(worth668: zowie26b!): prime364
+}
+
+interface whichfe6 {
+  midst81a: ID!
+  until9db(worth668: slicee87!, fooey052: Int, madly2ba: String): wetlya0c
+}
+
+enum zowie034 {
+  everya44
+  yahoo857
+  zowief8e
+  yahooe21
+  showy4b2
+  givencce
+  prime1b1
+}
+
+enum madlyad5 {
+  shave3ef
+  uncle862
+  styleae7
+}
+
+type wetlya0c {
+  sadlybf4: [burro8ab!]!
+  rusty683: fooey1b7!
+  worth409: zowie034!
+}
+
+type burro8ab {
+  fooey14d: String!
+  noisy502: zowie71e
+}
+
+type zowie71e {
+  midst81a: ID!
+  dread810: rough80b!
+  lankyc69: rough80b!
+  meatyf66: raiseb0e!
+}
+
+type raiseb0e {
+  soggyf9e: Int!
+}
+
+input slicee87 {
+  dread810: rough80b
+  lankyc69: rough80b
+}
+
+input yahooa2d {
+  midst81a: ID!
+}
+
+type shyly32a {
+  still876: inputf71!
+}
+
+type Query {
+  focus4e9(worth668: yahooa2d!): shyly32a
+}
+
+input winch4df {
+  theft6d8: [ID!]!
+}
+
+type hencec49 {
+  still876: fullyc24!
+}
+
+input total767 {
+  midst81a: ID!
+}
+
+type which74a {
+  midst81a: ID!
+}
+
+extend type Mutation {
+  along189(worth668: winch4df!): hencec49
+  annulea3(worth668: total767!): which74a
+}
+
+type inputf71 implements whichfe6 {
+  midst81a: ID!
+  north011: [fullyc24!]!
+  worth409: zowie034!
+  while0c2: tract3bf!
+  value317: madlyad5!
+  yowza1bb: yahoo570!
+  until9db(worth668: slicee87!, fooey052: Int, madly2ba: String): wetlya0c
+}
+
+type fullyc24 {
+  midst81a: ID!
+  theft6d8: [ID!]!
+}
+
+input amongbee {
+  leased16: ID!
+  speed9c1: ID!
+  rally1ff: ID!
+  manor701: String!
+  afterec9: String
+}
+
+type sincebad {
+  rally1ff: ID!
+}
+
+input fooeyf9b {
+  leased16: ID!
+  times493: Boolean!
+}
+
+type shushe53 {
+  shyly37e: unify0b1!
+}
+
+input shyly92d {
+  midst81a: ID!
+}
+
+type oddlya69 {
+  midst81a: ID
+}
+
+type Mutation {
+  yahooa65(worth668: amongbee!): sincebad
+  badly51c(worth668: fooeyf9b!): shushe53
+  swiftf88(worth668: shyly92d!): oddlya69
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

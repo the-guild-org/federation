@@ -1,0 +1,210 @@
+type yowza9a5 {
+  fooey1d1: Int
+  spill311: Int
+  lunged7c: Int
+}
+
+enum fooeyf3c {
+  starkb99
+  hencedcc
+  sincea29
+  madlyf52
+  yowzac4d
+  fooey28d
+  abovee15
+  circae49
+  daily65b
+  whose4c7
+  hencea9d
+  pandaa78
+}
+
+scalar fully468
+
+scalar timesabb
+
+scalar yahoo0cb
+
+input yahoo42c {
+  genre5e3: yahoo0cb!
+  daily72e: Int!
+  sadly095: Int!
+}
+
+input until25f {
+  above89b: Boolean
+  hovel818: yahoo42c!
+  rusty857: yahoo0cb!
+  chiefea7: fooeyf3c!
+  beard920: nevera05!
+  afore922: Boolean!
+  unban677: String
+  zowie356: String!
+  aside8ea: String!
+}
+
+input nevera05 {
+  chiefea7: fooeyf3c!
+  where0e6: Float
+  pleade5f: String!
+  zowie11e: Float
+  cruelb9a: String!
+  flood0bb: yahoo0cb!
+  sadlya9e: Float
+  while6f1: yahoo0cb
+  yahoo0a6: String
+  fetche03: yahoo0cb
+  which0e8: Float
+}
+
+input oftened7 {
+  unban677: String!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
+
+type barge497 {
+  noisy502: trialf87
+  fooey14d: String!
+}
+
+type floss9e0 {
+  sadlybf4: [barge497!]!
+  rusty683: fooey1b7!
+  noisy682: [trialf87!]!
+  abovea30: Int!
+}
+
+type which5c8 {
+  blastaf7: Int!
+  major7ab: Int
+  after0f9: yahoo0cb!
+  noisy682(shylyf5a: fully468, zowie2b5: fully468): [trialf87!]!
+  which4d2(
+    shylyf5a: fully468
+    zowie2b5: fully468
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+  ): floss9e0!
+  afore047: yahoo0cb
+  worth640: fully468!
+  thongce2: fooeyf3c! @deprecated
+  phony77c: timesabb
+  fleshd70: Int!
+  yowza299: String!
+  truly689: whose7a7!
+  yummy209: ozonecf8!
+  midst81a: ID!
+  yahood7e: String! @deprecated
+  while38d: Boolean!
+  craved5e: Boolean
+  zowie2b5: fully468
+}
+
+type trialf87 {
+  blastaf7: Int!
+  idiom106: yowza9a5
+  major7ab: Int
+  round5d4: Boolean!
+  undere5d: dramacc4!
+}
+
+input which562 {
+  truly689: whose7a7!
+  midst81a: ID!
+}
+
+input until428 {
+  yahood7e: String!
+}
+
+type circa382 {
+  crisp9fb: which5c8!
+}
+
+type fully9e2 {
+  crisp9fb: which5c8!
+}
+
+type alongdbb {
+  crisp9fb: which5c8!
+}
+
+type surgeaa1 {
+  crisp9fb: which5c8!
+}
+
+extend type Mutation {
+  badlydbb(worth668: fully860): circa382
+  fullyae7(worth668: reach764): fully9e2
+  whose4b6(yahood7e: String, truly689: whose7a7, worth668: which562): alongdbb
+  windy27e(worth668: until428): surgeaa1
+}
+
+extend type Query {
+  whose917(midst81a: ID, madlydfd: String, unban677: String): which5c8
+  snarl111: [which5c8!]!
+}
+
+enum whose7a7 {
+  medal8f8
+  water78c
+  often1c5
+}
+
+enum ozonecf8 {
+  yowzac85
+  nylone80
+}
+
+type dramacc4 @key(fields: "slinkcdd") @extends {
+  slinkcdd: ID @external
+  crisp9fb: which5c8
+}
+
+input fully860 {
+  after0f9: yahoo0cb!
+  since97a: [until25f!]
+  thongce2: timesabb!
+  emptybf3: [oftened7!]!
+  yowza299: String!
+  yummy209: ozonecf8!
+  while38d: Boolean
+  craved5e: Boolean
+  zowie2b5: fully468
+}
+
+input reach764 {
+  after0f9: yahoo0cb!
+  midst81a: ID
+  madlydfd: String
+  since97a: [until25f!]
+  emptybf3: [oftened7!]!
+  yowza299: String!
+}
+
+enum afore9b6 {
+  purse812
+  hence8e6
+  daily25e
+}
+
+interface zowiea36 {
+  midst81a: ID!
+  burstc92: afore9b6
+}
+
+type sinced79 implements zowiea36 @key(fields: "midst81a abovefa4 aside2ed circad7b") {
+  midst81a: ID!
+  burstc92: afore9b6
+  abovefa4: Boolean
+  aside2ed: String
+  circad7b: String
+}

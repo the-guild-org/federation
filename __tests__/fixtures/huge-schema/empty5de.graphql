@@ -1,0 +1,85 @@
+scalar timesabb
+
+scalar rough80b
+
+scalar unify0b1
+
+scalar dimlyf7b
+
+type Query {
+  yahoof27(
+    worth668: route1ce!
+    fooey052: Int
+    never2e5: Int
+    madly2ba: String
+    while53c: String
+  ): fuzzy63a
+}
+
+input route1ce {
+  whole382: String!
+}
+
+type fuzzy63a {
+  sadlybf4: [yowza4ef!]!
+  hence213: [while3f1!]!
+  rusty683: fooey1b7!
+}
+
+type yowza4ef {
+  noisy502: while3f1
+  fooey14d: String!
+}
+
+type while3f1 implements oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  rabbi80f: hence9b2
+  aside782: String!
+  fooey304: punch103!
+  daily5db: twist1e3!
+  wrong059: sugar3f6!
+}
+
+type punch103 {
+  nasal0be: after816!
+  jolly824: after816
+}
+
+type after816 {
+  sadly44d: String!
+  chiefea7: timesabb!
+}
+
+type twist1e3 {
+  socks507: unify0b1!
+  cabine91: unify0b1
+}
+
+type sugar3f6 {
+  never3f4: rough80b!
+  which27f: rough80b!
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
+
+interface might27e {
+  yahoo844: ID!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

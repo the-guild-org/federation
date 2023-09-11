@@ -1,0 +1,41 @@
+type Mutation {
+  emend0b8(minus147: round212!, oddly201: abaft448!): oddlybac
+  flamee80(
+    array9e1: String!
+    times9aa: String!
+    lumpy787: String!
+    alongf84: String!
+    under4a2: String
+    shape04b: [zowie767!]
+  ): fully718
+}
+
+type fully718 {
+  truly689: String!
+}
+
+type oddlybac {
+  truly689: String!
+}
+
+input round212 {
+  array9e1: String!
+  times9aa: String!
+  zowiea48: String!
+  alongf84: String!
+  under4a2: String
+}
+
+input abaft448 {
+  zowie328: [String!]
+  array9e1: String!
+  times9aa: String!
+  lumpy787: String!
+  alongf84: String!
+  under4a2: String
+}
+
+input zowie767 {
+  zowiea48: String!
+  mixed081: [String!]
+}

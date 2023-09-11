@@ -1,0 +1,190 @@
+input synodbf7 {
+  zowie61e: feign2a7!
+  aforec6d: [wortha6f!]!
+  clovef1e: [dimly631!]!
+}
+
+type trulyb56 {
+  zowie61e: feign2a7!
+  pandaee7: Boolean!
+  penny338: bacon85b!
+}
+
+type bacon85b {
+  zowieba9: Boolean!
+  plumpbed: Boolean!
+  stoneaf8: Boolean!
+}
+
+extend type Query {
+  badly6ac(worth668: synodbf7!): trulyb56
+}
+
+input yahooaa1 {
+  zowie61e: feign2a7
+  aside2ed: wortha6f
+  abaft80b: dimly631
+  fooey1fe: [ID!]
+}
+
+type cluck67b {
+  sadlybf4: [since6e8!]!
+  rusty683: fooey1b7!
+  abovea30: Int
+}
+
+extend type Query {
+  minus61e(worth668: yahooaa1!, fooey052: Int, madly2ba: String): cluck67b
+}
+
+type score302 {
+  badlybe1: dimlyf7b
+}
+
+input worthf0b {
+  zowie61e: feign2a7!
+}
+
+extend type Mutation {
+  runny095(worth668: worthf0b!): score302
+}
+
+input finerfac {
+  zowieba9: [aftera13!]
+}
+
+type whose0a4 {
+  fooey1fe: [ID!]!
+}
+
+extend type Mutation {
+  blame551(worth668: [finerfac!]): whose0a4
+}
+
+type neverf84 {
+  fifthc7a: dimlyf7b
+}
+
+input stiff383 {
+  chive0b5: feign2a7!
+  brawlc63: feign2a7!
+}
+
+extend type Mutation {
+  since7d3(worth668: stiff383!): neverf84
+}
+
+input yahoo791 {
+  zowie61e: feign2a7!
+  zowie9a1: [wortha6f!]
+  worth529: Boolean!
+  afterf32: Boolean!
+}
+
+type yahoo6f2 {
+  zowie61e: feign2a7!
+  treat637: [daily9dd!]!
+  order48e: [daily9dd!]!
+}
+
+scalar daily9dd
+
+extend type Query {
+  badly155(worth668: yahoo791!): yahoo6f2
+}
+
+type since6e8 {
+  noisy502: creekcbb
+  fooey14d: String!
+}
+
+type creekcbb {
+  quiet8a0: ID!
+  zowie61e: feign2a7
+  aside2ed: wortha6f
+  abaft80b: dimly631
+  zowie160: String
+  zowiec04: after7a7
+  worth19c: until598
+  fooeyb3b: dimly631
+}
+
+input aftera13 {
+  quiet8a0: ID
+  zowie61e: feign2a7!
+  aside2ed: wortha6f!
+  abaft80b: dimly631!
+  zowie160: String!
+  fooey419: yahoofc0
+  shore2e3: perchf03
+  worth19c: until598
+}
+
+type while31f {
+  yowzac43: unify0b1
+  whichdb4: String
+  badlyf90: unify0b1
+  flashfee: String
+  lumpyaee: String
+}
+
+input yahoofc0 {
+  yowzac43: unify0b1
+  whichdb4: String
+  badlyf90: unify0b1!
+  flashfee: String
+  lumpyaee: String
+}
+
+type steak012 {
+  party6b7: unify0b1
+}
+
+input perchf03 {
+  party6b7: unify0b1!
+}
+
+union after7a7 = while31f | steak012
+
+enum clang7a5 {
+  yowza365
+  cloakfb2
+}
+
+scalar wortha6f
+
+scalar until598
+
+scalar dimly631
+
+scalar dimlyf7b
+
+scalar feign2a7
+
+scalar unify0b1
+
+type Query
+
+type Mutation
+
+input chime3e7 {
+  zowie61e: feign2a7!
+  fooey971: Boolean
+}
+
+type circa9d9 {
+  zowie61e: feign2a7!
+  badly374: Boolean!
+  bough254: Boolean!
+}
+
+extend type Query {
+  whoseb45(worth668: chime3e7!): circa9d9
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
