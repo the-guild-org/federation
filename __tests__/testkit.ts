@@ -40,9 +40,13 @@ function composeServicesFactory(
       typeDefs: DocumentNode;
       url?: string;
     }>,
+    __internal?: {
+      disableValidationRules?: string[];
+    },
     debug = false,
   ) {
-    const result = implementation(services);
+    // @ts-expect-error - Expected 1 arguments, but got 2 as __internal is only available in our impl
+    const result = implementation(services, __internal as any);
 
     // This will help us detect new validation errors
     if (compositionHasErrors(result)) {

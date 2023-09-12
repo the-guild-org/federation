@@ -1,11 +1,11 @@
 import { bench, group, run } from 'mitata';
 import { composeServices as apolloComposeServices } from '@apollo/composition';
+import { getSubgraphs } from './__tests__/fixtures/huge-schema/index.js';
+import { graphql } from './__tests__/utils.js';
 import {
   assertCompositionSuccess,
   composeServices as guildComposeServices,
-} from '../src/compose.js';
-import { getSubgraphs } from './fixtures/huge-schema/index.js';
-import { graphql } from './utils.js';
+} from './src/compose.js';
 
 const basicServices = [
   {
@@ -63,7 +63,9 @@ group('huge schema', () => {
   });
 
   bench('guild', () => {
-    assertCompositionSuccess(guildComposeServices(hugeSchema));
+    assertCompositionSuccess(
+      guildComposeServices(hugeSchema, { disableValidationRules: ['SatisfiabilityRule'] }),
+    );
   });
 });
 

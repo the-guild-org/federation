@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+import { getSubgraphs } from './fixtures/huge-schema/index.js';
 import { assertCompositionSuccess, graphql, testImplementations } from './testkit.js';
 
 testImplementations(api => {
@@ -439,5 +440,13 @@ testImplementations(api => {
         view: Viewer!
       }
     `);
+  });
+
+  test('validate fixture/huge-schema', async () => {
+    const subgraphs = await getSubgraphs();
+    const result = api.composeServices(subgraphs, {
+      disableValidationRules: ['SatisfiabilityRule'],
+    });
+    assertCompositionSuccess(result);
   });
 });

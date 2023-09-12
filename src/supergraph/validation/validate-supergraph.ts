@@ -29,6 +29,9 @@ import { createSupergraphValidationContext } from './validation-context.js';
 export function validateSupergraph(
   subgraphStates: Map<string, SubgraphState>,
   state: SupergraphStateBuilder,
+  __internal?: {
+    disableValidationRules?: string[];
+  },
 ) {
   const context = createSupergraphValidationContext(subgraphStates);
 
@@ -37,8 +40,12 @@ export function validateSupergraph(
   }
 
   const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule];
+  const rulesToSkip = __internal?.disableValidationRules ?? [];
 
   for (const rule of preSupergraphRules) {
+    if (rulesToSkip.includes(rule.name)) {
+      continue;
+    }
     rule(context);
   }
 
@@ -74,7 +81,13 @@ export function validateSupergraph(
 
   visitSupergraphState(
     supergraph,
-    postSupergraphRules.map(rule => rule(context, supergraph)),
+    postSupergraphRules.map(rule => {
+      if (rulesToSkip.includes(rule.name)) {
+        return {};
+      }
+
+      return rule(context, supergraph);
+    }),
   );
 
   return context.collectReportedErrors();

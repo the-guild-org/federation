@@ -40,8 +40,8 @@
   ],
   "keywords": [],
   "scripts": {
-    "bench": "BENCHMARK=yes tsx ./__tests__/benchmark.ts",
-    "build": "rm -rf dist && bob check && bob build && rm -rf dist/README.md",
+    "bench": "tsx ./benchmark.ts",
+    "build": "rimraf dist && bob check && bob build && rimraf dist/README.md",
     "format": "prettier --write .",
     "test": "vitest --config ./vitest.config.js",
     "typecheck": "tsc --noEmit --project tsconfig.build.json"
@@ -60,6 +60,7 @@
     "lodash.sortby": "4.7.0",
     "mitata": "0.1.6",
     "prettier": "3.0.3",
+    "rimraf": "5.0.1",
     "tsx": "3.12.8",
     "typescript": "5.2.2",
     "vitest": "0.34.4"

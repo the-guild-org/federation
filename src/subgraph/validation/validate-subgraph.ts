@@ -85,9 +85,13 @@ export function validateSubgraph(
     version: FederationVersion;
     imports: readonly LinkImport[];
   },
+  __internal?: {
+    disableValidationRules?: string[];
+  },
 ) {
   subgraph.typeDefs = cleanSubgraphTypeDefsFromSubgraphSpec(subgraph.typeDefs);
 
+  const rulesToSkip = __internal?.disableValidationRules ?? [];
   const typeNodeInfo = new TypeNodeInfo();
   const validationContext = createSubgraphValidationContext(
     subgraph,
@@ -137,7 +141,12 @@ export function validateSubgraph(
       typeNodeInfo,
       visitInParallel(
         [stateBuilder.visitor(typeNodeInfo)].concat(
-          federationRules.map(rule => rule(validationContext)),
+          federationRules.map(rule => {
+            if (rulesToSkip.includes(rule.name)) {
+              return {};
+            }
+            return rule(validationContext);
+          }),
         ),
       ),
     ),
@@ -196,7 +205,17 @@ export function validateSubgraph(
 
   const simpleValidationContext = createSimpleValidationContext(fullTypeDefs, typeNodeInfo);
 
-  visit(fullTypeDefs, visitInParallel(graphqlRules.map(rule => rule(simpleValidationContext))));
+  visit(
+    fullTypeDefs,
+    visitInParallel(
+      graphqlRules.map(rule => {
+        if (rulesToSkip.includes(rule.name)) {
+          return {};
+        }
+        return rule(simpleValidationContext);
+      }),
+    ),
+  );
 
   return validationContext
     .collectReportedErrors()

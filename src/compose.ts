@@ -7,8 +7,18 @@ import { sdl as tagSDL } from './specifications/tag.js';
 import { ServiceDefinition } from './types.js';
 import { validate } from './validate.js';
 
-export function composeServices(services: ServiceDefinition[]): CompositionResult {
-  const validationResult = validate(services);
+export function composeServices(
+  services: ServiceDefinition[],
+  __internal?: {
+    /**
+     * For benchmarking purposes we allow to ignore validation errors.
+     * Once we have all validation errors covered (no false positives and false negatives)
+     * we can remove this thing from the code.
+     */
+    disableValidationRules?: string[];
+  },
+): CompositionResult {
+  const validationResult = validate(services, __internal);
 
   if (!validationResult.success) {
     return {

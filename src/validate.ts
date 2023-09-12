@@ -16,11 +16,6 @@ function startsWithNumber(value: string) {
   return numberAtStartRegex.test(value);
 }
 
-// For benchmarking purposes we ignore validation errors and print supergraph's sdl.
-// Once we have all validation errors covered (no false positives and false negatives)
-// we can remove this thing from the code.
-const isBenchmark = typeof process.env.BENCHMARK === 'string';
-
 function buildGraphList(
   subgraphs: ReadonlyArray<{ name: string; typeDefs: DocumentNode; url?: string }>,
 ) {
@@ -112,6 +107,9 @@ function buildGraphList(
 
 export function validate(
   subgraphs: ReadonlyArray<{ name: string; url?: string; typeDefs: DocumentNode }>,
+  __internal?: {
+    disableValidationRules?: string[];
+  },
 ) {
   const graphList = buildGraphList(subgraphs);
 
@@ -129,7 +127,7 @@ export function validate(
   // If core-level errors are detected, we skip validation of subgraphs.
   // We do it because if a core is invalid the subgraph is going to be invalid anyway.
   // By core, we mean the validation of `@link` and other fundamental logic of Federation v2
-  if (coreErrors.length > 0 && !isBenchmark) {
+  if (coreErrors.length > 0) {
     return {
       success: false,
       errors: coreErrors,
@@ -158,13 +156,14 @@ export function validate(
         graph,
         subgraphStateBuilders.get(graph.id)!,
         detectedFederationSpec.get(graph.id)!,
+        __internal,
       ),
     )
     .flat(1);
 
   // If subgraph-level errors are detected, we skip validation of a supergraph.
   // We do it because if a subgraph is invalid the supergraph is going to be invalid anyway.
-  if (subgraphErrors.length > 0 && !isBenchmark) {
+  if (subgraphErrors.length > 0) {
     return {
       success: false,
       errors: subgraphErrors,
@@ -184,11 +183,12 @@ export function validate(
       ]),
     ),
     state,
+    __internal,
   );
 
   // If supergraph-level errors are detected, we skip the generation of a supergraph.
   // It's corrupted anyway...
-  if (supergraphErrors.length > 0 && !isBenchmark) {
+  if (supergraphErrors.length > 0) {
     return {
       success: false,
       errors: supergraphErrors,
