@@ -977,7 +977,7 @@ export function schemaCoordinate(
   return coordinate;
 }
 
-// Removes Federation crap from the supergraph
+// Removes Federation stuff from the supergraph
 // It's safe to look for link__ and join__ prefixes as Federation v2 does not allow to define type names that start with these prefixes
 export function stripFederation(supergraph: DocumentNode): DocumentNode {
   const inaccessible = new Set<string>();
