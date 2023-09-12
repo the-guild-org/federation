@@ -1,0 +1,91 @@
+scalar wortha6f
+
+type Query {
+  ramend11(worth668: zowie5bc!, fooey052: Int, madly2ba: String): satin7b8
+  wetly181(worth668: midst24a!, fooey052: Int, madly2ba: String): until3a3
+  utter54b(worth668: wetlyf2b!, fooey052: Int, madly2ba: String): agonybca
+}
+
+input zowie5bc {
+  above032: wortha6f!
+  round1ea: ID
+  worstceb: Int
+}
+
+type satin7b8 {
+  sadlybf4: [thoseb76!]!
+  rusty683: fooey1b7!
+  after0e8: [often0a7!]!
+  abovea30: Int!
+}
+
+type thoseb76 {
+  noisy502: often0a7!
+  fooey14d: String!
+}
+
+input midst24a {
+  above032: wortha6f!
+  round1ea: ID
+  sleep650: [ID!]
+}
+
+type until3a3 {
+  sadlybf4: [brakefae!]!
+  rusty683: fooey1b7!
+  loosedf7: [dailyc44]!
+  abovea30: Int!
+}
+
+type brakefae {
+  noisy502: dailyc44
+  fooey14d: String!
+}
+
+input wetlyf2b {
+  above032: wortha6f!
+  plead5c5: [ID!]!
+}
+
+type agonybca {
+  sadlybf4: [giddy357!]!
+  rusty683: fooey1b7!
+  yowza975: [badly50d]!
+  abovea30: Int!
+}
+
+type giddy357 {
+  noisy502: badly50d
+  fooey14d: String!
+}
+
+type often0a7 @key(fields: "midst81a") {
+  midst81a: ID!
+  oftenb86: ID
+  yowza299: String!
+}
+
+type dailyc44 @key(fields: "midst81a") {
+  midst81a: ID!
+  untilf01: worthfb6!
+  yowza299: String!
+  yowza975: [badly50d!]!
+}
+
+type worthfb6 @key(fields: "midst81a") {
+  midst81a: ID!
+  yowza299: String!
+}
+
+type badly50d @key(fields: "midst81a") {
+  midst81a: ID!
+  yowza299: String!
+  round1ea: ID!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

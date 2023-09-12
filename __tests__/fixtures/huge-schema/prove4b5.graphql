@@ -1,0 +1,13 @@
+type Query {
+  scened47: amongf59
+}
+
+type amongf59 {
+  daily431: String!
+  hence79e: String
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

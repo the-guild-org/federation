@@ -1,0 +1,72 @@
+scalar unify0b1
+
+scalar fooeya96
+
+type Mutation {
+  never2dd(worth668: fully356!): prize6a7
+}
+
+type Query {
+  since72e: scrime95
+}
+
+enum fooey4b7 {
+  fooey17f
+  fully98d
+  means738
+  grimy433
+  about311
+}
+
+input fully356 {
+  fooey471: fooey4b7!
+  yowza299: String!
+  where4ff: Boolean
+  equal5e6: String
+  zowie855: fooeya96!
+  yowza880: String!
+  fooeye3c: String!
+  since200: String
+  whose41d: unify0b1
+  zowie350: String
+}
+
+type minusce9 {
+  fooey471: fooey4b7!
+  yowza299: String!
+  where4ff: Boolean
+  equal5e6: String
+  zowie855: fooeya96!
+  yowza880: String!
+  fooeye3c: String!
+  since200: String
+  whose41d: unify0b1
+  zowie350: String
+}
+
+type month6de {
+  zowie160: String!
+  quake984: unify0b1
+}
+
+type wetly1bf {
+  yahooa3f: minusce9
+  jolly71d: month6de
+}
+
+type mushy6e2 {
+  payeece6: Boolean!
+}
+
+type prize6a7 {
+  yowzabf0: wetly1bf!
+}
+
+type scrime95 {
+  yowzabf0: mushy6e2!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

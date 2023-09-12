@@ -1,0 +1,171 @@
+scalar rough80b
+
+schema {
+  query: Query
+}
+
+type Query {
+  aside486(worth668: staid43b!): madly3a0
+}
+
+input staid43b {
+  badlyb7c: alongc35
+  zowie06b: whose5f8
+  afterc14: [zowie801!]
+  madly2ba: String
+  while53c: String
+  midsta2d: Int!
+  blank09a: [validc80!]
+  shyly839: bonusba1
+}
+
+input alongc35 {
+  yahoo9ea: String!
+}
+
+input whose5f8 {
+  thorna48: whose5f8
+  worth36b: [whose5f8!]
+  phone3c1: [whose5f8!]
+  whichab6: along63c
+  worst202: zowie4a4
+  grout3e3: sweatf38
+  dimlyc21: along63c
+  scrub24d: along63c
+  limit416: along63c
+  after8f9: often51a
+  pulse7cb: often51a
+  never364: often51a
+  amongbbd: Boolean
+  gracee3c: Boolean
+  shylyd79: Boolean
+  child868: Boolean
+  shyly5b4: [badlyea5!]
+  untilf14: Boolean
+  rugby2c4: Boolean
+  yowza34e: afterc4b
+  daily289: along63c
+  flank372: Boolean
+}
+
+input zowie4a4 {
+  yahoo9ea: String!
+}
+
+input along63c {
+  poncefb3: [ID!]!
+}
+
+input often51a {
+  fully470: rough80b
+  style375: rough80b
+}
+
+input sweatf38 {
+  yahoo9ea: String!
+  above032: String
+}
+
+input zowie801 {
+  after8f9: tweet04c
+  pulse7cb: tweet04c
+  aftercaf: branda15
+  daily007: tweet04c
+}
+
+input validc80 {
+  grout3e3: until65f
+}
+
+input until65f {
+  yowza299: String!
+  scary40c: wherebb0!
+  yowza2a6: tweet04c!
+  sadly263: Int!
+}
+
+input bonusba1 {
+  grout3e3: hence367
+}
+
+input hence367 {
+  poncefb3: [String!]!
+}
+
+enum wherebb0 {
+  fooeye99
+  spicye3d
+}
+
+enum afterc4b {
+  where750
+  sadly2ed
+  clock45c
+  parche9a
+  kookyadb
+  split147
+}
+
+enum branda15 {
+  exultc25 @deprecated(reason: "")
+  daily289
+  drool984
+  dimlyc21
+  shyly5b4
+  never364
+  mould585
+  sleep26d
+}
+
+enum tweet04c {
+  untila57
+  timesa6b
+}
+
+enum badlyea5 {
+  medal8f8
+  often1c5
+  water78c
+  kookyadb
+}
+
+type moral38b {
+  oddlyf24: String
+  circa33d: Boolean!
+  alongd72: String
+  rapid0c3: Boolean!
+}
+
+type madly3a0 {
+  yowzabf0: [hence98c!]!
+  tastyf67: Int!
+  rusty683: moral38b!
+  fooey4c7: [zowieef1!]!
+}
+
+type hence98c {
+  mango962: which577!
+}
+
+type which577 implements oddlybcf @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type zowieef1 {
+  yowza299: String!
+  smoltc1f: [after95a!]!
+}
+
+type after95a {
+  title7b1: String!
+  soggyf9e: Int!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

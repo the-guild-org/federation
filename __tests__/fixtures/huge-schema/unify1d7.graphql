@@ -1,0 +1,177 @@
+type Mutation {
+  minuseb8: boxer422
+  zowie57a: stoop453
+  pearl037(worth668: droop90c): sincebfa
+  stall261(worth668: yahoocaf!): fooey2a6
+  fooey786(worth668: daily524!): grape663
+  never239: madlyca2
+  train169(worth668: colon1d8!): whichc5e
+  wholeb23(worth668: laugh545!): badly31a
+}
+
+type Query {
+  swamp223(worth668: whileb8d!): rowdy3e3
+}
+
+type stoop453 {
+  shylyf49: unify0b1!
+  climb1c5: String!
+}
+
+input droop90c {
+  climb1c5: String!
+  yowza299: String!
+  afterec9: String
+  zowie45e: oddlyd6d!
+  afore8c4: fooey10b
+  soggy5a9: [String!]
+  given617: String!
+  madly9c4: String!
+  glass2b6: String!
+}
+
+input yahoocaf {
+  midst81a: ID!
+}
+
+type boxer422 {
+  alert194: unify0b1
+  since25a: unify0b1
+  loose6a1: unify0b1
+  hencedb9: unify0b1
+}
+
+type sincebfa {
+  infer7ae: stage100
+  whichcb0: clack799
+  roundd0c: clack799
+  dimlyc67: clack799
+  boardeb2: clack799
+}
+
+type fooey2a6 {
+  quake984: unify0b1
+}
+
+type clack799 {
+  midst81a: ID!
+  after8f3: String
+  briefd39: String
+  while364: String
+  forge190: String
+  whileb5c: afterf20
+  given617: String
+  yahoo90d: String
+  soggy5a9: [String!]!
+  matchfcd: dimlyf7b
+}
+
+type stage100 @key(fields: "midst81a times2bf") @extends {
+  midst81a: ID! @external
+  times2bf: String @external
+}
+
+type fooeyfec @key(fields: "times2bf") @extends {
+  times2bf: String @external
+}
+
+type untie8c3 @key(fields: "times2bf") @extends {
+  times2bf: String @external
+  plume3a0: fooeyca2
+}
+
+type fooeyca2 {
+  daily5db: force4e2
+}
+
+type force4e2 {
+  clank86b: String!
+  zowie945: String!
+  abafta7d: String!
+}
+
+input daily524 {
+  climb1c5: ID!
+}
+
+type grape663 {
+  climb1c5: ID!
+}
+
+type madlyca2 {
+  climb1c5: ID!
+}
+
+input colon1d8 {
+  yahoo5e0: ID!
+  whileb5c: yahoo26d!
+}
+
+input laugh545 {
+  whilee32: dimly59c!
+  whileb5c: yahoo26d!
+}
+
+type whichc5e {
+  quake984: unify0b1
+}
+
+type badly31a {
+  quake984: unify0b1
+}
+
+enum afterf20 {
+  wetly529
+  which4a3
+  foray61b
+  trulyf66
+}
+
+enum fooey10b {
+  thing4de
+  eager571
+  daily105
+  table00a
+  scalye39
+  truly5e5
+}
+
+enum oddlyd6d {
+  beard85a
+  rallyccd
+}
+
+input whileb8d {
+  whilee32: dimly59c!
+}
+
+type rowdy3e3 {
+  times2bf: ID!
+}
+
+enum yahoo26d {
+  amongbe7
+  skull645
+  while263
+}
+
+scalar dimly59c
+
+scalar unify0b1
+
+scalar dimlyf7b
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+input where645 {
+  times73f: String!
+  hence01b: String!
+}
+
+input aforeae4 {
+  after943: String!
+  chaind08: String!
+  truly17d: String!
+}

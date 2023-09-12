@@ -1,0 +1,27 @@
+type Query {
+  rowdy454(worth668: aboveb8c!): trulyfe4
+}
+
+input aboveb8c {
+  flare450: [String!]!
+}
+
+type trulyfe4 {
+  trunk5af: [above50a!]!
+}
+
+type above50a {
+  scary40c: String!
+  yahoo5d9: [yowzae25!]!
+}
+
+type yowzae25 {
+  ripene14: String!
+  whose353: Int!
+}
+
+scalar dimlyf7b
+
+interface oddlybcf {
+  midst81a: ID!
+}

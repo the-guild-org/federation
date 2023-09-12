@@ -1,0 +1,171 @@
+scalar dimlyf7b
+
+scalar rough80b
+
+type Query {
+  basisacc(worth668: solid2f7!): whose963
+}
+
+input solid2f7 {
+  fling381: String!
+  drill9f2: String!
+  where793: birth3f5!
+  about022: shadyb7e
+  which401: String
+  shyly550: String
+  midsta2d: Int
+}
+
+input birth3f5 {
+  mouse1bf: after2b3!
+  zowie14f: dimlyf7b
+  witty6b7: dimlyf7b
+}
+
+input after2b3 {
+  afore3f4: dimlyf7b
+  chant2b0: String
+  after22f: String
+}
+
+input shadyb7e {
+  until7fb: steel704
+}
+
+input steel704 {
+  drool984: String
+  while04b: Float
+  omega6be: Float
+  zowie9dc: String
+  fooey029: Int
+  dodge3c1: [String]
+  bumpy8a7: [String]
+  smart492: [String]
+}
+
+type whose963 {
+  owner7f5: String!
+  sadly904: String! @deprecated(reason: "")
+  sinceb95: [whereb92!]!
+  thick1da: Int
+  which401: String
+  pinotc05: String
+  aside077: String
+  truly689: ripen3e3
+}
+
+type whereb92 {
+  midst81a: ID!
+  sushi788: [String!]!
+  yahoo12b: yahoob2c
+}
+
+type yahoob2c {
+  choir561: Boolean
+  blond7d1: [molar780!]!
+}
+
+type molar780 {
+  while7ed: [under50c!]!
+  while83f: rigidd23
+  fullyccd: rough80b
+  madlydd3: [catchb00!]!
+  sadly68e: [shady264!]!
+  after937: [until35f!]!
+  zowie9dc: yahoo812
+  chirpa83: dimlyf7b
+  fooeydf0: [givena94!]!
+}
+
+enum yahoo812 {
+  beard85a
+  rallyccd
+  cloakfb2
+}
+
+type under50c {
+  class47e: glean41f
+  worst202: String
+}
+
+type rigidd23 {
+  quilt5d8: String
+  often518: String
+  grout3e3: where870
+}
+
+type where870 {
+  clampc17: String
+  zowie9dc: String
+  aside2ed: String
+}
+
+type catchb00 {
+  class47e: glean41f
+  toughf76: [whosed6a!]!
+  lumpy74e: String
+}
+
+type whosed6a {
+  green9f2: String
+  oddly7f1: String
+}
+
+type shady264 {
+  class47e: glean41f
+  worst202: String
+}
+
+type until35f {
+  yowzaf99: dimlyf7b
+  chiefcf5: String
+}
+
+type givena94 {
+  untilf01: String
+  class47e: glean41f
+  oftenddc: String
+  worst202: String
+}
+
+type glean41f {
+  badlyd8b: known5a1
+  endow195: Boolean
+  along620: known5a1
+}
+
+type known5a1 {
+  endow195: Boolean
+  yahooeb5: belowdeb
+  yowzaaa6: Int
+}
+
+enum belowdeb {
+  guavac7c
+  wetly262
+  yahoo5fb
+  until210
+  fooeye23
+  since4c6
+  flock6f8
+  froth0ba
+  human168
+  noise5b7
+  fooeya5e
+  clone8b4
+  sadly9e0
+}
+
+type ripen3e3 {
+  ripene14: rurale4c
+}
+
+enum rurale4c {
+  yowzaed5
+  fooeybe4
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

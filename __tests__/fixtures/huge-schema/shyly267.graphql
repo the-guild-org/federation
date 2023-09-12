@@ -1,0 +1,97 @@
+scalar unify0b1
+
+enum afterf26 {
+  quail2fe
+  sadly173
+  oftenb06
+  until00e
+  oftene6a
+  plump88d
+  wetly529
+  daily026
+  recapcc7
+  sinceed5
+  idealfff
+  never9f1
+  swingaab
+  sunnyd2b
+  timesafd
+  embed751
+  oddlyfdc
+  circa2db
+  wearydad
+  fooey923
+  circaedd
+  cover3c1
+  worthc4b
+  beingada
+}
+
+interface below7e1 {
+  midst81a: afterf26!
+  trulydf2: unify0b1!
+  title7b1: String
+}
+
+type clonk16c implements below7e1 {
+  midst81a: afterf26!
+  trulydf2: unify0b1!
+  title7b1: String
+}
+
+type camele40 implements below7e1 {
+  midst81a: afterf26!
+  trulydf2: unify0b1!
+  title7b1: String!
+  madly6af: String
+}
+
+type fully818 implements below7e1 {
+  midst81a: afterf26!
+  trulydf2: unify0b1!
+  title7b1: String!
+  times4cb: String
+}
+
+type below5e6 {
+  satin10f: [fully818!]!
+  waive514: [fully818!]!
+}
+
+type after617 {
+  voice7a1: below5e6!
+  never331: [camele40!]!
+  tarrye2f: Boolean!
+}
+
+enum knife57d {
+  truly238
+}
+
+input bagel819 {
+  since0a8: knife57d!
+  which786: String!
+  mocha0e9: unify0b1!
+  untilf00: String!
+  pointee7: String
+  brief00e: String
+  saintd24: String
+  tired0e5: String
+  times9cc: Boolean
+  scoot049: String
+  carry4d5: String
+  fussy1bb: String
+}
+
+type Query {
+  skirt33f(worth668: bagel819!): after617
+  times46c(worth668: bagel819!): minusbe7
+}
+
+schema {
+  query: Query
+}
+
+type minusbe7 {
+  times46c: [clonk16c!]!
+}

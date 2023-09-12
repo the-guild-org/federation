@@ -1,0 +1,27 @@
+type Mutation {
+  zowie786(worth668: vividf52!): greatc86
+}
+
+input vividf52 {
+  murky1a1: ID!
+  minus147: String
+  ketch926: String
+}
+
+type greatc86 {
+  yowza394: shyly3d1!
+}
+
+type shyly3d1 {
+  milkyb75: String!
+  whichdce: String!
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+  bribeb17: where803
+}
+
+type where803 {
+  pandaee7: Boolean!
+}

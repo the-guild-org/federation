@@ -1,0 +1,53 @@
+enum asidee98 {
+  sadlybf1
+  alongf04
+  madly328
+  cabinb19
+  fatal8a8
+  whose040
+  blare772
+}
+
+enum which832 {
+  circa964
+  payeebdf
+  where261
+  yahoo4c6
+}
+
+enum spicy590 {
+  abaft37e
+  zowie896
+  crookebe
+  while2ff
+}
+
+enum hobby2cc {
+  loosee58
+  sadly369
+  prate394
+  storm981
+}
+
+type Mutation {
+  afored45(worth668: brief952!): shyly8f7
+}
+
+input brief952 {
+  yahoo998: spicy590!
+  yahoo88a: hobby2cc!
+  untilf00: asidee98!
+  fullyc94: ID!
+  whose8ea: String!
+  month9b2: ID!
+  bandy994: which832!
+}
+
+type shyly8f7 {
+  zowie160: String!
+  owner5f4: Boolean!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

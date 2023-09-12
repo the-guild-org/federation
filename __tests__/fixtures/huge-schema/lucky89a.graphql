@@ -1,0 +1,23 @@
+type since9a4 implements might27e @key(fields: "yahoo844") @extends {
+  yahoo844: ID! @external
+  linede5f: sincec45!
+}
+
+type sincec45 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+  badlyd23: String!
+  brief90c: String
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

@@ -1,0 +1,142 @@
+scalar wortha6f
+
+scalar dimly631
+
+type corny421 {
+  scary40c: ID!
+  yahood7e: ID!
+  title7b1: String!
+  above74b: [String!]!
+  spurta65: String!
+  midst5bc: [String!]!
+  fooey2da: [corny421!]!
+  incur653: [corny421!]!
+  alder843: [stiffcf3!]!
+  fooey520: under07f!
+  fooeyc1c: Boolean!
+  until99c: Boolean!
+}
+
+input quill788 {
+  alder843: [ID!]!
+  close8fa: fooey3c8
+}
+
+enum fooey3c8 {
+  nursed5c
+  yowzabf9
+}
+
+type stiffcf3 {
+  scary40c: ID!
+  yahood7e: ID!
+  title7b1: String!
+}
+
+enum under07f {
+  shyly0ed
+  after44d
+  hence24f
+  untileb0
+}
+
+type Query {
+  which8bd(worth668: about219!): untilc5d
+  scent796(worth668: rapid10a!): gauge50f
+  tight42b(worth668: abhore67!): never8cd
+  modeld5a(worth668: epoch2ba!): zowie6ba
+}
+
+input about219 {
+  right3a4: under07f
+  zowie6a3: [ID!]!
+  fullyaa5: quill788!
+  yahoof9c: Boolean
+  above032: wortha6f
+  fresh597: dimly631
+}
+
+input rapid10a {
+  afterec9: String
+  drool984: String
+  yowza880: String
+  above032: wortha6f
+  fresh597: dimly631
+}
+
+input abhore67 {
+  aboutffc: ID!
+  dailyfc8: ID
+  minusecf: ID
+  above032: wortha6f
+  fresh597: dimly631
+}
+
+input epoch2ba {
+  afterec9: String
+  worst202: String
+  untilf01: String
+  grout3e3: String
+  above032: wortha6f
+  fresh597: dimly631
+}
+
+type untilc5d {
+  which8bd: [corny421!]
+  whichdf5: ID!
+  planee4a: fooey71c!
+}
+
+type never8cd {
+  which8bd: [corny421!]
+  planee4a: fooey71c!
+}
+
+type gauge50f {
+  shyly0df: [corny421!]!
+  yowzad8d: [corny421!]!
+  planee4a: fooey71c!
+}
+
+type zowie6ba {
+  until756: [batch369!]!
+  after24a: [baggy66e!]!
+}
+
+type batch369 {
+  about597: corny421!
+  fully73c: never5bd!
+}
+
+type never5bd {
+  yahoo4d9: fully081!
+  excelea4: Int!
+  until82c: Int!
+}
+
+type baggy66e {
+  chiefcf5: String!
+  yahoo4d9: fully081!
+}
+
+enum fully081 {
+  kookyadb
+  shorec56
+  sallyf33
+  snare4cb
+}
+
+type fooey71c {
+  hence29b: floor90b!
+  yahooe98: String
+}
+
+enum floor90b {
+  rifle792
+  zowiec7e
+  ratioc64
+  givendd3
+  fluid254
+  crowdf32
+  alive713
+}

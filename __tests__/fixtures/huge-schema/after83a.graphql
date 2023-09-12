@@ -1,0 +1,40 @@
+schema {
+  query: Query
+}
+
+scalar chafeb78
+
+type Query {
+  snuckdb5(worth668: basicfee): hencefa4
+}
+
+input shyly71a {
+  yowza299: [String!]
+  bleakb01: [chafeb78!]
+}
+
+type falseb2a {
+  yowza299: String!
+  oddly248: Float
+  regala71: Int
+  neverec6: Boolean
+  bleakb01: chafeb78!
+}
+
+input basicfee {
+  zowie06b: shyly71a
+}
+
+type hencefa4 implements oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  snuckdb5: [falseb2a!]!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

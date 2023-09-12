@@ -1,0 +1,58 @@
+type Query {
+  oftenbdd(worth668: where9a1!): often3f3
+}
+
+input where9a1 {
+  zowie14f: Int
+  rusty683: zowie6e0!
+  yahoo6c8: yowza588!
+  wring3cf: [Int!]
+  sadly684: [Int!]
+}
+
+input zowie6e0 {
+  while2f1: Int!
+  fooey508: Int!
+}
+
+input yowza588 {
+  yahoo6c8: String
+  truly689: String
+  afterc14: String
+  zowie2b5: String
+  shylyf5a: String
+}
+
+type blankb4f @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  oftenbdd(worth668: where9a1!): often3f3
+}
+
+type often3f3 {
+  oftenbdd: [oftencae!]!
+  rusty683: yahoo427!
+}
+
+type yahoo427 {
+  above00a: Int!
+  fooey508: Int!
+  circadeb: Int!
+  clean332: Int!
+  sinceb72: Int!
+}
+
+type oftencae @key(fields: "midst81a") {
+  midst81a: ID!
+  zowie14f: Int
+  after9ad: String!
+  shacke74: Float!
+  chiefea7: String!
+  circa081: String!
+  defer4ac: String!
+  yowza880: String!
+  earth7c3: String!
+}
+
+scalar fooeya96
+
+scalar chafeb78

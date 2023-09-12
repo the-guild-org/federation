@@ -1,0 +1,62 @@
+type Query {
+  yahoo4f3(worth668: dailyf11!): lease05b @deprecated
+  zowieafe(worth668: dimlye42!): after375 @deprecated
+}
+
+input dimlye42 {
+  scorn513: String!
+}
+
+input dailyf11 {
+  scorn513: String!
+  hence435: Int!
+  yahoo610: Int!
+  ferry3d6: Int!
+}
+
+type lease05b {
+  yowzabf0: [yahoo085!]!
+}
+
+type after375 {
+  yowzabf0: above2f7!
+}
+
+type circad45 {
+  where23b: ID!
+  paste4d9: String!
+  yowzadeb: String!
+  belowc21: Int!
+  waist703: String!
+}
+
+type wrongc47 {
+  quest765: String!
+  while7ed: [circad45!]!
+}
+
+type alertd1a {
+  midst81a: String!
+  hence646: String!
+  yowza299: String!
+  whilee32: String!
+  trulycaa: String!
+  yahooe2e: String!
+  moose612: String!
+  among5b3: Int!
+  yowza25a: Float!
+}
+
+type yahoo085 {
+  alertc45: String!
+  midstc13: [wrongc47!]!
+}
+
+type above2f7 {
+  lumpy74e: alertd1a
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

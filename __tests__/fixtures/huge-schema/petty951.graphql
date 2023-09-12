@@ -1,0 +1,26 @@
+type hyenaa5e @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  majorf3f: oftene37!
+}
+
+type tepid4ab {
+  omegaa59: hazele3d!
+  yahoo05e: [milkye46!]!
+}
+
+type oftene37 {
+  topic930: [tepid4ab!]!
+}
+
+scalar hazele3d
+
+scalar milkye46
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

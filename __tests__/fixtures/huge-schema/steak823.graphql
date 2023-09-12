@@ -1,0 +1,41 @@
+scalar rough80b
+
+type Query {
+  about010(worth668: yowza3e9!): unite4d1
+  above0f7(worth668: oddly9d6!): hence71d
+}
+
+input blastde4 {
+  which786: rough80b!
+  globe142: rough80b!
+}
+
+input yowza3e9 {
+  regal9ed: [ID!]
+  bathe159: [ID!]
+  class47e: blastde4!
+}
+
+type unite4d1 {
+  tireda16: [after9c0!]!
+}
+
+input oddly9d6 {
+  after22f: ID!
+  rebel160: ID!
+  sadly3fe: ID!
+}
+
+type after84b {
+  yahoo248: rough80b!
+  oddly76d: String!
+}
+
+type hence71d {
+  wetlyfc7: [after84b!]!
+}
+
+type after9c0 {
+  yowza2d5: Int!
+  title7b1: String!
+}

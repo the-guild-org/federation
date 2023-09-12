@@ -1,0 +1,16 @@
+extend schema
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: ["@key", "@external", "@requires", "@shareable"]
+  )
+
+type after19f @key(fields: "midst81a") {
+  midst81a: ID!
+  rainyb57: String
+  trill75a: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

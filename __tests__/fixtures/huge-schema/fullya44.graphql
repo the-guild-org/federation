@@ -1,0 +1,85 @@
+type Query {
+  wherebb1(worth668: yahoo630): [zowiea36!]
+}
+
+input yahoo630 {
+  taste7e0: [whose864!]
+  henceb58: blank1b3
+}
+
+interface zowiea36 {
+  midst81a: ID!
+  burstc92: afore9b6
+}
+
+enum afore9b6 {
+  purse812
+  hence8e6
+  daily25e
+}
+
+enum whose864 {
+  zowie1d8
+  since133
+}
+
+input blank1b3 {
+  abovefa4: Boolean
+  sadly4ec: [String!]
+  beast91f: String
+  craneec2: yahooabf
+  shawl07c: yahoocbb
+}
+
+type afterb5b implements zowiea36 {
+  midst81a: ID!
+  burstc92: afore9b6
+  shyly059: String
+  small71a: String
+}
+
+input yahooabf {
+  small71a: String
+}
+
+type sinced79 implements zowiea36 @key(fields: "midst81a abovefa4 aside2ed circad7b") @extends {
+  midst81a: ID! @external
+  burstc92: afore9b6 @external
+  abovefa4: Boolean @external
+  aside2ed: String @external
+  circad7b: String @external
+}
+
+input yahoocbb {
+  aside2ed: String
+  circad7b: String
+}
+
+enum grown4c3 {
+  zowie1d8
+}
+
+type glory99e implements moulte83 @key(fields: "midst81a") {
+  midst81a: ID!
+  pandaee7: Boolean
+  afterec9: String
+}
+
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  regal334(worth668: circa787): [moulte83!]
+}
+
+interface moulte83 {
+  midst81a: ID!
+  pandaee7: Boolean
+}
+
+input circa787 {
+  taste7e0: [grown4c3!]
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

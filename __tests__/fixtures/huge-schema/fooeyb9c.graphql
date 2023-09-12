@@ -1,0 +1,49 @@
+type round2e8 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type punch8ce @key(fields: "noisy502 { midst81a } troll394 { midst81a }") @extends {
+  troll394: round2e8! @external
+  noisy502: which577! @external
+  yahoo34f: ID @external
+  afore466: which88d @requires(fields: "yahoo34f")
+}
+
+type which88d {
+  hencec43(midsta2d: Int): [yahoodd5!]!
+  yowza281: [bossy20c!]!
+}
+
+type yahoodd5 {
+  drool984: String!
+  yowza880: String!
+}
+
+type bossy20c {
+  madlyd77: while018
+  fooey9e9: until381
+  chiefcf5: String!
+}
+
+enum until381 {
+  which6d3
+  abovebdf
+  grain079
+}
+
+enum while018 {
+  murky41c
+  zowie9d2
+  often010
+  fooeyb98
+  yahooe32
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

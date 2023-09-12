@@ -1,0 +1,39 @@
+type smell938 @key(fields: "scary40c") @extends {
+  scary40c: ID @external
+}
+
+type times7ac {
+  tense414: smell938
+  above032: String!
+  fresh597: String!
+  scorn513: String!
+}
+
+input daily384 {
+  wetly8f9: String!
+  above032: String!
+  fresh597: String!
+}
+
+type since89c {
+  where1e3: times7ac
+}
+
+input igloo84b {
+  scorn513: String!
+  above032: String!
+  fresh597: String!
+}
+
+type funnye97 {
+  where1e3: times7ac
+}
+
+type Mutation {
+  zowie630(worth668: igloo84b!): funnye97
+  zowie1c5(worth668: daily384!): since89c
+}
+
+type Query {
+  where1e3(scorn513: String!, fresh597: String!, above032: String!): [times7ac!]!
+}

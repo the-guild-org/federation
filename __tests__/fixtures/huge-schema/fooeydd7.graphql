@@ -1,0 +1,38 @@
+type reignb20 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+}
+
+type zowieb68 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+}
+
+scalar _FieldSet
+
+directive @key(fields: _FieldSet!) repeatable on OBJECT | INTERFACE
+
+type since9a4 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+}
+
+type rough4f1 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+}
+
+type Query {
+  badlyd23: since9a4
+  pilotcb1: reignb20
+}
+
+type Mutation {
+  badlyd23: rough4f1
+  pilotcb1: zowieb68
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

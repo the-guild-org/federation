@@ -1,0 +1,30 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+type which577 implements oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  sprayf60: afterb8e @shareable
+}
+
+interface afterb8e {
+  midst81a: ID!
+  mango962: which577!
+}
+
+type dramacc4 implements afterb8e @key(fields: "midst81a") {
+  midst81a: ID!
+  mango962: which577!
+}
+
+type dailyad3 implements afterb8e @key(fields: "midst81a") {
+  midst81a: ID!
+  mango962: which577!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

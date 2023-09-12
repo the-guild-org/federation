@@ -1,0 +1,436 @@
+type zowie365 implements shyly005 & circa10e & fooey15a & oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  rabbi80f: chante1e
+  sadly62f: neveref2
+  alpha143: aside48c
+  wetlyeca: yahoo83d
+  prowl398: lever171
+  floora99: rough80b!
+}
+
+input dailyc45 {
+  equal27a: String!
+  while5d1: String!
+  whelp972: ID!
+  floora99: rough80b!
+  minus147: happy2a6!
+}
+
+input while8f0 {
+  nasal85c: ID
+  sadly62f: sadlyf17
+  alpha143: where166
+  wetlyeca: leave688
+  prowl398: larged4c
+  afterec9: String
+  firstd7a: bloop673
+}
+
+input sadlyf17 {
+  whelp972: ID
+  yowza299: String
+  zowie608: String!
+}
+
+input where166 {
+  alpha143: [robotb35!]!
+}
+
+input robotb35 {
+  noisy502: burlyf3c
+  afterfa4: [about37d!]!
+}
+
+input burlyf3c {
+  zowie608: String!
+  yowza299: String
+}
+
+input leave688 {
+  minus147: happy2a6
+}
+
+input larged4c {
+  grout3e3: String
+  yummy209: exact4ee
+}
+
+enum exact4ee {
+  blind63c
+  bathe779
+  timesd6d
+  aboveb2d
+  which7e5
+  belowf83
+  yowza040
+}
+
+input bloop673 {
+  flakyed5: String
+  hence2d7: fully17c
+  fooeya4f: about2e1
+  minusab5: String
+  yummy209: abaft2fd
+}
+
+input about2e1 {
+  reigne5d: [rough80b!]!
+}
+
+enum abaft2fd {
+  whilef34
+  urban2be
+}
+
+input fully17c {
+  kookyce5: ID!
+}
+
+type meccaf10 implements shyly005 & circa10e & great7ba & oddlybcf @key(fields: "midst81a") {
+  midst81a: ID!
+  sadly62f: neveref2
+  alpha143: aside48c
+  wetlyeca: yahoo83d
+  prowl398: lever171
+  rabbi80f: chante1e
+  afterec9: String
+  yahoo43d: Int!
+  firstd7a: minus5bf!
+  badly08c: style60e
+}
+
+type round2e8 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+interface fooey15a {
+  floora99: rough80b!
+}
+
+interface circa10e implements shyly005 {
+  midst81a: ID!
+  sadly62f: neveref2
+  alpha143: aside48c
+  wetlyeca: yahoo83d
+  prowl398: lever171
+  rabbi80f: chante1e
+}
+
+interface shyly005 {
+  midst81a: ID!
+}
+
+interface stale545 implements shyly005 {
+  midst81a: ID!
+}
+
+interface great7ba {
+  midst81a: ID!
+  afterec9: String
+  yahoo43d: Int!
+  firstd7a: minus5bf!
+  badly08c: style60e
+}
+
+extend type Mutation {
+  wheree02(worth668: badly456!): abaft89a
+  glass72b(worth668: mediabcd!): above236
+  fooey65b(worth668: dimly662!): greateba
+  alloy3de(worth668: bloat81b!): whileb2f
+}
+
+type abaft89a {
+  whose253: zowie365
+}
+
+input badly456 {
+  whose253: dailyc45!
+}
+
+input mediabcd {
+  where0cf: while8f0!
+}
+
+type above236 {
+  where0cf: circa10e!
+}
+
+input dimly662 {
+  midst81a: ID!
+  where0cf: while8f0!
+}
+
+type greateba {
+  where0cf: circa10e!
+}
+
+input bloat81b {
+  midst81a: ID!
+}
+
+type whileb2f {
+  where0cf: circa10e!
+}
+
+extend type Query {
+  untile87(worth668: where3cd!): readye53
+  where0cf(midst81a: ID!): harshaac
+}
+
+input where3cd @oneOf {
+  early6de: cloneab9
+  since4a1: dwarfb15
+}
+
+type readye53 {
+  belowe42: [circa10e!]!
+  sadlybf4: [dirty253!]!
+  rusty683: fooey1b7!
+}
+
+type dirty253 {
+  noisy502: circa10e!
+  fooey14d: String!
+}
+
+input above9f6 {
+  minus147: happy2a6!
+  fooey052: Int
+  madly2ba: String
+}
+
+input cloneab9 {
+  whelp972: ID!
+  fooey052: Int
+  madly2ba: String
+}
+
+input dwarfb15 {
+  crime0cd: rough80b!
+  ruddyb66: rough80b!
+  fooey052: Int
+  madly2ba: String
+}
+
+type harshaac {
+  where0cf: circa10e!
+}
+
+directive @oneOf on INPUT_OBJECT
+
+union neveref2 = round2e8 | since46d
+
+type since46d {
+  yowza299: String
+  zowie608: String
+}
+
+type aside48c {
+  noisy2e7: which069!
+}
+
+type which069 {
+  rusty683: fooey1b7!
+  sadlybf4: [yowza837!]!
+}
+
+type yowza837 {
+  noisy502: madly45e!
+  fooey14d: String!
+  afterfa4: [about37d!]!
+}
+
+union madly45e = oddly773
+
+type oddly773 {
+  yowza299: String
+  zowie608: String
+}
+
+enum about37d {
+  fooeya16
+  since716
+}
+
+union chante1e = which577 | worthfef
+
+type worthfef {
+  yowza880: String
+  drool984: String
+}
+
+union lever171 = after644 | crush025 | waist25c | sadly01d | zowie858 | staid5db | minus5c3
+
+type after644 {
+  where46b: punchaa7!
+}
+
+union punchaa7 = needyf13 | zowie9e1
+
+type needyf13 {
+  aware708: unify0b1!
+}
+
+type zowie9e1 {
+  whilea43: String!
+}
+
+type crush025 {
+  frizz87d: unify0b1!
+}
+
+type waist25c {
+  equal27a: String!
+}
+
+type sadly01d {
+  stilla65: aside714
+}
+
+union aside714 = grindd14
+
+type grindd14 {
+  grout3e3: String!
+}
+
+type zowie858 {
+  timesb8a: unify0b1!
+}
+
+type staid5db {
+  where5cc: String!
+}
+
+type minus5c3 {
+  while5d1: String!
+}
+
+type yahoo83d {
+  minus147: cargo201
+}
+
+type cargo201 {
+  yowza6d4: total510
+  rightfc0: leash8f5
+}
+
+type total510 {
+  vapidf6e: ID
+  yowza299: loyal4d0!
+}
+
+type leash8f5 {
+  vapidf6e: ID
+  yowza299: since464!
+}
+
+enum loyal4d0 {
+  until899
+  prizecde
+  phony60d
+  midst001
+  earlya6b
+  untile9a
+  hence0a8
+  refit15c
+  hairy5f9
+  whiled43
+  yahood23
+}
+
+enum since464 {
+  where19e
+  alonge89
+  zowie213
+  pottyf72
+  metro5cd
+  oddly840
+}
+
+input happy2a6 {
+  above9c1: ID
+  buyercda: loyal4d0
+  shiny9d1: ID
+  zowie87f: since464
+}
+
+type minus5bf {
+  rhymedf4: peace062
+  minusab5: yahoo570
+  flakyed5: tract3bf!
+}
+
+union peace062 = snare594 | panice79
+
+type snare594 {
+  reigne5d: [rough80b!]!
+}
+
+type panice79 {
+  kookyce5: ID!
+}
+
+union style60e = debarc3b | strapd6e | fooeye86 | flame3ba | yowza1eb | whichc0b
+
+type debarc3b {
+  pesky68b: rough80b!
+}
+
+type strapd6e {
+  zowie586: rough80b!
+  dread810: rough80b
+}
+
+type fooeye86 {
+  tight31a: rough80b!
+}
+
+type flame3ba {
+  recurc08: rough80b!
+}
+
+type yowza1eb {
+  hencee4b: rough80b!
+}
+
+type whichc0b {
+  lunchebb: rough80b!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
+
+type Mutation
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+type Query
+
+scalar unify0b1
+
+scalar wortha6f
+
+scalar fooeya96
+
+scalar until598
+
+scalar rough80b
+
+scalar yahoo570
+
+scalar tract3bf

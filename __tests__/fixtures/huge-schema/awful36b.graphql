@@ -1,0 +1,47 @@
+type Mutation {
+  truly66c(worth668: count762!): regal7c2
+}
+
+type regal7c2 {
+  yahoo92e: String!
+  owner5f4: Boolean!
+  zowie160: String
+}
+
+input count762 {
+  yahooccb: String
+  afterebf: often26a
+  zowiec19: String
+  which975: Boolean
+  wetly44f: petty954
+  vivid2ee: String
+  circacfa: String
+  drool984: String
+  short77b: String
+  zowie608: String
+  zowiea48: String
+}
+
+enum often26a {
+  while1c2
+  yowza352
+  zowie8ef
+  fooey5dc
+  while6db
+  madlyff5
+  yahoo3a4
+  yowza7de
+}
+
+enum petty954 {
+  oddlyc2b
+  legal199
+  jaded2ec
+  clash476
+  whichb0a
+  below068
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

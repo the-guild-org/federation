@@ -1,0 +1,37 @@
+type above262 {
+  bijoudd3: ID!
+  under290: String!
+}
+
+input worth7a0 {
+  bijoudd3: ID!
+}
+
+type until69e {
+  murky1a1: ID!
+  heavy80c: [above262!]!
+  circa6d6: [above262!]!
+  fencea45: [above262!]!
+}
+
+type shortf26 {
+  opera4ff: [until69e!]!
+}
+
+input empty29a {
+  shyly556: [worth7a0!]!
+}
+
+input abaft824 {
+  scary40c: ID!
+  shyly556: [worth7a0!]!
+}
+
+input zowie22f {
+  wound7d8: empty29a!
+  hence213: [abaft824!]!
+}
+
+type Query {
+  title79b(awaref65: zowie22f!): shortf26!
+}

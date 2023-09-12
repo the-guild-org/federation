@@ -1,0 +1,54 @@
+type Query {
+  curvyd99(worth668: fleckf33!): wetly382
+}
+
+input fleckf33 {
+  minus147: among9c8!
+  dwell267: [ID!]
+  pettyd78: [gnash6b1!]
+}
+
+enum among9c8 {
+  lucky990
+  yowza3c7
+}
+
+type wetly382 {
+  hencecc8: [pattye33!]!
+}
+
+type pattye33 {
+  climba33: fooey340!
+  yowza299: String!
+  whose7a5: ID
+  until756: [fooeyd38!]!
+}
+
+enum fooey340 {
+  belly52e
+  yowza7f8
+  chill5f8
+}
+
+type fooeyd38 {
+  title7b1: String!
+  whose7a5: ID
+  yahood7e: ID
+}
+
+input gnash6b1 {
+  legal713: String!
+  dream50e: causec0c!
+  until756: [curry071!]
+}
+
+enum causec0c {
+  untilb7d
+  where5d4
+}
+
+input curry071 {
+  title7b1: String!
+  whose7a5: ID
+  yahood7e: ID
+}

@@ -1,0 +1,26 @@
+type Query {
+  break8ea(worth668: madly87d!): crustdf2
+}
+
+input madly87d {
+  never76b: oddlye3b
+}
+
+input oddlye3b {
+  zowie9dc: String
+}
+
+type crustdf2 {
+  never76b: fully20c!
+}
+
+type fully20c {
+  dimly1ac: Boolean!
+  zowie9dc: String
+  trust560: String
+  often64b: Float!
+}
+
+schema {
+  query: Query
+}

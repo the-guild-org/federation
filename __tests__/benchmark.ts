@@ -4,6 +4,7 @@ import {
   assertCompositionSuccess,
   composeServices as guildComposeServices,
 } from '../src/compose.js';
+import { getSubgraphs } from './fixtures/huge-schema/index.js';
 import { graphql } from './utils.js';
 
 const basicServices = [
@@ -44,6 +45,8 @@ const basicServices = [
   },
 ];
 
+const hugeSchema = await getSubgraphs();
+
 group('basic schema', () => {
   bench('apollo', () => {
     assertCompositionSuccess(apolloComposeServices(basicServices));
@@ -51,6 +54,16 @@ group('basic schema', () => {
 
   bench('guild', () => {
     assertCompositionSuccess(guildComposeServices(basicServices));
+  });
+});
+
+group('huge schema', () => {
+  bench('apollo', () => {
+    assertCompositionSuccess(apolloComposeServices(hugeSchema));
+  });
+
+  bench('guild', () => {
+    assertCompositionSuccess(guildComposeServices(hugeSchema));
   });
 });
 

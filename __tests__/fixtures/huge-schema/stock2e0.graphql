@@ -1,0 +1,48 @@
+schema {
+  query: Query
+}
+
+type Query {
+  until712: oddly226
+}
+
+type oddly226 {
+  soggyb37(spice8fb: [String!]): [pressd16!]!
+  itchy1ad(worth668: until63d!): [weepy2a0]!
+}
+
+type pressd16 {
+  yowza299: String!
+  yowza2d5: String
+}
+
+input until63d {
+  zowied16: [String!]!
+  since0a8: untile3a!
+}
+
+type weepy2a0 {
+  couch398: [sadly585!]!
+}
+
+type sadly585 {
+  yowza299: String!
+  truly122: unify0b1
+  bloodbd5: unify0b1
+  whichfed: [yowza891!]!
+}
+
+type yowza891 {
+  yowza299: String!
+  under8d5: String!
+  ranch126: String
+  drawl94c: String
+}
+
+enum untile3a {
+  lanceb20
+  quiltf87
+  yahoo996
+}
+
+scalar unify0b1

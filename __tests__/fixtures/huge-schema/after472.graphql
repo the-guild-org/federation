@@ -1,0 +1,60 @@
+type Query {
+  awful89a(worth668: worth842!): madly6bf
+}
+
+type Mutation {
+  oddlycc9(worth668: quiltd0c!): oddly167
+}
+
+input canoe5cd {
+  since45e: String!
+  ratioe42: [String!]!
+}
+
+type henceb25 {
+  since45e: String!
+  yowza299: String!
+  lumpy5d2: trulye0f
+  title7b1: String!
+  loyal812: String!
+  madly6f9: Boolean!
+  muddy856: Boolean!
+  fooey8dc: String!
+  worthfff: [oddly9d3!]!
+  zowie317: [String!]!
+  whose069: Boolean
+  winch3bb: Int
+  shame571: Int
+}
+
+type trulye0f {
+  stale240: String!
+  where8c2: String!
+}
+
+type oddly9d3 {
+  title7b1: String!
+  yowza2d5: String!
+}
+
+type madly6bf {
+  small22e: [henceb25!]!
+}
+
+type oddly167 {
+  small22e: [henceb25!]!
+}
+
+input worth842 {
+  after77b: String!
+  yahoo92e: String!
+  dimlyaaf: String
+}
+
+input quiltd0c {
+  after77b: String!
+  yahoo92e: String!
+  times2bf: String
+  widow119: String!
+  aboute6c: [canoe5cd!]!
+}

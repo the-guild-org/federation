@@ -1,0 +1,52 @@
+scalar wortha6f
+
+scalar rough80b
+
+type Query {
+  hence59d: trial5c2
+}
+
+type Mutation {
+  coverc7d(worth668: zowie78e!): circab4f
+}
+
+type trial5c2 {
+  yowzabf0: hence658!
+}
+
+enum hence658 {
+  wetly5e9
+  muted7aa
+  untilc41
+  whosed6b
+  clink88a
+  green536
+}
+
+input zowie78e {
+  pulse7cb: rough80b!
+  fooey1b4: wortha6f!
+  widow119: wortha6f!
+  dailyd19: Boolean!
+  neveraf6: Boolean!
+}
+
+type circab4f {
+  yowzabf0: hence001!
+}
+
+type hence001 {
+  where63c: Boolean!
+  hencee81: stale247
+}
+
+enum stale247 {
+  midst0ad
+  untilc41
+  repel969
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

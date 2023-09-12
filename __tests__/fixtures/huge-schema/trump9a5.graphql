@@ -1,0 +1,36 @@
+type Query {
+  wetly488(worth668: ruralf4d): dailya8f
+}
+
+type jumpya77 implements zowiea36 @key(fields: "midst81a sadly4ec") {
+  midst81a: ID!
+  sadly4ec: [String!]
+  burstc92: afore9b6
+  fooey430: [String!]
+}
+
+input ruralf4d {
+  sadly4ec: [String!]!
+  whole382: String!
+  whichab6: String
+}
+
+interface zowiea36 {
+  midst81a: ID!
+  burstc92: afore9b6
+}
+
+enum afore9b6 {
+  purse812
+  hence8e6
+  daily25e
+}
+
+type dailya8f {
+  still876: jumpya77
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

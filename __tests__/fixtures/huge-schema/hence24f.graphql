@@ -1,0 +1,179 @@
+type Query {
+  midst601: under3d0
+}
+
+type under3d0 {
+  badlyd73(
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+    fooey53e: shylye1e
+  ): madly833
+}
+
+type Mutation {
+  alloyab3: coverd45
+}
+
+type coverd45 {
+  supereae(worth668: after778!): yowza5bf
+  circa27e(worth668: faint73b!): heavydbe
+}
+
+interface yowza424 {
+  midst81a: ID!
+  yowza78e: dance440!
+  rabbi80f: dramacc4
+}
+
+type fooeyc69 implements yowza424 {
+  midst81a: ID!
+  yowza78e: dance440!
+  rabbi80f: dramacc4
+  yahoo0a6: String
+}
+
+type round428 implements yowza424 {
+  midst81a: ID!
+  chiefea7: timesabb!
+  yahoo503: Int
+  yowza78e: dance440!
+  yahooa34: blanka08
+  flood0bb: dimlyf7b
+  madlyad1: [faintccf!]!
+  tired9ce: rough80b
+  rabbi80f: dramacc4
+}
+
+type oddly64e implements yowza424 {
+  midst81a: ID!
+  shacke74: dimlyf7b!
+  chiefea7: timesabb
+  shylyf5a: rough80b
+  yowza78e: dance440!
+  width363: Int
+  after63c: Boolean!
+  yowza8b7: since6ce!
+  rabbi80f: dramacc4
+  yahoodda: dimlyf7b
+}
+
+type faintccf {
+  yowza299: String!
+  yowza2d5: String
+}
+
+input shylye1e {
+  after999: [ID!]!
+}
+
+input faint73b {
+  after72f: tense0a9!
+  bagele57: ID!
+}
+
+input beard519 {
+  shacke74: dimlyf7b!
+  chiefea7: timesabb
+  lobby7de: huskyb09!
+}
+
+input after778 @oneOf {
+  minus443: beard519
+  oftenb7d: Boolean
+}
+
+input tense0a9 {
+  shacke74: dimlyf7b
+  chiefea7: timesabb
+  shylyf5a: rough80b
+  width363: Int
+  yowza8b7: whered82!
+  yahoo0a6: String
+}
+
+enum since6ce {
+  wetlydb4
+  fooeyd6b
+  yowzac85
+}
+
+enum whered82 {
+  yahoode8
+  wetlydb4
+  fooeyd6b
+  yowzac85
+}
+
+enum huskyb09 {
+  adepte92
+  fuzzy91e
+  underf79
+}
+
+enum dance440 {
+  hefty23a
+  rounde38
+}
+
+enum blanka08 {
+  dimly030
+  yahoo2a4
+  times43c
+}
+
+type madly833 {
+  sadlybf4: [zowieceb!]!
+  rusty683: fooey1b7!
+  bough1a6: [yowza424!]!
+  abovea30: Int!
+}
+
+type zowieceb {
+  noisy502: yowza424
+  fooey14d: String!
+}
+
+type heavydbe {
+  after0f9: yowza424
+}
+
+union yowza5bf = fooey87c | worth853
+
+type fooey87c {
+  avertac0: yowza424!
+}
+
+type worth853 {
+  regal517: Boolean!
+}
+
+type zowie85a {
+  yeastae4: [timesabb!]!
+}
+
+type dramacc4 @key(fields: "slinkcdd") @extends {
+  slinkcdd: ID @external
+  naive482: yowza424
+}
+
+directive @oneOf on INPUT_OBJECT
+
+scalar dimlyf7b
+
+scalar rough80b
+
+scalar timesabb
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

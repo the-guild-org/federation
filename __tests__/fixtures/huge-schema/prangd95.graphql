@@ -1,0 +1,83 @@
+input since85b {
+  fully27f: String
+  small22e: [haunt51e!]!
+}
+
+type yowza4a9 {
+  about931: decry78c
+  fully27f: String
+}
+
+type decry78c {
+  burly29b: Boolean!
+  worth85b: String
+  daily5d8: String
+  viola589: String
+  sadly461: above3b5
+  total5e6: Boolean!
+  afterec9: String
+  noisy978: Int
+  merry0cf(minusaaa: String): unify0b1
+  midst81a: ID!
+  fresh597: String
+  provebb7: String
+  oddly33e: decry78c
+  yowza299: String
+  price091(madly2ba: String, while53c: String, fooey052: Int, never2e5: Int): hyena34f!
+  small22e(madly2ba: String, while53c: String, fooey052: Int, never2e5: Int): hyena34f!
+    @deprecated(reason: "")
+  hence177: Boolean!
+  shylyf6e: Boolean!
+  vivid71d: String
+  whilee32: String
+  shell7b0: Boolean!
+}
+
+type above3b5 {
+  today571: [String!]!
+  ripene14: String!
+  yowza299: String!
+}
+
+type yahoo635 implements oddlybcf @key(fields: "midst81a") {
+  oddlydb5: String!
+  midst81a: ID!
+}
+
+type hyena34f {
+  sadlybf4: [badly821!]!
+  below597: [yahoo635!]!
+  rusty683: fooey1b7!
+  abovea30: Int!
+  quiet69b: Int!
+}
+
+type badly821 {
+  fooey14d: String!
+  noisy502: yahoo635
+}
+
+input haunt51e {
+  oddlydb5: String!
+}
+
+type Mutation {
+  gravy2c9(worth668: since85b!): yowza4a9
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}
+
+type Query {
+  shylyc50(yahoo651: [String!]!): [decry78c!]
+}
+
+scalar unify0b1

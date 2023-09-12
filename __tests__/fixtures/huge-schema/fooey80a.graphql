@@ -1,0 +1,62 @@
+type Query {
+  tepidd2f(worth668: vivid0a1!): award7e9
+}
+
+input vivid0a1 {
+  times2bf: ID!
+  whose4f1: ID!
+}
+
+type award7e9 {
+  fluid4da: rider6bd
+}
+
+type rider6bd {
+  exultbf7(fooey052: Int, madly2ba: String): sleet0bb
+}
+
+type sleet0bb {
+  sadlybf4: [timesa66!]!
+  rusty683: fooey1b7!
+  yahoobd9: [whose723!]!
+}
+
+type timesa66 {
+  noisy502: whose723
+  fooey14d: String!
+}
+
+type whose723 @key(fields: "midst81a wring55c { midst81a }") @extends {
+  midst81a: ID!
+  wring55c: fooey0da! @external
+  under6b3: [offera3f!]!
+}
+
+type fooey0da @extends {
+  midst81a: ID!
+}
+
+union offera3f = judgef40
+
+type judgef40 {
+  midst81a: ID!
+  point40c: until598
+  yowzaa9e: whosefc7
+}
+
+type whosefc7 {
+  whichbdc: String
+}
+
+scalar until598
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

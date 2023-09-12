@@ -1,0 +1,82 @@
+type Query {
+  blanda64(unban677: ID!): fooey56e
+  afore695(sadly3fe: ID!): alias6e6
+  where489(unban677: ID!, zowie14f: ID!): grill67b
+}
+
+type Mutation {
+  undera32(worth668: growne4e!): shyly5ec
+}
+
+enum amonga65 {
+  madly328
+  tough88e
+}
+
+type fooey56e {
+  thiefe2e: [dimly71d!]!
+  perkyaf5: [dimly71d!]!
+  dailyff4: [knock5ba!]!
+}
+
+type alias6e6 {
+  wheel24a: [after646!]!
+}
+
+type grill67b {
+  where489: Boolean!
+}
+
+type dimly71d {
+  slump373: String!
+  yowza2d5: String!
+  title7b1: String!
+}
+
+type knock5ba {
+  sadly3fe: String!
+  snail999: [dimly71d!]!
+}
+
+input growne4e {
+  unban677: ID!
+  perkyaf5: [abaft3ab!]!
+}
+
+input abaft3ab {
+  slump373: String!
+  yowza2d5: String!
+  circad06: amonga65!
+}
+
+type shyly5ec {
+  still876: Boolean!
+}
+
+type stallb7e {
+  slump373: String!
+  yowza2d5: String!
+}
+
+type after646 {
+  slump373: String!
+  yowza2d5: String!
+  title7b1: String!
+  still876: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+input where645 {
+  times73f: String!
+  hence01b: String!
+}
+
+input aforeae4 {
+  after943: String!
+  chaind08: String!
+  truly17d: String!
+}

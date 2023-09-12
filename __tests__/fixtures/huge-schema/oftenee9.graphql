@@ -1,0 +1,66 @@
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  loosec18: cheekac0
+}
+
+type cheekac0 {
+  alertadd: roundb17
+  unity0e9: [virusd68!]!
+}
+
+type virusd68 {
+  circad13: ID!
+  crook2d2: Boolean!
+  times39e: Boolean!
+  frankbc7: Boolean!
+  theseee1: Boolean!
+  crudef58: Boolean
+}
+
+type Query {
+  pushy651(worth668: until0ac!): fresh98c!
+}
+
+input until0ac {
+  eagerbe3: [fooey24c!]
+  starkbad: [ID!]
+}
+
+input fooey24c {
+  midst81a: ID!
+  covetc9e: String!
+}
+
+type fresh98c {
+  yowzabf0: [pinot35a!]!
+}
+
+type pinot35a {
+  fully54f: oddly06f
+  nasal85c: ID
+  loosec18: cheekac0
+}
+
+type oddly06f {
+  midst81a: ID!
+  covetc9e: String!
+}
+
+type roundb17 {
+  fooey943: fooey51e!
+  waivea30: Boolean!
+  oddly613: Boolean!
+}
+
+enum fooey51e {
+  winch801
+  which2a8
+  until67c
+  rallyccd
+  kookyadb
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

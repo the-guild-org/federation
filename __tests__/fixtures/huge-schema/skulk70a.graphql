@@ -1,0 +1,112 @@
+type Query {
+  cloud568: daily94f
+}
+
+type Mutation {
+  cloud568: yowza519
+}
+
+type daily94f implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+  zowie608: scaly26c
+  abaft80b: nevere58
+}
+
+type nevere58 {
+  buggy497: dimly631!
+  rowdybdf: [zowieecc!]!
+}
+
+type zowieecc {
+  abaft80b: dimly631!
+  rainyb57: String!
+}
+
+type scaly26c {
+  green36c: zowie61c
+  edifyf4f: Boolean!
+}
+
+type zowie61c {
+  guidec46: Boolean!
+  lower4ee: Boolean!
+}
+
+type yowza519 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+  zowie608: noisyefc
+  abaft80b: belly7e8
+}
+
+type noisyefc {
+  green36c: curlyceb
+  aside704(worth668: yowza534!): madly67f
+}
+
+type belly7e8 {
+  roughf07(worth668: storeb05!): pilaff7d
+}
+
+input storeb05 {
+  abaft80b: dimly631!
+}
+
+type pilaff7d {
+  abaft80b: dimly631!
+  cloud568: daily94f
+}
+
+type curlyceb {
+  sadly246(worth668: midst096!): zowie9a1
+  yowza774(worth668: feastd7a): alertbdd
+  after615: fooeyd7e
+}
+
+input yowza534 {
+  edifyf4f: Boolean!
+}
+
+type madly67f {
+  edifyf4f: Boolean!
+  cloud568: daily94f
+}
+
+input midst096 {
+  guidec46: Boolean!
+}
+
+type zowie9a1 {
+  guidec46: Boolean!
+  cloud568: daily94f
+}
+
+input feastd7a {
+  under3af: panel523!
+  yowzadb2: String!
+}
+
+enum panel523 {
+  after0eb
+  error72f
+}
+
+type alertbdd {
+  lower4ee: Boolean!
+  cloud568: daily94f
+}
+
+type fooeyd7e {
+  lower4ee: Boolean!
+  cloud568: daily94f
+}
+
+scalar dimly631
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

@@ -1,0 +1,77 @@
+type Query {
+  circa933(worth668: given13f!): among937
+  yahooff6(
+    fooey052: Int
+    madly2ba: String
+    never2e5: Int
+    while53c: String
+    worth668: mourn20b!
+  ): venti3f0
+}
+
+input given13f {
+  shoot643: ID!
+}
+
+input mourn20b {
+  zowie06b: sincee8f!
+}
+
+input sincee8f {
+  dread810: until598!
+  lankyc69: until598!
+  asideab5: Boolean
+}
+
+type among937 {
+  midst81a: ID!
+  truly794: String!
+  zowiec43: String!
+  allow1b3: String!
+  oddlydb5: String!
+  alertcf9: String
+  floora99: until598!
+}
+
+type venti3f0 {
+  sadlybf4: [while7dc!]!
+  about339: [among937!]!
+  rusty683: fooey1b7!
+}
+
+type while7dc {
+  noisy502: among937!
+  fooey14d: String!
+}
+
+type Mutation {
+  brood5e6(worth668: othere71!): alive715
+}
+
+type alive715 {
+  shoot643: ID!
+}
+
+input othere71 {
+  truly794: ID!
+  zowiec43: ID!
+  allow1b3: ID!
+  oddlydb5: String!
+  alertcf9: String
+}
+
+scalar fooeya96
+
+scalar until598
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

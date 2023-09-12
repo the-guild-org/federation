@@ -1,0 +1,55 @@
+scalar until598
+
+type Query {
+  afterf0f: validfb3
+}
+
+type Mutation {
+  after04c(worth668: yowza8f0!): afore606
+  until3f7: timesdc8
+}
+
+type validfb3 {
+  zowiea18: renew75b!
+}
+
+type renew75b {
+  thosee9e: quellb31
+  robin4e1: which23a
+}
+
+enum quellb31 {
+  clashfdb
+  afterb2e
+}
+
+type which23a {
+  gaffe96c: Boolean
+}
+
+input yowza8f0 {
+  thosee9e: hence86d
+  robin4e1: circaf9d
+}
+
+enum hence86d {
+  clashfdb
+  afterb2e
+}
+
+input circaf9d {
+  gaffe96c: Boolean!
+}
+
+type afore606 {
+  zowiea18: renew75b!
+}
+
+type timesdc8 {
+  madlyca3: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

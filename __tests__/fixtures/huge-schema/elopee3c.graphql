@@ -1,0 +1,7 @@
+type Query {
+  abovebfb(yowza299: String!): above644!
+}
+
+type above644 {
+  zowie160: String!
+}

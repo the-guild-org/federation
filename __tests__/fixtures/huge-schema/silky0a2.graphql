@@ -1,0 +1,78 @@
+type Mutation {
+  oddly921(worth668: timesf93!): roundfe5
+}
+
+input timesf93 {
+  midst81a: yahoo9c8!
+  yahoo314: String
+  wetlybd9: shyly3ed
+  zowie922: Boolean!
+}
+
+input yahoo9c8 {
+  yummy209: String!
+  midst81a: ID!
+}
+
+input shyly3ed {
+  shylyda5: shyly264
+  wherea53: [curvy8a1!]
+  muted84f: [merryd78!]
+}
+
+input curvy8a1 {
+  aside2ed: wortha6f!
+  yahood77: Boolean!
+  neverdc3: String
+  bumpyc9e: String
+  stuff0c8: [ID!]
+}
+
+input zowiea8b {
+  yowza299: String!
+}
+
+input merryd78 {
+  aside2ed: wortha6f!
+  abaft80b: dimly631!
+  yahood77: Boolean!
+  wordy1f1: String
+  fresh097: String
+  afterec9: String
+  baggy45b: String
+  yowzaf62: String
+  super268: zowiea8b
+}
+
+enum shyly264 {
+  zowieedf
+  wetlyaee
+}
+
+type roundfe5 {
+  hence29b: about1e5!
+  scorn513: ID
+  third596: Boolean!
+  zowie439: Boolean!
+  fooeyb47: [fresh5df!]!
+}
+
+type fresh5df {
+  zowie160: String!
+  welly917: String
+  husky52f: String
+}
+
+enum about1e5 {
+  rifle792
+  zowiec7e
+  ratioc64
+  givendd3
+  fluid254
+  crowdf32
+  alive713
+}
+
+scalar wortha6f
+
+scalar dimly631

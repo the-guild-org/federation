@@ -1,0 +1,26 @@
+type Mutation {
+  worth82a(worth668: madly952!): madly7e7
+}
+
+input madly952 {
+  steepcf9: aforea45!
+  towelc06: until598
+  badly7b3: ID!
+  whosed3b: minus34d!
+}
+
+input aforea45 {
+  about13f: String!
+  short97b: String!
+  brief00e: String!
+}
+
+type madly7e7 {
+  yahoo92e: String!
+}
+
+enum minus34d {
+  amberdb5
+}
+
+scalar until598

@@ -1,0 +1,60 @@
+type crowded4 {
+  until923: [often4ae!]
+  throw612: [circa76b!]
+  timese95: [where153!]
+}
+
+type often4ae implements madly3ec {
+  tunicc8f: snipeee9!
+  often9a5: until012!
+}
+
+type circa76b implements madly3ec {
+  tunicc8f: snipeee9!
+  often9a5: until012!
+}
+
+type where153 implements madly3ec {
+  tunicc8f: snipeee9!
+  often9a5: until012!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+type round2e8 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+}
+
+type punch8ce @key(fields: "noisy502 { midst81a } troll394 { midst81a }") @extends {
+  troll394: round2e8! @external
+  noisy502: which577! @external
+  yahoo34f: ID @external
+  smilecdf: crowded4 @requires(fields: "yahoo34f")
+}
+
+interface madly3ec {
+  tunicc8f: snipeee9!
+  often9a5: until012!
+}
+
+enum snipeee9 {
+  which6d3
+  abovebdf
+  grain079
+  kookyadb
+}
+
+type until012 {
+  shyly3a8: String!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}

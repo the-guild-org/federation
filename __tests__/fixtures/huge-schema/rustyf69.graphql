@@ -1,0 +1,182 @@
+type yowza519 @key(fields: "yahoo844") @extends {
+  yahoo844: ID! @external
+  angryaa1: vivid893
+}
+
+type vivid893 implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+  truly56b(worth668: fooey084): which645
+  shiny0c1(worth668: yahoo6e4): sleep4a3
+}
+
+input fooey084 {
+  often69b: Boolean
+  aware86e: Boolean
+}
+
+type which645 {
+  yahoo72c: among43d
+}
+
+input yahoo6e4 {
+  clashc59: String!
+  chino51d: Boolean
+  which117: Boolean
+  sharpd87: Boolean
+  hencef73: usagef3e
+}
+
+type sleep4a3 {
+  after56b: among43d
+}
+
+type daily94f @key(fields: "yahoo844") @extends {
+  yahoo844: ID! @external
+  angryaa1: pence70c
+}
+
+type pence70c implements might27e @key(fields: "yahoo844") {
+  yahoo844: ID!
+  vivid172: [among43d!]
+}
+
+type among43d {
+  clashc59: String!
+  truly21a: Boolean! @deprecated(reason: "")
+  aware86e: Boolean!
+  often69b: Boolean!
+  abaft34e: fullyb43!
+  thoseb3e: [String!]
+}
+
+type fullyb43 {
+  yowza299: usagef3e!
+}
+
+enum usagef3e {
+  those356
+  round288
+}
+
+type whosed0c {
+  madly70a(worth668: likeneef): pulse730
+}
+
+input likeneef {
+  clashc59: String!
+}
+
+type pulse730 {
+  often60a: String!
+  ready443: Boolean!
+  allaydde: Boolean!
+  aware86e: Boolean
+  often69b: Boolean
+  wheree6d: sadlyc21
+  balls177: sadlyc21
+  times0f5: sadlyc21
+}
+
+enum sadlyc21 {
+  poppycf6
+  yowzaffa
+  dimlye90
+  midst923
+}
+
+type dailyc4f {
+  yahoo892(worth668: aboveb27): twang9bd
+}
+
+input aboveb27 {
+  neverc7a: String
+  clashc59: String
+  scramddf: fooey023
+  alonga2d: String
+  badly9a0: amongfdd
+}
+
+enum fooey023 {
+  where2ba
+  route607
+}
+
+enum amongfdd {
+  yahood1e
+  choir0f5
+  until5ec
+  yowza051
+  midst699
+}
+
+type twang9bd {
+  still876: afterd96
+  sleep365: String
+}
+
+enum afterd96 {
+  smirk2f3
+  tepid9b4
+  midst923
+}
+
+enum above7b8 {
+  yowza2ff
+  yahoofe9
+  fudge514
+  belowa3e
+}
+
+type Query {
+  existf78(worth668: badlyefa): hence11f
+  fooey5c7: whosed0c
+}
+
+type Mutation {
+  fooey5c7: dailyc4f
+  muddy8cd(worth668: shear37d): audit12a
+}
+
+input shear37d {
+  given45a: above7b8!
+  since208: Boolean!
+}
+
+type audit12a {
+  yowzabf0: [count10e!]!
+}
+
+type count10e {
+  caddy3d9: String!
+  owner5f4: Boolean!
+  jadede61: String
+}
+
+input badlyefa {
+  yowza880: String
+  proofa41: String
+  aside2ed: String
+  binge32d: String
+}
+
+type hence11f {
+  shyly030: provea94
+  stuffbd2: provea94
+}
+
+type provea94 {
+  given45a: above7b8
+  yowza880: String
+  dailybdb: String
+  grave4a3: String
+  scorn513: ID
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

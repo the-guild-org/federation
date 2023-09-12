@@ -1,0 +1,13 @@
+type madly58b implements might27e @key(fields: "yahoo844") @extends {
+  yahoo844: ID! @external
+  court492: String!
+}
+
+type dimly676 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  misty59e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

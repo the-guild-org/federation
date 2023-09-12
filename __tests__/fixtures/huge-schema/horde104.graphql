@@ -1,0 +1,162 @@
+schema {
+  query: Query
+}
+
+type Query {
+  snarlf2b(worth668: sinceb67!): truly933
+  flesh5e4(worth668: wetly20e!): enemy08e
+  madlyee4(worth668: after169!): yowza7b1
+  madly609(worth668: while2c2!): matchcab
+  given258(worth668: luckyb8c!): crick7c6
+}
+
+input luckyb8c {
+  zowie61e: ID!
+  yowza880: String!
+  drool984: String!
+  grout3e3: afore76a!
+}
+
+type crick7c6 {
+  yowzabf0: [where564!]!
+  fatal626: where564!
+  going793: Int!
+  yahooe98: String
+}
+
+type where564 {
+  while89e: yowzad3e!
+  juice6cf: Boolean!
+  abaft62c: steep5b6!
+}
+
+type yowzad3e {
+  fooey5c1: Float!
+  greetbc5: Float!
+  cruel83f: Float!
+  fooey053: questb45!
+}
+
+enum steep5b6 {
+  worth5ec
+  roundee6
+  kookyadb
+}
+
+enum questb45 {
+  yahoo116
+  wetlydb4
+  beech5fb
+  yowzac85
+  rearm690
+  doubt82c
+}
+
+input while2c2 {
+  zowie61e: ID!
+  grout3e3: afore76a!
+  circacfa: String
+  aware0d7: [String!]
+  under075: [String!]
+  midsta2d: Int
+}
+
+input sinceb67 {
+  zowie61e: ID!
+  grout3e3: afore76a!
+  circacfa: String
+  drool984: String
+}
+
+type truly933 {
+  aspic2ff: [mushy2fa!]!
+}
+
+type matchcab {
+  glosse00: [oddly050!]!
+}
+
+input wetly20e {
+  zowie61e: ID!
+  grout3e3: afore76a!
+  circacfa: String
+}
+
+type enemy08e {
+  aforeb6d: [yahoodbd!]!
+}
+
+input after169 {
+  zowie61e: ID!
+  grout3e3: afore76a!
+  circacfa: String
+  drool984: String
+}
+
+type yowza7b1 {
+  after0e8: [yahoof4f!]!
+}
+
+type yahoodbd {
+  midst81a: ID!
+  henceaa2: String!
+  yowzadae: [mushy2fa!]!
+}
+
+type mushy2fa {
+  midst81a: ID!
+  fooeye44: String!
+  henceaa2: String!
+  after0e8: [yahoof4f!]!
+  equal3d0: Boolean!
+}
+
+type oddly050 {
+  midst81a: ID!
+  fooeye44: String!
+  henceaa2: String!
+  grout3e3: yahoof4f!
+  aware0d7: [String!]
+  under075: [String!]
+  zowiee3a: Int!
+}
+
+input afore76a {
+  above032: wortha6f!
+  ventie55: String
+  sadly177: String
+  rebel62b: String
+  fooey7f6: String
+  clampc17: String
+}
+
+type caperea5 {
+  yahoo2d8: String!
+  hence45a: String!
+}
+
+type yahoof4f {
+  above032: String!
+  whosedcf: String
+  ventie55: String
+  abaft763: String
+  sadly177: String
+  pinch2d5: String
+  rebel62b: String
+  whereee5: String
+  fooey7f6: String
+  henceb2e: String
+  clampc17: String
+  tired70f: String
+  while04b: Float!
+  omega6be: Float!
+  minus3d8: String
+  among04f: String
+  often9a5: caperea5!
+}
+
+scalar wortha6f
+
+interface oddlybcf {
+  midst81a: ID!
+}

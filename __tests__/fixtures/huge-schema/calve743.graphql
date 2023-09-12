@@ -1,0 +1,27 @@
+schema {
+  query: Query
+}
+
+type Query {
+  daily340(worth668: about985): whereb72
+}
+
+input about985 {
+  whose803: ID
+}
+
+type whereb72 {
+  shyly70a: [yowza868!]!
+}
+
+type yowza868 @key(fields: "scary40c") {
+  scary40c: ID!
+  yowza299: String!
+  dailyfbf: String!
+  freshf07: Boolean!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}

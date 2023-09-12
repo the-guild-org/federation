@@ -1,0 +1,34 @@
+schema {
+  query: Query
+}
+
+type Query @extends {
+  worth032: String
+}
+
+type dimly214 {
+  chiefcf5: String!
+  yahooc5b: String!
+}
+
+type untilb36 @extends {
+  while871: String! @external
+  pastaa2e: [String!]! @external
+}
+
+type alongc78 @extends {
+  chiefcf5: String! @external
+}
+
+type hence9b2 @key(fields: "scary40c") @extends {
+  scary40c: ID! @external
+  afterec9: alongc78! @external
+}
+
+type baggy033 @key(fields: "badly7b3") @extends {
+  badly7b3: ID! @external
+  wetlyeca: untilb36! @external
+  rabbi80f: hence9b2! @external
+  shyly3a8(zowie3fb: Boolean!): dimly214
+    @requires(fields: "wetlyeca { while871 pastaa2e } rabbi80f { afterec9 { chiefcf5 } }")
+}

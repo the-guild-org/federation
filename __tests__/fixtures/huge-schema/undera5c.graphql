@@ -1,0 +1,182 @@
+scalar rough80b
+
+type Query {
+  yahoob68(midst81a: ID!): whiff976
+  emailf7f(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): sadlyeb9
+  coacheda(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): asidec7a
+  total574(worth668: fully0b8): blend498
+}
+
+type Mutation {
+  fullyc6f(worth668: rigid59f!): midstfac
+  where6be(worth668: wetly509!): fooeya63
+  which113(worth668: tastyf2b!): worth537
+  yahoo5a3(worth668: abaft49d!): regalaab
+  afore5e9(worth668: clear817!): since25d
+  blend22e(worth668: neverdd1!): unityea9
+  beach467(worth668: under09e!): split0a2
+}
+
+type dimlydd7 implements oddlybcf & jumpy31d @key(fields: "midst81a") {
+  midst81a: ID!
+  psych0ae: ID!
+  yummy209: timesb28!
+  yowza299: String
+  pulse7cb: rough80b!
+  fullyccd: rough80b!
+  cycle7cb: Boolean!
+  shyly09a(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): asidec7a
+}
+
+enum timesb28 {
+  ravel97b
+  yahoocae
+}
+
+type sadlyeb9 {
+  midst81a: ID!
+  sadlybf4: [yahoo7c2!]!
+  rusty683: fooey1b7!
+  emailf7f: [dimlydd7!]!
+  abovea30: Int!
+}
+
+type yahoo7c2 {
+  noisy502: dimlydd7
+  fooey14d: String!
+}
+
+type whiff976 {
+  yahoob68: dimlydd7
+}
+
+input rigid59f {
+  yowza299: String
+  starkbad: [ID!]
+  cycle7cb: Boolean
+}
+
+type midstfac {
+  yahoob68: dimlydd7!
+}
+
+input wetly509 {
+  midst81a: ID!
+}
+
+type fooeya63 {
+  midst81a: ID!
+}
+
+input tastyf2b {
+  midst81a: ID!
+  yowza299: String
+}
+
+type worth537 {
+  midst81a: ID!
+  yowza299: String
+}
+
+type noisy47c {
+  where28f(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): sadlyeb9
+  sadly32b: Boolean
+}
+
+type which577 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  tummydd8: noisy47c
+}
+
+type asidec7a implements lanky8a5 {
+  sadlybf4: [boostdf2!]!
+  rusty683: fooey1b7!
+  weirdc41: [which577!]!
+  abovea30: Int!
+}
+
+type boostdf2 implements crime147 {
+  noisy502: which577
+  whichab6: Int! @deprecated
+  fooey14d: String!
+}
+
+interface jumpy31d {
+  midst81a: ID!
+  shyly09a(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): lanky8a5
+}
+
+interface lanky8a5 {
+  sadlybf4: [crime147!]!
+  rusty683: fooey1b7!
+  weirdc41: [which577!]!
+  abovea30: Int!
+}
+
+interface crime147 {
+  noisy502: which577
+  fooey14d: String!
+}
+
+input abaft49d {
+  midst81a: ID!
+  starkbad: [ID!]!
+}
+
+type regalaab {
+  yahoob68: dimlydd7!
+}
+
+input clear817 {
+  midst81a: ID!
+  starkbad: [ID!]!
+}
+
+type since25d {
+  yahoob68: dimlydd7!
+}
+
+input neverdd1 {
+  starkbad: [ID!]!
+}
+
+type unityea9 {
+  minusdde(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): asidec7a
+}
+
+input under09e {
+  starkbad: [ID!]!
+}
+
+type split0a2 {
+  minusdde(fooey052: Int, madly2ba: String, never2e5: Int, while53c: String): asidec7a
+}
+
+input fully0b8 {
+  ruddye6f: [timesb28!]!
+}
+
+type wetlyc0b {
+  cameo936: ID!
+  pricea16: timesb28!
+}
+
+type blend498 {
+  emailf7f: [wetlyc0b!]!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface oddlybcf {
+  midst81a: ID!
+}
+
+type fooey1b7 {
+  alongd72: String
+  rapid0c3: Boolean!
+  circa33d: Boolean!
+  oddlyf24: String
+}

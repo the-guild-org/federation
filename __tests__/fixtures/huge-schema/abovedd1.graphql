@@ -1,0 +1,18 @@
+type state2c1 implements might27e @key(fields: "yahoo844") @extends {
+  yahoo844: ID! @external
+  court492: String!
+}
+
+type abovee05 @key(fields: "midst81a") @extends {
+  midst81a: ID! @external
+  misty59e: [String!]!
+}
+
+input yowza01c {
+  times73f: String!
+  yahoo05e: [String!]!
+}
+
+interface might27e {
+  yahoo844: ID!
+}

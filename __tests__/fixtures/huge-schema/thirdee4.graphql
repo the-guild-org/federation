@@ -1,0 +1,31 @@
+schema {
+  query: Query
+}
+
+type Query @extends {
+  minus122: String
+}
+
+type wetly0bd @key(fields: "scary40c") @extends {
+  scary40c: ID @external
+  belowbc2(
+    trulya99: wrest6c7!
+    mocha0e9: String
+    briske76: String
+    larch084: Boolean
+    discoc0e: String
+    which319: String
+    widow119: String
+    whereb42: String
+  ): brush351
+}
+
+enum wrest6c7 {
+  tough88e
+  until093
+}
+
+type brush351 {
+  quake984: String!
+  miter03b: String!
+}
