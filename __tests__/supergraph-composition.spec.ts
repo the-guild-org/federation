@@ -459,7 +459,7 @@ testImplementations(api => {
     assertCompositionSuccess(result);
   });
 
-  test.only('validate fixtures/dgs', async () => {
+  test('validate fixtures/dgs', async () => {
     if (api.library === 'apollo') {
       return;
     }
