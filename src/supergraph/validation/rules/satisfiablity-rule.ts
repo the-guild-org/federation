@@ -7,9 +7,11 @@ import {
   ListValueNode,
   OperationTypeNode,
   print,
+  SelectionSetNode,
   specifiedScalarTypes,
   ValueNode,
 } from 'graphql';
+import { parseFields } from '../../../subgraph/helpers.js';
 import { Key, ObjectType, TypeKind } from '../../../subgraph/state.js';
 import { DepGraph } from '../../../utils/dependency-graph.js';
 import { isDefined } from '../../../utils/helpers.js';
@@ -1197,4 +1199,123 @@ function createEmptyValueNode(fullType: string, supergraphState: SupergraphState
 function resolveKeyFields(key: Key): string[] {
   // TODO: support fragments
   return key.fields.replace(/\,/g, '').split(/\s+/g);
+}
+
+// TODO: it should return a list of paths
+// TODO: it should return a list of schema coordinates
+function resolveFieldsFromFieldSet(
+  key: Key,
+  typeName: string,
+  graphId: string,
+  supergraphState: SupergraphState,
+): {
+  paths: Set<string>;
+  coordinates: Set<string>;
+} {
+  const paths = new Set<string>();
+  const coordinates = new Set<string>();
+  const selectionSet = parseFields(key.fields);
+
+  if (!selectionSet) {
+    return {
+      coordinates,
+      paths,
+    };
+  }
+
+  findFieldPathsFromSelectionSet(
+    paths,
+    coordinates,
+    typeName,
+    selectionSet,
+    graphId,
+    typeName,
+    supergraphState,
+  );
+
+  return {
+    coordinates,
+    paths,
+  };
+}
+
+function findFieldPathsFromSelectionSet(
+  fieldPaths: Set<string>,
+  coordinates: Set<string>,
+  typeName: string | string[],
+  selectionSet: SelectionSetNode,
+  currentPath: string,
+  graphId: string,
+  supergraphState: SupergraphState,
+): void {
+  for (const selection of selectionSet.selections) {
+    if (selection.kind === Kind.FIELD) {
+      const innerPath = `${currentPath}.${selection.name.value}`;
+      fieldPaths.add(innerPath);
+
+      if (typeName.length > 0) {
+        for (const t of typeName) {
+          coordinates.add(`${t}.${selection.name.value}`);
+        }
+      } else {
+        coordinates.add(`${typeName}.${selection.name.value}`);
+      }
+
+      if (selection.selectionSet) {
+        // TODO: resolve field type
+        // const outputType = supergraphState.objectTypes.get(typeName as string) ?
+        const types = (Array.isArray(typeName) ? typeName : [typeName]).map(tName => {
+          const outputType =
+            supergraphState.objectTypes.get(tName) ?? supergraphState.interfaceTypes.get(tName);
+
+          if (!outputType) {
+            throw new Error(`Type "${tName}" is not defined.`);
+          }
+
+          return outputType;
+        });
+
+        const typesWithField = types.filter(t => t.fields.has(selection.name.value));
+
+        if (typesWithField.length === 0) {
+          throw new Error(
+            `Type "${typeName.toString()}" does not have field "${selection.name.value}".`,
+          );
+        }
+
+        const outputTypes = typesWithField.map(t =>
+          stripTypeModifiers(t.fields.get(selection.name.value)!.type),
+        );
+
+        findFieldPathsFromSelectionSet(
+          fieldPaths,
+          coordinates,
+          outputTypes,
+          selection.selectionSet,
+          innerPath,
+          graphId,
+          supergraphState,
+        );
+      }
+    } else if (selection.kind === Kind.INLINE_FRAGMENT) {
+      if (!selection.typeCondition) {
+        throw new Error(`Inline fragment without type condition is not supported.`);
+      }
+
+      // TODO: if `User` is the only possible type, we could use `me.id` instead. For now it's fine. We will improve it later if needed.
+
+      // Use `me.(User).id` when `id` is defined in `... on User` inline fragment.
+      findFieldPathsFromSelectionSet(
+        fieldPaths,
+        coordinates,
+        selection.typeCondition.name.value,
+        selection.selectionSet,
+        `${currentPath}.(${selection.typeCondition.name.value})`,
+        graphId,
+        supergraphState,
+      );
+    } else {
+      throw new Error(`Fragment spread is not supported.`);
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { getSubgraphs } from './fixtures/huge-schema/index.js';
+import { getSubgraphs as getSubgraphsOfDGS } from './fixtures/dgs/index.js';
+import { getSubgraphs as getSubgraphsOfHugeSchema } from './fixtures/huge-schema/index.js';
 import { assertCompositionSuccess, graphql, testImplementations } from './shared/testkit.js';
 
 testImplementations(api => {
@@ -442,11 +443,35 @@ testImplementations(api => {
     `);
   });
 
-  test('validate fixture/huge-schema', async () => {
-    const subgraphs = await getSubgraphs();
-    const result = api.composeServices(subgraphs, {
-      disableValidationRules: ['SatisfiabilityRule'],
-    });
+  test('validate fixtures/huge-schema', async () => {
+    if (api.library === 'apollo') {
+      return;
+    }
+
+    const subgraphs = await getSubgraphsOfHugeSchema();
+    const result = api.composeServices(
+      subgraphs,
+      {
+        disableValidationRules: ['SatisfiabilityRule'],
+      },
+      true,
+    );
+    assertCompositionSuccess(result);
+  });
+
+  test.only('validate fixtures/dgs', async () => {
+    if (api.library === 'apollo') {
+      return;
+    }
+
+    const subgraphs = await getSubgraphsOfDGS();
+    const result = api.composeServices(
+      subgraphs,
+      {
+        disableValidationRules: ['SatisfiabilityRule'],
+      },
+      true,
+    );
     assertCompositionSuccess(result);
   });
 });

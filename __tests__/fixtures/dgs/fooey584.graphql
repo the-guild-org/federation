@@ -1,0 +1,55 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible"]) {
+  query: Query
+}
+
+directive @extends on INTERFACE | OBJECT
+
+directive @external(reason: String) on FIELD_DEFINITION | OBJECT
+
+directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+
+directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+
+directive @provides(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+
+enum whosec2c {
+  first056
+  slicee5f
+}
+
+type plate86e @key(fields: "adornea4") {
+  adornea4: smalld4d!
+}
+
+scalar smalld4d
+
+type Query {
+  fullyd8a(straw54a: Float!): glass5d1!
+  abaft1ac(horse812: String): glass5d1! @deprecated(reason: "")
+  spark92e(afore878: String!): glass5d1!
+  stoved9e(dolor352: String!): glass5d1!
+}
+
+type glass5d1 @key(fields: "dolor352 straw54a") {
+  fooeyfc9: plate86e! @shareable
+  straw54a: String!
+  until22e: String @shareable
+  dolor352: String!
+}
+
+scalar roundd32
+
+scalar federation__FieldSet
+
+scalar link__Import
+
+enum link__Purpose {
+  EXECUTION
+  SECURITY
+}

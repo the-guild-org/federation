@@ -1,0 +1,373 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible", "@override"]) {
+  query: Query
+  mutation: Mutation
+}
+
+directive @extends on INTERFACE | OBJECT
+
+directive @external(reason: String) on FIELD_DEFINITION | OBJECT
+
+directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+
+directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+
+directive @override(from: String!) on FIELD_DEFINITION
+
+directive @provides(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
+
+directive @shareable on FIELD_DEFINITION | OBJECT
+
+directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+
+type untilba2 @extends @key(fields: "metal6ef { fooey29e trail84e adornea4 } until877 oftend70 where5b0 truly811 sadly185 fooeyc5f") {
+  oftend70: String @external
+  metal6ef: [badlya1f!]! @external
+  where5b0: String @external
+  truly811: String @external
+  until877: Float! @external
+  sadly185: String @external
+  fooeyc5f: Float @external
+}
+
+scalar shyly29e
+
+type worth1a1 @extends @key(fields: "madlybd2") {
+  madlybd2: String @external
+  fooeyfc9: plate86e
+}
+
+enum whosec2c {
+  first056
+  slicee5f
+}
+
+type plate86e @key(fields: "adornea4 creek166 ready859") {
+  adornea4: smalld4d!
+  dwarf084: madly4e3
+  rigida5f(whose5d3: tastyc47): curvecc9
+  along2c9(which541: Boolean!, sally487: String, whose5d3: tastyc47, chief6ff: String, sadly930: Boolean, until877: Int, yahoo609: String, creek166: String!, messy877: madlyd8f, fooeyc5f: Int): curvecc9
+  bruite6b(whose5d3: tastyc47, fooeyc5f: Int, forgeced: madly963!, fullyb31: String!): curvecc9!
+  repay45b: dimlyf57
+  oftenec4(organ346: String!, until22e: String!): click2e7
+  creek166: String
+  ready859: chinoaa2
+}
+
+type yowza033 @key(fields: "adornea4 until4b4 fooey29e trail84e ready859 sincead5 midstc23") {
+  adornea4: smalld4d!
+  fooey29e: String!
+  midstc23: [chinoaa2!]
+  yahoo2b3(whose5d3: tastyc47, fullyb31: String): [curvecc9!]
+  bumpye23(whose5d3: tastyc47, fullyb31: String): yahooa80
+  yowzafb1(whose5d3: tastyc47, fullyb31: String): [yowza033!]
+  until4b4: smalld4d
+  until21b(whose5d3: tastyc47, fullyb31: String): [yowza033!]
+  about3e6(whose5d3: tastyc47, fullyb31: String): [[yowza033!]!]
+  sincead5: chinoaa2
+  anger9f5: [yowza033!]
+  ready859: chinoaa2!
+  trail84e: yowza5b1!
+}
+
+type yahooa80 {
+  yowza2dc: Boolean!
+  doing980: Boolean!
+  thick5ed: Boolean!
+}
+
+enum yowza5b1 {
+  sadlya29
+  dozenc62
+  fight092
+  rowdy287
+  yahooc7a
+  cheapd51
+  among3ab
+  yowza668
+  whose24c
+  yowzab03
+  sensef61
+  until3fa
+  chiefb3d
+  zowie361
+  while769
+  hence04b
+  metro6d8
+  lanai8be
+}
+
+type badlya1f @extends @key(fields: "fooey29e trail84e adornea4") {
+  adornea4: smalld4d! @external
+  fooey29e: String! @external
+  trail84e: String! @external
+}
+
+type query60d {
+  entry2c5: String!
+}
+
+type curvecc9 @key(fields: "adornea4 ready859 sincead5") {
+  yowza2dc: Boolean!
+  itchy8a4: [yowza033!]!
+  spoola62: yowzab51
+  fooeyfc9: plate86e
+  adornea4: smalld4d
+  metal6ef(trail84e: yowza5b1, cheep759: [yowza5b1!]): [yowza033!]! @shareable
+  grafta62: plate86e
+  yowza676: [fibref86!] @deprecated(reason: "")
+  yahoo45c: since841
+  sincead5: chinoaa2
+  ready859: chinoaa2
+  fullyb31: fully354
+}
+
+input unban11a {
+  where3e4: String
+  sadly930: Boolean
+  until877: Int!
+  gussy4f6: [String!]
+  wedge7f4: [String!]
+  yahoo609: String!
+  fooeyb1a: String
+  strutaeb: String!
+  fooeyc5f: String
+  aforedf5: String
+}
+
+scalar smalld4d
+
+input pilotdb4 {
+  yowzae8f: String!
+  oftend70: String
+  where3e4: String
+  where5b0: String!
+  truly811: String!
+  yahoo572: String!
+  until877: Float!
+  gussy4f6: [String!]
+  wedge7f4: [String!]
+  zowiee5f: String @deprecated(reason: "")
+  fooeyb1a: String
+  sadly185: String!
+  strutaeb: String!
+  cheapf08: String!
+  fooeyc5f: Float!
+  aforedf5: String
+}
+
+type madly4e3 @key(fields: "since9b7 { adornea4 creek166 ready859 }") {
+  since9b7: [plate86e!]!
+  glass900: plate86e @shareable
+  oftenec4(organ346: String, until22e: String!): click2e7
+  thick5ed: plate86e @shareable
+}
+
+type fibref86 {
+  after56b: String
+}
+
+enum madlyd8f {
+  whose2aa
+  since128
+  ruddy8e6
+  abovea80
+}
+
+scalar chinoaa2
+
+type fully354 @key(fields: "adornea4 oddly579") {
+  adornea4: smalld4d
+  oddly579: String
+  where46e: String @external
+  occur6da: String
+  throbf08: String @requires(fields: "where46e")
+}
+
+enum tastyc47 {
+  worth375
+  fraudfb8
+  zowie769
+  oddly392
+}
+
+type yahoob6d @extends @key(fields: "madlybd2") {
+  madlybd2: String @external
+  fooeyfc9: plate86e
+}
+
+type whose2eb @key(fields: "since9b7 { adornea4 creek166 ready859 }") {
+  since9b7: [plate86e!]!
+  glass900: plate86e @shareable
+  oftenec4(organ346: String, until22e: String!): click2e7
+  thick5ed: plate86e @shareable
+}
+
+type untilf95 {
+  churn085: madly4e3!
+  untilb37: arrayc4c!
+  glass900: dimlyf57 @shareable
+  troopc57(untilb37: String, shyly5db: silkyf52!): [untilf95!]!
+  shyly5db: silkyf52!
+  wriste37: String!
+  badly79c: [dimlyf57!]!
+}
+
+type Mutation {
+  smiledae: query60d!
+  yowzac84: query60d!
+}
+
+type dimlyf57 @key(fields: "yahoo45c untilb37 { organ346 until22e often162 }") @key(fields: "whose18d") {
+  awake90c: shyly29e!
+  churn085: madly4e3!
+  rigida5f: afterbba!
+  untilb37: arrayc4c!
+  whose18d: smallcd5!
+  yahoo45c: since841!
+  rerun1cb: whereee4!
+}
+
+type afterbba {
+  yahoo45c: since841!
+  daily5ad: [among79f!]!
+  anger9f5: [beach049!]!
+  fullyb31: usual02e!
+}
+
+type until845 {
+  fancy0c2: [which650!]!
+  hatch6d4: [which650!]!
+  fullyb31: usual02e!
+}
+
+scalar smallcd5
+
+type usual02e {
+  oddly579: String!
+  occur6da: String!
+}
+
+type arrayc4c @key(fields: "organ346 until22e often162") {
+  often162: String!
+  organ346: String!
+  until22e: String!
+}
+
+enum silkyf52 {
+  those1ab
+  after6de
+}
+
+scalar since841
+
+type click2e7 {
+  churn085: madly4e3!
+  untilb37: arrayc4c!
+  glass900: dimlyf57 @shareable
+  troopc57(untilb37: String, shyly5db: silkyf52!): [untilf95!]!
+  badly79c: [dimlyf57!]!
+}
+
+type which47c @key(fields: "seize765 whose18d") {
+  seize765: String!
+  fooeyd9f: [hence581!]!
+  whose18d: smallcd5!
+  given37d: Boolean!
+  sadlya5e: [abovefd8!]!
+}
+
+type among79f @key(fields: "seize765 whose18d") {
+  wetlyc96: String!
+  spoola62: until845!
+  seize765: String!
+  fooeyd9f: [hence581!]!
+  whose18d: smallcd5!
+  sadlya5e: [abovefd8!]!
+}
+
+type beach049 @key(fields: "seize765 trail84e yahoo45c") @key(fields: "seize765 trail84e whose18d") {
+  wetlyc96: String!
+  spoola62: until845!
+  seize765: String!
+  whose18d: smallcd5!
+  yahoo45c: since841! @tag(name: "internal")
+  sadlya5e: [abovefd8!]!
+  trail84e: String!
+}
+
+type which650 @key(fields: "seize765 trail84e yahoo45c") {
+  seize765: String!
+  yahoo45c: since841! @tag(name: "internal")
+  trail84e: String!
+}
+
+enum abovefd8 {
+  until57a
+  dimly5b8
+  after0fe
+  fooey069
+  screw0c8
+  bulkyfad
+}
+
+type hence581 @key(fields: "seize765 trail84e") {
+  seize765: String!
+  trail84e: String!
+}
+
+type since9c5 @key(fields: "seize765 trail84e") @key(fields: "seize765 trail84e whose18d") {
+  seize765: String!
+  whose18d: smallcd5!
+  given37d: Boolean!
+  sadlya5e: [abovefd8!]!
+  trail84e: String!
+}
+
+type whereee4 {
+  given0e5: [since9c5!]!
+  fooeyfc9: smalld4d
+  wedge7f4: [which47c!]!
+  hence1ef: [since9c5!]!
+}
+
+type Query {
+  hence908(oftend70: String, organ346: String, whose5d3: tastyc47, where5b0: String, truly811: String, until877: Float!, creek166: String!, sadly185: String, fooeyc5f: Float): untilba2!
+  whose8f8(whose5d3: tastyc47, fullyb31: String): plate86e!
+  shyly130(sally487: String, creek166: String!, messy877: madlyd8f, trulyc40: unban11a!): curvecc9!
+  where3c7(often162: String!, organ346: String!, until22e: String!): madly4e3!
+  dwarf084(organ346: String, creek166: String, until7aa: pilotdb4, ditch5b8: String, fooeyc5f: Int, fully85e: Boolean, while7c7: Int, alert274: Int): madly4e3!
+  freshb8f(fullyb31: String!): dimlyf57
+  cadgea1b(often162: String!, organ346: String!, until22e: String!): click2e7
+  dailycb0(creek166: String!): madly4e3!
+}
+
+type yowzab51 @key(fields: "adornea4") @key(fields: "adornea4 ready859 sincead5") {
+  vital7d7: smalld4d!
+  adornea4: smalld4d!
+  supere4a: yowza033!
+  wetly42e: [yowza033!]
+  yahoo384: [yowza033!]
+  yahoo45c: since841
+  wherefd4: smalld4d!
+  zowie51a: smalld4d!
+  sincead5: chinoaa2
+  ready859: chinoaa2
+}
+
+enum madly963 {
+  giddyf28
+  abhordc1
+}
+
+scalar roundd32
+
+scalar federation__FieldSet
+
+scalar link__Import
+
+enum link__Purpose {
+  EXECUTION
+  SECURITY
+}
