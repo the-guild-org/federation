@@ -1,5 +1,10 @@
 import { expect, test } from 'vitest';
-import { assertCompositionSuccess, createStarsStuff, graphql, testVersions } from '../testkit.js';
+import {
+  assertCompositionSuccess,
+  createStarsStuff,
+  graphql,
+  testVersions,
+} from '../shared/testkit.js';
 
 testVersions((api, version) => {
   test('__typename allowed in @provides', () => {

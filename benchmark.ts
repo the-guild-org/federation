@@ -1,7 +1,7 @@
 import { bench, group, run } from 'mitata';
 import { composeServices as apolloComposeServices } from '@apollo/composition';
 import { getSubgraphs } from './__tests__/fixtures/huge-schema/index.js';
-import { graphql } from './__tests__/utils.js';
+import { graphql } from './__tests__/shared/utils.js';
 import {
   assertCompositionSuccess,
   composeServices as guildComposeServices,

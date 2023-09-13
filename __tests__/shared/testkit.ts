@@ -7,7 +7,7 @@ import {
   compositionHasErrors,
   CompositionResult,
   composeServices as guildComposeServices,
-} from '../src/compose.js';
+} from '../../src/compose.js';
 import { graphql, inspect } from './utils.js';
 
 const missingErrorCodes = [

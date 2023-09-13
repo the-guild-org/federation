@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../testkit.js';
+import { graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('REQUIRED_ARGUMENT_MISSING_IN_SOME_SUBGRAPH', () => {

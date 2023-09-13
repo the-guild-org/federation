@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { assertCompositionSuccess, graphql, testVersions } from '../../testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('MERGED_DIRECTIVE_APPLICATION_ON_EXTERNAL', () => {

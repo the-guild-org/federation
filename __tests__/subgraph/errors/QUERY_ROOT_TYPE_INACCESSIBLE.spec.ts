@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../testkit.js';
+import { graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('QUERY_ROOT_TYPE_INACCESSIBLE', () => {

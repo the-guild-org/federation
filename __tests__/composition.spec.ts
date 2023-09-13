@@ -7,8 +7,8 @@ import {
   assertCompositionFailure,
   assertCompositionSuccess,
   testImplementations,
-} from './testkit.js';
-import { normalizeAst } from './utils.js';
+} from './shared/testkit.js';
+import { normalizeAst } from './shared/utils.js';
 
 expect.addSnapshotSerializer({
   serialize: value => print(normalizeAst(parse(value as string))),

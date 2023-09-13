@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../testkit.js';
+import { graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('TYPE_KIND_MISMATCH', () => {

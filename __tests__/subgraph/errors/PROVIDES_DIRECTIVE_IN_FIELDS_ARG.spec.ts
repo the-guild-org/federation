@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../testkit.js';
+import { graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('PROVIDES_DIRECTIVE_IN_FIELDS_ARG', () => {

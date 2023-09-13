@@ -4,7 +4,7 @@ import {
   assertCompositionSuccess,
   graphql,
   testVersions,
-} from '../testkit.js';
+} from '../shared/testkit.js';
 
 testVersions((api, version) => {
   test('error if directive is defined without overlapping locations across subgraphs and all included in @composeDirective', () => {

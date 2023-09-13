@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { assertCompositionFailure, graphql, testVersions } from '../../testkit.js';
+import { assertCompositionFailure, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INVALID_GRAPHQL - invalid value for fields (input object)', () => {

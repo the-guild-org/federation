@@ -4,7 +4,7 @@ import {
   createStarsStuff,
   graphql,
   testVersions,
-} from '../../testkit.js';
+} from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   describe('@extends', () => {

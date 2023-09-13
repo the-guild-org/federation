@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { ensureCompositionSuccess, graphql, testVersions } from '../../testkit.js';
+import { ensureCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('EXTERNAL_TYPE_MISMATCH', () => {

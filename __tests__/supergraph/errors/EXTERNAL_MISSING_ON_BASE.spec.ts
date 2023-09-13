@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { assertCompositionSuccess, graphql, testVersions } from '../../testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('EXTERNAL_MISSING_ON_BASE', () => {

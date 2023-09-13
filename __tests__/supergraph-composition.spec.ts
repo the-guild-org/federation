@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { getSubgraphs } from './fixtures/huge-schema/index.js';
-import { assertCompositionSuccess, graphql, testImplementations } from './testkit.js';
+import { assertCompositionSuccess, graphql, testImplementations } from './shared/testkit.js';
 
 testImplementations(api => {
   test('composition of basic object types', () => {

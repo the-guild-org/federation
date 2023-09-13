@@ -4,7 +4,7 @@ import {
   assertCompositionSuccess,
   graphql,
   testVersions,
-} from '../testkit.js';
+} from '../shared/testkit.js';
 
 testVersions((api, version) => {
   test('federation v1 directives should be available when schema @link(federation) is NOT provided', () => {
