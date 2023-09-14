@@ -60,7 +60,6 @@ testVersions((api, version) => {
       }),
     );
 
-    // TODO: fix it
     expect(
       api.composeServices([
         {
