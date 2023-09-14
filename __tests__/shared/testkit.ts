@@ -52,7 +52,7 @@ function composeServicesFactory(
     if (compositionHasErrors(result)) {
       if (debug) {
         inspect(result.errors);
-        inspect(result.errors.map(e => e.message).join('\n'));
+        console.log(result.errors.map(e => e.message).join('\n'));
       }
       const codes = result.errors.map(e => e.extensions?.code).filter(Boolean);
       const uniqueCodes = new Set(codes);

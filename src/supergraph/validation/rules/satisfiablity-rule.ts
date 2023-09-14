@@ -12,7 +12,7 @@ import {
   ValueNode,
 } from 'graphql';
 import { parseFields } from '../../../subgraph/helpers.js';
-import { Key, ObjectType, TypeKind } from '../../../subgraph/state.js';
+import { ObjectType, TypeKind } from '../../../subgraph/state.js';
 import { DepGraph } from '../../../utils/dependency-graph.js';
 import { isDefined } from '../../../utils/helpers.js';
 import { isList, isNonNull, stripNonNull, stripTypeModifiers } from '../../../utils/state.js';
@@ -106,15 +106,11 @@ function canGraphMoveToGraph(
       });
   }
 
-  if (nonExternalFieldsOfSourceGraph.length === 0) {
-    return false;
-  }
-
   return sourceGraphKeys.some(sourceGraphKey => {
-    if (sourceGraphKey.resolvable === false) {
-      return false;
-    }
+    // if a subgraph has `resolvable: false` it means that it cannot resolve a reference (it has no __resolveReference resolver)
+    // That's why it's fine to not check if the @key has resolvable: false.
 
+    // Get source key fields
     const sourceKeyFields = resolveFieldsFromFieldSet(
       sourceGraphKey.fields,
       objectTypeState.name,
@@ -122,25 +118,28 @@ function canGraphMoveToGraph(
       supergraphState,
     );
 
-    return targetGraphKeys
-      .filter(k => k.resolvable === true)
-      .some(k => {
-        const targetKeyFields = resolveFieldsFromFieldSet(
-          k.fields,
-          objectTypeState.name,
-          targetGraphId,
-          supergraphState,
-        );
+    return (
+      targetGraphKeys
+        // @key(resolvable: false) means this graph cannot resolve the entity by the key
+        .filter(k => k.resolvable === true)
+        .some(k => {
+          const targetKeyFields = resolveFieldsFromFieldSet(
+            k.fields,
+            objectTypeState.name,
+            targetGraphId,
+            supergraphState,
+          );
 
-        for (const fieldPath of targetKeyFields.paths) {
-          if (!sourceKeyFields.paths.has(fieldPath)) {
-            // Every field of target key fields needs to be in source key fields
-            return false;
+          for (const fieldPath of targetKeyFields.paths) {
+            if (!sourceKeyFields.paths.has(fieldPath)) {
+              // Every field of target key fields needs to be in source key fields
+              return false;
+            }
           }
-        }
 
-        return true;
-      });
+          return true;
+        })
+    );
   });
 }
 
@@ -227,27 +226,29 @@ function canGraphResolveField(
 
   const fieldInGraph = fieldSuperState.byGraph.get(graphId);
 
-  if (fieldInGraph) {
-    return canGraphResolveFieldDirectly(
-      objectTypeSuperState,
-      fieldSuperState,
-      graphId,
-      supergraphState,
-    );
+  if (
+    fieldInGraph &&
+    fieldInGraph.external === false &&
+    canGraphResolveFieldDirectly(objectTypeSuperState, fieldSuperState, graphId, supergraphState)
+  ) {
+    return true;
   }
 
-  const graphsWithField = Array.from(fieldSuperState.byGraph).filter(([g, _]) =>
-    canGraphResolveField(
-      objectTypeSuperState,
-      fieldSuperState,
-      g,
-      supergraphState,
-      movabilityGraph,
-    ),
-  );
+  const graphsWithField = Array.from(fieldSuperState.byGraph).filter(([g, _]) => {
+    if (g === graphId) {
+      return false;
+    }
+
+    const fieldInGraph = fieldSuperState.byGraph.get(g);
+    if (!fieldInGraph || fieldInGraph.external === true) {
+      return false;
+    }
+
+    return true;
+  });
 
   const canMoveToGraphWithField = graphsWithField.some(([g, _]) => {
-    return movabilityGraph.directDependenciesOf(graphId).includes(g);
+    return canGraphMoveToGraphBasedOnMovabilityGraph(movabilityGraph, graphId, g);
   });
 
   return canMoveToGraphWithField;
@@ -679,12 +680,6 @@ export function SatisfiabilityRule(
           ([graphId]) => !fieldState.byGraph.has(graphId),
         );
         const graphsWithField = fieldStateGraphPairs.map(([graphId]) => graphId);
-
-        function log(...args: any[]) {
-          if (objectState.name === 'Queries' && fieldState.name === 'upcomingGames') {
-            console.log(...args);
-          }
-        }
 
         for (const [graphId] of graphsWithoutField) {
           const subgraphState = context.subgraphStates.get(graphId)!;
