@@ -120,6 +120,8 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
           override: field.override,
           provides: field.provides,
           requires: field.requires,
+          provided: field.provided,
+          required: field.required,
           shareable: field.shareable,
           used: field.used,
           usedAsKey,
@@ -231,8 +233,11 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             } else {
               joinFields =
                 graphs.size > 1 && !isDefinedEverywhere
-                  ? fieldInGraphs.map(([graphId]) => ({
+                  ? fieldInGraphs.map(([graphId, meta]) => ({
                       graph: graphId,
+                      provides: differencesBetweenGraphs.provides
+                        ? meta.provides ?? undefined
+                        : undefined,
                     }))
                   : [];
             }
@@ -450,6 +455,8 @@ type FieldStateInGraph = {
   override: string | null;
   provides: string | null;
   requires: string | null;
+  provided: boolean;
+  required: boolean;
   shareable: boolean;
   usedAsKey: boolean;
 };

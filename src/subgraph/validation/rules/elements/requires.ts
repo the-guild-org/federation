@@ -112,6 +112,17 @@ export function RequiresRules(context: SubgraphValidationContext): ASTVisitor {
         context,
         selectionSet,
         typeDefinition: annotatedType,
+        interceptField(info) {
+          if (
+            info.typeDefinition.kind === Kind.OBJECT_TYPE_DEFINITION ||
+            info.typeDefinition.kind === Kind.OBJECT_TYPE_EXTENSION
+          ) {
+            context.stateBuilder.objectType.field.markedAsRequired(
+              info.typeDefinition.name.value,
+              info.fieldName,
+            );
+          }
+        },
         interceptUnknownField(info) {
           isValid = false;
           context.reportError(

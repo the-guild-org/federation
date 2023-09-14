@@ -1,4 +1,18 @@
-schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible"]) {
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: [
+      "@key"
+      "@external"
+      "@provides"
+      "@requires"
+      "@extends"
+      "@shareable"
+      "@tag"
+      "@inaccessible"
+    ]
+  ) {
   query: Query
   mutation: Mutation
 }
@@ -7,9 +21,17 @@ directive @extends on INTERFACE | OBJECT
 
 directive @external(reason: String) on FIELD_DEFINITION | OBJECT
 
-directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+directive @key(
+  fields: federation__FieldSet!
+  resolvable: Boolean = true
+) repeatable on INTERFACE | OBJECT
 
-directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+directive @link(
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+  url: String
+) repeatable on SCHEMA
 
 directive @provides(fields: federation__FieldSet!) on FIELD_DEFINITION
 
@@ -17,7 +39,9 @@ directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
 
 directive @shareable on FIELD_DEFINITION | OBJECT
 
-directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+directive @tag(
+  name: String!
+) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
 
 enum total126 {
   sneak089
@@ -124,6 +148,7 @@ enum whosec2c {
 
 type plate86e @key(fields: "adornea4") {
   adornea4: smalld4d!
+  # if field is used as external but required by other field, it's fine
   windy599: [circadcd!] @external
   error4f1(tweakde2: String!): [hence61a!] @requires(fields: "windy599 { fooey29e }")
 }
@@ -312,7 +337,13 @@ type merry89c {
 }
 
 type Mutation {
-  clothc39(thongf20: plushd39!, force350: String, until877: String, zowiee5f: String, fooeyc5f: String): fooeyee7!
+  clothc39(
+    thongf20: plushd39!
+    force350: String
+    until877: String
+    zowiee5f: String
+    fooeyc5f: String
+  ): fooeyee7!
 }
 
 type which640 @key(fields: "where46e") {

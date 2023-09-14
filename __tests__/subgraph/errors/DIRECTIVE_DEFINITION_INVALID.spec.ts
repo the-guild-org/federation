@@ -1037,44 +1037,43 @@ testVersions((api, version) => {
           {
             name: 'inventory',
             typeDefs: graphql`
-                  extend schema
-                    @link(
-                      url: "https://specs.apollo.dev/federation/${version}"
-                      import: ["@key", "@shareable", "@external", "FieldSet"]
-                    )
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@shareable", "@external", "FieldSet"]
+                )
 
-                  directive @requires(fields: FieldSet!) on FIELD_DEFINITION
-                  scalar FieldSet
+              directive @requires(fields: FieldSet!) on FIELD_DEFINITION
+              scalar FieldSet
 
-                  type Product implements ProductItf @key(fields: "id") {
-                    id: ID!
-                    dimensions: ProductDimension @external
-                    delivery(zip: String): DeliveryEstimates
-                      @requires(fields: "IT DOES NOT EXIST!!!!! ")
-                  }
+              type Product implements ProductItf @key(fields: "id") {
+                id: ID!
+                dimensions: ProductDimension @external
+                delivery(zip: String): DeliveryEstimates @requires(fields: "IT DOES NOT EXIST!!!!! ")
+              }
 
-                  type ProductDimension @shareable {
-                    size: String
-                    weight: Float
-                  }
+              type ProductDimension @shareable {
+                size: String
+                weight: Float
+              }
 
-                  type DeliveryEstimates {
-                    estimatedDelivery: String
-                    fastestDelivery: String
-                  }
+              type DeliveryEstimates {
+                estimatedDelivery: String
+                fastestDelivery: String
+              }
 
-                  interface ProductItf {
-                    id: ID!
-                    dimensions: ProductDimension
-                    delivery(zip: String): DeliveryEstimates
-                  }
+              interface ProductItf {
+                id: ID!
+                dimensions: ProductDimension
+                delivery(zip: String): DeliveryEstimates
+              }
 
-                  enum ShippingClass {
-                    STANDARD
-                    EXPRESS
-                    OVERNIGHT
-                  }
-                `,
+              enum ShippingClass {
+                STANDARD
+                EXPRESS
+                OVERNIGHT
+              }
+            `,
           },
         ]),
       );

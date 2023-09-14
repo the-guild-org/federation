@@ -23,6 +23,7 @@ import type { SupergraphState } from '../../state.js';
 import type { SupergraphValidationContext } from '../validation-context.js';
 
 function canGraphMoveToGraph(
+  supergraphState: SupergraphState,
   objectTypeState: ObjectTypeState,
   sourceGraphId: string,
   targetGraphId: string,
@@ -46,14 +47,63 @@ function canGraphMoveToGraph(
     // if the source type has no keys,
     // we need to check if the fields resolvable by the type
     // can be used to resolve the key fields of the target graph
-
     return targetGraphKeys
       .filter(k => k.resolvable === true)
-      .some(k =>
-        resolveKeyFields(k)
-          // Every field of target key fields needs to be in source object type
-          .every(field => nonExternalFieldsOfSourceGraph.some(f => f.name === field)),
-      );
+      .some(k => {
+        const targetKeyFields = resolveFieldsFromFieldSet(
+          k.fields,
+          objectTypeState.name,
+          targetGraphId,
+          supergraphState,
+        );
+        return Array.from(targetKeyFields.coordinates).every(fieldPath => {
+          const [typeName, fieldName] = fieldPath.split('.');
+
+          if (typeName === objectTypeState.name) {
+            const fieldState = objectTypeState.fields.get(fieldName);
+            if (!fieldState) {
+              throw new Error(`Field "${fieldPath}" not found in object type "${typeName}"`);
+            }
+
+            const fieldStateByGraph = fieldState.byGraph.get(targetGraphId);
+            if (!fieldStateByGraph) {
+              throw new Error(
+                `Field "${fieldPath}" not found in object type "${typeName}" in graph "${targetGraphId}"`,
+              );
+            }
+
+            return fieldStateByGraph.external === false;
+          }
+
+          const currentTypeState =
+            supergraphState.objectTypes.get(typeName) ??
+            supergraphState.interfaceTypes.get(typeName);
+
+          if (!currentTypeState) {
+            throw new Error(`Type "${typeName}" not found`);
+          }
+
+          const fieldState = currentTypeState.fields.get(fieldName);
+
+          if (!fieldState) {
+            throw new Error(`Field "${fieldPath}" not found in object type "${typeName}"`);
+          }
+
+          const fieldStateByGraph = fieldState.byGraph.get(targetGraphId);
+
+          if (!fieldStateByGraph) {
+            throw new Error(
+              `Field "${fieldPath}" not found in object type "${typeName}" in graph "${targetGraphId}"`,
+            );
+          }
+
+          if ('external' in fieldStateByGraph) {
+            return fieldStateByGraph.external === false;
+          }
+
+          return true;
+        });
+      });
   }
 
   if (nonExternalFieldsOfSourceGraph.length === 0) {
@@ -65,15 +115,32 @@ function canGraphMoveToGraph(
       return false;
     }
 
-    const sourceKeyFields = resolveKeyFields(sourceGraphKey);
+    const sourceKeyFields = resolveFieldsFromFieldSet(
+      sourceGraphKey.fields,
+      objectTypeState.name,
+      sourceGraphId,
+      supergraphState,
+    );
 
     return targetGraphKeys
       .filter(k => k.resolvable === true)
-      .some(k =>
-        resolveKeyFields(k)
-          // Every field of target key fields needs to be in source key fields
-          .every(field => sourceKeyFields.includes(field)),
-      );
+      .some(k => {
+        const targetKeyFields = resolveFieldsFromFieldSet(
+          k.fields,
+          objectTypeState.name,
+          targetGraphId,
+          supergraphState,
+        );
+
+        for (const fieldPath of targetKeyFields.paths) {
+          if (!sourceKeyFields.paths.has(fieldPath)) {
+            // Every field of target key fields needs to be in source key fields
+            return false;
+          }
+        }
+
+        return true;
+      });
   });
 }
 
@@ -272,7 +339,7 @@ export function SatisfiabilityRule(
         const otherGraphIds = graphIds.filter(g => g !== sourceGraphId);
 
         for (const destGraphId of otherGraphIds) {
-          if (canGraphMoveToGraph(objectState, sourceGraphId, destGraphId)) {
+          if (canGraphMoveToGraph(supergraphState, objectState, sourceGraphId, destGraphId)) {
             movabilityGraph.addDependency(sourceGraphId, destGraphId);
           }
         }
@@ -405,6 +472,24 @@ export function SatisfiabilityRule(
           }
 
           const fieldStateInGraph = fieldState.byGraph.get(graphId);
+
+          if (fieldStateInGraph?.external === true) {
+            const objectStateInGraph = objectState.byGraph.get(graphId)!;
+            if (objectStateInGraph.extension === true) {
+              // if a field is marked as external but defined in type extension, it's fine
+              continue;
+            }
+
+            // if a field is marked as external but required by some other field, it's fine
+            if (fieldStateInGraph.required) {
+              continue;
+            }
+
+            // if a field is marked as external but provided by some other field, it's fine
+            if (fieldStateInGraph.provided) {
+              continue;
+            }
+          }
 
           const subgraphState = context.subgraphStates.get(graphId)!;
           const schemaDefinitionOfGraph = subgraphState.schema;
@@ -1196,15 +1281,10 @@ function createEmptyValueNode(fullType: string, supergraphState: SupergraphState
   throw new Error(`Type "${fullType}" is not supported.`);
 }
 
-function resolveKeyFields(key: Key): string[] {
-  // TODO: support fragments
-  return key.fields.replace(/\,/g, '').split(/\s+/g);
-}
-
 // TODO: it should return a list of paths
 // TODO: it should return a list of schema coordinates
 function resolveFieldsFromFieldSet(
-  key: Key,
+  fields: string,
   typeName: string,
   graphId: string,
   supergraphState: SupergraphState,
@@ -1214,7 +1294,7 @@ function resolveFieldsFromFieldSet(
 } {
   const paths = new Set<string>();
   const coordinates = new Set<string>();
-  const selectionSet = parseFields(key.fields);
+  const selectionSet = parseFields(fields);
 
   if (!selectionSet) {
     return {
@@ -1228,8 +1308,8 @@ function resolveFieldsFromFieldSet(
     coordinates,
     typeName,
     selectionSet,
-    graphId,
     typeName,
+    graphId,
     supergraphState,
   );
 
@@ -1253,7 +1333,7 @@ function findFieldPathsFromSelectionSet(
       const innerPath = `${currentPath}.${selection.name.value}`;
       fieldPaths.add(innerPath);
 
-      if (typeName.length > 0) {
+      if (Array.isArray(typeName)) {
         for (const t of typeName) {
           coordinates.add(`${t}.${selection.name.value}`);
         }

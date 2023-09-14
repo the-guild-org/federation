@@ -15,7 +15,8 @@ import {
 import { TypeNodeInfo } from '../../graphql/type-node-info.js';
 import { createSpecSchema, FederationVersion } from '../../specifications/federation.js';
 import { LinkImport } from '../../specifications/link.js';
-import type { SubgraphStateBuilder } from '../state.js';
+import { stripTypeModifiers } from '../../utils/state.js';
+import { TypeKind, type SubgraphStateBuilder } from '../state.js';
 
 export type SubgraphValidationContext = ReturnType<typeof createSubgraphValidationContext>;
 export type SimpleValidationContext = ReturnType<typeof createSimpleValidationContext>;
@@ -347,7 +348,7 @@ export function createSubgraphValidationContext(
       markedAsExternal.add(coordinate);
     },
     markAsUsed(
-      reason: 'fields' | '@extends',
+      reason: 'fields' | '@extends' | 'references @shareable',
       kind:
         | Kind.OBJECT_TYPE_DEFINITION
         | Kind.INTERFACE_TYPE_DEFINITION
@@ -370,6 +371,7 @@ export function createSubgraphValidationContext(
           }
         }
       }
+
       markedAsUsed.add(`${typeName}.${fieldName}`);
     },
     markAsKeyField(coordinate: string) {
@@ -395,7 +397,29 @@ export function createSubgraphValidationContext(
         );
       }
 
-      return Array.from(markedAsExternal).filter(c => !markedAsUsed.has(c));
+      const unused = Array.from(markedAsExternal).filter(c => !markedAsUsed.has(c));
+
+      return unused.filter(coordinate => {
+        const [typeName, fieldName] = coordinate.split('.');
+
+        const typeDef = stateBuilder.state.types.get(typeName);
+
+        if (typeDef && typeDef.kind === TypeKind.OBJECT) {
+          const fieldDef = typeDef.fields.get(fieldName);
+
+          if (fieldDef) {
+            const outputTypeName = stripTypeModifiers(fieldDef.type);
+            const outputType = stateBuilder.state.types.get(outputTypeName);
+
+            if (outputType?.kind === TypeKind.OBJECT && outputType.shareable) {
+              // If a field is marked as @external but the output type is @shareable, it should not be marked as unused.
+              return false;
+            }
+          }
+        }
+
+        return true;
+      });
     },
     reportError(error: GraphQLError) {
       reportedErrors.push(error);

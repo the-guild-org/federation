@@ -141,6 +141,8 @@ export interface Field {
   override: string | null;
   provides: string | null;
   requires: string | null;
+  required: boolean;
+  provided: boolean;
   shareable: boolean;
   used: boolean;
   tags: Set<string>;
@@ -1028,6 +1030,12 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
       setRequires(typeName: string, fieldName: string, requires: string) {
         getOrCreateObjectField(state, renameObject, typeName, fieldName).requires = requires;
       },
+      markAsProvided(typeName: string, fieldName: string) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).provided = true;
+      },
+      markedAsRequired(typeName: string, fieldName: string) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).required = true;
+      },
       setShareable(typeName: string, fieldName: string) {
         getOrCreateObjectField(state, renameObject, typeName, fieldName).shareable = true;
       },
@@ -1609,6 +1617,8 @@ function getOrCreateObjectField(
     external: false,
     inaccessible: false,
     used: false,
+    required: false,
+    provided: false,
     override: null,
     provides: null,
     requires: null,
@@ -1647,6 +1657,8 @@ function getOrCreateInterfaceField(
     override: null,
     provides: null,
     requires: null,
+    required: false,
+    provided: false,
     shareable: false,
     tags: new Set(),
     args: new Map(),

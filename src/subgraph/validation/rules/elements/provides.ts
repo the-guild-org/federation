@@ -247,6 +247,16 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
                         interceptedFieldIsPrimaryKeyFromExtension = true;
                       }
                     }
+
+                    if (
+                      info.typeDefinition.kind === Kind.OBJECT_TYPE_DEFINITION ||
+                      info.typeDefinition.kind === Kind.OBJECT_TYPE_EXTENSION
+                    ) {
+                      context.stateBuilder.objectType.field.markAsProvided(
+                        info.typeDefinition.name.value,
+                        info.fieldName,
+                      );
+                    }
                   },
                 });
               }

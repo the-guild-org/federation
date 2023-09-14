@@ -454,23 +454,19 @@ testImplementations(api => {
       {
         disableValidationRules: ['SatisfiabilityRule'],
       },
-      true,
+      // true,
     );
     assertCompositionSuccess(result);
   });
 
   test('validate fixtures/dgs', async () => {
-    if (api.library === 'apollo') {
-      return;
-    }
-
     const subgraphs = await getSubgraphsOfDGS();
     const result = api.composeServices(
       subgraphs,
       {
         disableValidationRules: ['SatisfiabilityRule'],
       },
-      true,
+      // true,
     );
     assertCompositionSuccess(result);
   });
