@@ -68,7 +68,7 @@ testVersions((api, version) => {
           typeDefs: graphql`
             extend schema
               @link(
-                url: "https://specs.apollo.dev/federation/{version}"
+                url: "https://specs.apollo.dev/federation/not-a-version"
                 import: ["@override", "@external", "@provides"]
               )
               @link(url: "https://specs.apollo.dev", import: [{ name: "@key", as: "@renamed" }])
@@ -90,7 +90,7 @@ testVersions((api, version) => {
           typeDefs: graphql`
             extend schema
               @link(
-                url: "https://specs.apollo.dev/federation/{version}"
+                url: "https://specs.apollo.dev/federation/not-a-version"
                 import: [{ name: "@key", as: "@renamed" }]
               )
 
@@ -110,7 +110,7 @@ testVersions((api, version) => {
         errors: expect.arrayContaining([
           expect.objectContaining({
             message: expect.stringContaining(
-              '[billing] Expected a version string (of the form v1.2), got %7Bversion%7D',
+              '[billing] Expected a version string (of the form v1.2), got not-a-version',
             ),
             extensions: expect.objectContaining({
               code: 'INVALID_LINK_IDENTIFIER',
@@ -118,7 +118,7 @@ testVersions((api, version) => {
           }),
           expect.objectContaining({
             message: expect.stringContaining(
-              '[payments] Expected a version string (of the form v1.2), got %7Bversion%7D',
+              '[payments] Expected a version string (of the form v1.2), got not-a-version',
             ),
             extensions: expect.objectContaining({
               code: 'INVALID_LINK_IDENTIFIER',

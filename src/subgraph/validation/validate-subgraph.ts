@@ -316,6 +316,17 @@ function extractLinks(subgraph: { name: string; typeDefs: DocumentNode }) {
 
       identities.add(link.identity);
 
+      if (link.version && !/^v\d+\.\d+/.test(link.version)) {
+        errors.push(
+          new GraphQLError(`Expected a version string (of the form v1.2), got ${link.version}`, {
+            extensions: {
+              code: 'INVALID_LINK_IDENTIFIER',
+            },
+          }),
+        );
+        continue;
+      }
+
       if (!link.name) {
         errors.push(
           new GraphQLError(`Missing path in feature url '${link.identity}'`, {

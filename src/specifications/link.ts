@@ -57,6 +57,7 @@ export function printLink(link: Link): string {
   | https://spec.example.com/a/b/mySchema/v1.0/      | https://spec.example.com/a/b/mySchema/v1.0  | mySchema | v1.0    |
   | https://spec.example.com                         | https://spec.example.com                    | (null)   | (null)  |
   | https://spec.example.com/mySchema/v0.1?q=v#frag  | https://spec.example.com/mySchema/v0.1      | mySchema | v0.1    |
+  | https://spec.example.com/mySchema/not-v          | https://spec.example.com/mySchema/not-v     | mySchema | not-v   |
   | https://spec.example.com/v1.0                    | https://spec.example.com/v1.0               | (null)   | v1.0    |
   | https://spec.example.com/vX                      | https://spec.example.com/vX                 | vX       | (null)  |
 
@@ -73,23 +74,42 @@ export function parseLinkUrl(urlString: string) {
   }
 
   const last = parts[len - 1];
+  const secondLast = parts[len - 2];
+
+  // https://spec.example.com/mySchema/v0.1
+  // https://spec.example.com/mySchema/not-a-version
+  const potentiallyNameAndVersion = typeof secondLast === 'string';
+
+  if (potentiallyNameAndVersion) {
+    return {
+      name: secondLast,
+      version: last,
+      identity:
+        url.origin +
+        '/' +
+        parts
+          .slice(0, len - 2)
+          .concat(secondLast)
+          .join('/'),
+    };
+  }
 
   if (/^v\d+/i.test(last)) {
-    if (len >= 2) {
-      const secondLast = parts[len - 2];
+    // if (len >= 2) {
+    //   const secondLast = parts[len - 2];
 
-      return {
-        name: secondLast,
-        version: last,
-        identity:
-          url.origin +
-          '/' +
-          parts
-            .slice(0, len - 2)
-            .concat(secondLast)
-            .join('/'),
-      };
-    }
+    //   return {
+    //     name: secondLast,
+    //     version: last,
+    //     identity:
+    //       url.origin +
+    //       '/' +
+    //       parts
+    //         .slice(0, len - 2)
+    //         .concat(secondLast)
+    //         .join('/'),
+    //   };
+    // }
     return {
       name: null,
       version: last,
