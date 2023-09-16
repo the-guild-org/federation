@@ -6,13 +6,13 @@ settings:
 
 dependencies:
   constant-case:
-    specifier: 3.0.4
+    specifier: ^3.0.0
     version: 3.0.4
   graphql:
-    specifier: 16.6.0
+    specifier: ^16.0.0
     version: 16.6.0
   json5:
-    specifier: 2.2.3
+    specifier: ^2.2.0
     version: 2.2.3
 
 devDependencies:

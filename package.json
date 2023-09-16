@@ -1,5 +1,5 @@
 {
-  "name": "@the-guild-org/federation-composition",
+  "name": "@theguild/federation-composition",
   "version": "0.0.0-alpha.0",
   "type": "module",
   "description": "",
@@ -9,7 +9,6 @@
     "url": "https://the-guild.dev"
   },
   "license": "MIT",
-  "private": true,
   "packageManager": "pnpm@8.7.4",
   "engines": {
     "node": ">=18",
@@ -47,9 +46,9 @@
     "typecheck": "tsc --noEmit --project tsconfig.build.json"
   },
   "dependencies": {
-    "constant-case": "3.0.4",
-    "graphql": "16.6.0",
-    "json5": "2.2.3"
+    "constant-case": "^3.0.0",
+    "graphql": "^16.0.0",
+    "json5": "^2.2.0"
   },
   "devDependencies": {
     "@apollo/composition": "2.5.4",
