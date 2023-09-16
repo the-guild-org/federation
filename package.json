@@ -45,9 +45,11 @@
     "test": "vitest --config ./vitest.config.js",
     "typecheck": "tsc --noEmit --project tsconfig.build.json"
   },
+  "peerDependencies": {
+    "graphql": "^16.0.0"
+  },
   "dependencies": {
     "constant-case": "^3.0.0",
-    "graphql": "^16.0.0",
     "json5": "^2.2.0"
   },
   "devDependencies": {
@@ -59,6 +61,7 @@
     "@types/node": "20.6.0",
     "@vitest/ui": "0.34.4",
     "bob-the-bundler": "7.0.1",
+    "graphql": "16.8.0",
     "lodash.sortby": "4.7.0",
     "mitata": "0.1.6",
     "prettier": "3.0.3",
