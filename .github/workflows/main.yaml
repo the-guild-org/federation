@@ -6,6 +6,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: setup pnpm
         uses: pnpm/action-setup@v2
@@ -19,11 +21,16 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: typecheck
-        run: pnpm typecheck
+      - name: prepare npm credentials
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> $HOME/.npmrc
 
-      - name: bench
-        run: pnpm bench
-
-      - name: tests
-        run: pnpm test
+      - name: publish stable
+        id: changesets
+        uses: changesets/action@v1.4.5
+        with:
+          publish: pnpm build && changeset publish
+          commit: 'chore(release): update package version'
+          title: 'Upcoming Release Changes'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GUILD_BOT_TOKEN }}
