@@ -118,6 +118,49 @@ function canGraphMoveToGraph(
       supergraphState,
     );
 
+    const hasNonKeyFields = Array.from(objectTypeState.fields).some(([_, fState]) => {
+      const f = fState.byGraph.get(sourceGraphId);
+
+      if (f && f.usedAsKey === false) {
+        return true;
+      }
+
+      return false;
+    });
+
+    // if all fields of the source key are external, and not required or provided, the graph cannot move to another graph
+    if (
+      Array.from(sourceKeyFields.coordinates).every(fieldPath => {
+        const [typeName, fieldName] = fieldPath.split('.');
+        const objectTypeState = supergraphState.objectTypes.get(typeName);
+
+        if (!objectTypeState) {
+          throw new Error(`Type "${typeName}" not found`);
+        }
+
+        const fieldState = objectTypeState.fields.get(fieldName);
+        if (!fieldState) {
+          throw new Error(`Field "${fieldPath}" not found in object type "${typeName}"`);
+        }
+
+        const fieldStateByGraph = fieldState.byGraph.get(sourceGraphId);
+        if (!fieldStateByGraph) {
+          throw new Error(
+            `Field "${fieldPath}" not found in object type "${typeName}" in graph "${sourceGraphId}"`,
+          );
+        }
+
+        return (
+          !hasNonKeyFields &&
+          objectTypeState.byGraph.get(sourceGraphId)!.extension !== true &&
+          fieldStateByGraph.external === true &&
+          fieldStateByGraph.usedAsKey
+        );
+      })
+    ) {
+      return false;
+    }
+
     return (
       targetGraphKeys
         // @key(resolvable: false) means this graph cannot resolve the entity by the key
@@ -465,14 +508,14 @@ export function SatisfiabilityRule(
         // 3. See if they key provided by those graphs can fullfil the key of the original graph.
 
         for (const graphId of objectState.byGraph.keys()) {
+          const fieldStateInGraph = fieldState.byGraph.get(graphId);
+
           // we need to run it for each root type
           if (
             canGraphResolveField(objectState, fieldState, graphId, supergraphState, movabilityGraph)
           ) {
             continue;
           }
-
-          const fieldStateInGraph = fieldState.byGraph.get(graphId);
 
           if (fieldStateInGraph?.external === true) {
             const objectStateInGraph = objectState.byGraph.get(graphId)!;
@@ -548,6 +591,7 @@ export function SatisfiabilityRule(
               Array.from(rootType.fields.keys()),
               objectState.name,
               fieldState.name,
+              graphId,
               dependenciesOfObjectType,
             );
             const reasons: Array<[string, string[]]> = [];
@@ -849,6 +893,7 @@ export function SatisfiabilityRule(
                 rootTypeFields,
                 objectState.name,
                 fieldState.name,
+                graphId,
                 dependenciesOfObjectType,
               );
             }
@@ -957,6 +1002,7 @@ function printExampleQuery(
   rootTypeFieldsToStartWith: string[],
   leafTypeName: string,
   leafFieldName: string,
+  graphId: string,
   typesInBetweenRootAndLeaf: string[] = [],
 ): string | null {
   const rootType = supergraphState.objectTypes.get(rootTypeName)!;
