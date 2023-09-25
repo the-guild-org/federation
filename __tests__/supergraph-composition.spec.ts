@@ -454,7 +454,7 @@ testImplementations(api => {
       {
         disableValidationRules: ['SatisfiabilityRule'],
       },
-      // true,
+      true,
     );
     assertCompositionSuccess(result);
   });
@@ -466,7 +466,7 @@ testImplementations(api => {
       {
         disableValidationRules: ['SatisfiabilityRule'],
       },
-      // true,
+      true,
     );
     assertCompositionSuccess(result);
   });
