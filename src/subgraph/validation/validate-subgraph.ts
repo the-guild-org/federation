@@ -168,7 +168,6 @@ export function validateSubgraph(
           // We should validate its directives and types
           // just like we do with Federation directives and types.
           parse(/* GraphQL */ `
-            scalar Import
             enum Purpose {
               EXECUTION
               SECURITY
