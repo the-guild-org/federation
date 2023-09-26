@@ -23,6 +23,7 @@ import { ExtendsRules } from './rules/elements/extends.js';
 import { ExternalRules } from './rules/elements/external.js';
 import { FieldSetRules } from './rules/elements/field-set.js';
 import { InaccessibleRules } from './rules/elements/inaccessible.js';
+import { InterfaceObjectRules } from './rules/elements/interface-object.js';
 import { KeyRules } from './rules/elements/key.js';
 import { OverrideRules } from './rules/elements/override.js';
 import { ProvidesRules } from './rules/elements/provides.js';
@@ -105,6 +106,7 @@ export function validateSubgraph(
     KnownFederationDirectivesRule,
     FieldSetRules,
     InaccessibleRules,
+    InterfaceObjectRules,
     OverrideRules,
     ExtendsRules,
     QueryRootTypeInaccessibleRule,
