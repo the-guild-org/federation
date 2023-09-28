@@ -7,7 +7,10 @@ import {
   createSubgraphStateBuilder,
   SubgraphStateBuilder,
 } from './subgraph/state.js';
-import { validateSubgraph, validateSubgraphCore } from './subgraph/validation/validate-subgraph.js';
+import {
+  validateSubgraph as internal_validateSubgraph,
+  validateSubgraphCore,
+} from './subgraph/validation/validate-subgraph.js';
 import { createSupergraphStateBuilder } from './supergraph/state.js';
 import { validateSupergraph } from './supergraph/validation/validate-supergraph.js';
 
@@ -105,6 +108,54 @@ function buildGraphList(
   } as const;
 }
 
+export function validateSubgraph(subgraph: { name: string; url?: string; typeDefs: DocumentNode }) {
+  const subgraphs = [subgraph];
+  const graphList = buildGraphList(subgraphs);
+
+  if (!graphList.success) {
+    return graphList.errors;
+  }
+
+  const corePerSubgraph = graphList.graphs.map(subgraph => validateSubgraphCore(subgraph));
+  // Validate the basics of basics before checking subgraphs.
+  const coreErrors = corePerSubgraph.map(core => core.errors ?? []).flat(1);
+
+  // If core-level errors are detected, we skip validation of subgraphs.
+  // We do it because if a core is invalid the subgraph is going to be invalid anyway.
+  // By core, we mean the validation of `@link` and other fundamental logic of Federation v2
+  if (coreErrors.length > 0) {
+    return coreErrors;
+  }
+
+  const detectedFederationSpec = new Map(
+    graphList.graphs.map(graph => [graph.id, detectFederationVersion(graph.typeDefs)] as const),
+  );
+
+  const subgraphStateBuilders = new Map<string, SubgraphStateBuilder>(
+    graphList.graphs.map((graph, i) => [
+      graph.id,
+      createSubgraphStateBuilder(
+        graph,
+        graph.typeDefs,
+        detectedFederationSpec.get(graph.id)!.version,
+        corePerSubgraph[i].links ?? [],
+      ),
+    ]),
+  );
+  // Validate each subgraph
+  const subgraphErrors = graphList.graphs
+    .map(graph =>
+      internal_validateSubgraph(
+        graph,
+        subgraphStateBuilders.get(graph.id)!,
+        detectedFederationSpec.get(graph.id)!,
+      ),
+    )
+    .flat(1);
+
+  return subgraphErrors;
+}
+
 export function validate(
   subgraphs: ReadonlyArray<{ name: string; url?: string; typeDefs: DocumentNode }>,
   __internal?: {
@@ -152,7 +203,7 @@ export function validate(
   // Validate each subgraph
   const subgraphErrors = graphList.graphs
     .map(graph =>
-      validateSubgraph(
+      internal_validateSubgraph(
         graph,
         subgraphStateBuilders.get(graph.id)!,
         detectedFederationSpec.get(graph.id)!,
