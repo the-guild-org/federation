@@ -1,5 +1,12 @@
 # @theguild/federation-composition
 
+## 0.1.0
+
+### Minor Changes
+
+- [`8574d45`](https://github.com/the-guild-org/federation/commit/8574d455c9a5cc03190d12191c1b0a7ae29f85be)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Release v0.1.0
+
 ## 0.0.0
 
 ### Minor Changes
