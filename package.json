@@ -2,7 +2,7 @@
   "name": "@theguild/federation-composition",
   "version": "0.0.0-alpha.0",
   "type": "module",
-  "description": "",
+  "description": "Open Source Composition library for Apollo Federation",
   "author": {
     "email": "contact@the-guild.dev",
     "name": "The Guild",
@@ -37,7 +37,11 @@
   "files": [
     "dist"
   ],
-  "keywords": [],
+  "keywords": [
+    "graphql",
+    "federation",
+    "graphql-federation"
+  ],
   "scripts": {
     "bench": "tsx ./benchmark.ts",
     "build": "rimraf dist && bob check && bob build && rimraf dist/README.md",
