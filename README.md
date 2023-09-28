@@ -117,5 +117,4 @@ pnpm test
 - [ ] `SATISFIABILITY_ERROR` - @provides?
 - [ ] more accurate key fields comparison (I did string ≠ string but we need to make it better)
 - [ ] support `@interfaceObject`
-- [x] support `@key(resolvable: false)`
 - [ ] support `[String!]!` and `[String!]` comparison, not only `String!` vs `String`
