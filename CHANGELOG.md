@@ -1,5 +1,13 @@
 # @theguild/federation-composition
 
+## 0.1.1
+
+### Patch Changes
+
+- [#12](https://github.com/the-guild-org/federation/pull/12)
+  [`75d2117`](https://github.com/the-guild-org/federation/commit/75d2117dd6e5864888ed6c336aec1a334902c845)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Add repository to package.json
+
 ## 0.1.0
 
 ### Minor Changes
