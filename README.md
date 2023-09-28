@@ -1,6 +1,77 @@
 # Federation Composition
 
-Supports all Federation versions prior to v2.4.0.
+Supports all Federation versions prior to v2.4.0. Drop-in replacement for `@apollo/composition`.
+
+🚧 Work in progress, so please check [TODOs](#todos).
+
+## Comparison with `@apollo/composition`
+
+- Open Source (MIT License)
+- identical API
+- same set of validation rules and exact same error messages
+- produces Supergraph SDL (can be used with Apollo Router and every tool that supports Supergraph
+  SDL)
+- does not support Hints
+
+## Installation
+
+```bash
+# NPM
+npm install @theguild/federation-composition
+# PNPM
+pnpm add @theguild/federation-composition
+# Yarn
+yarn add @theguild/federation-composition
+```
+
+## Usage
+
+```ts
+import { parse } from 'graphql'
+import { composeServices, compositionHasErrors } from '@theguild/federation-composition'
+
+const result = composeServices([
+  {
+    name: 'users',
+    typeDefs: parse(/* GraphQL */ `
+      extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+      type User @key(fields: "id") {
+        id: ID!
+        name: String!
+      }
+
+      type Query {
+        users: [User]
+      }
+    `)
+  },
+  {
+    name: 'comments',
+    typeDefs: parse(/* GraphQL */ `
+      extend schema
+        @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@external"])
+
+      extend type User @key(fields: "id") {
+        id: ID! @external
+        comments: [Comment]
+      }
+
+      type Comment {
+        id: ID!
+        text: String!
+        author: User!
+      }
+    `)
+  }
+])
+
+if (compositionHasErrors(result)) {
+  console.error(result.errors)
+} else {
+  console.log(result.supergraphSdl)
+}
+```
 
 ## Contributing
 
@@ -26,7 +97,7 @@ pnpm test
 - Look for `skipIf` or `skip` in the tests.
 - Refactor code (piece by piece) if you feel like it.
 
-## Supergraph Composition
+## Supergraph SDL Composition
 
 ✅ Done
 
@@ -36,61 +107,64 @@ pnpm test
 
 ### Validation rules
 
-- [x] `NO_QUERIES`
-- [x] `TYPE_KIND_MISMATCH`
-- [x] `EXTENSION_WITH_NO_BASE`
-- [x] `FIELD_TYPE_MISMATCH`
-- [x] `FIELD_ARGUMENT_TYPE_MISMATCH`
-- [x] `EXTERNAL_TYPE_MISMATCH`
-- [x] `ENUM_VALUE_MISMATCH`
-- [x] `EMPTY_MERGED_ENUM_TYPE`
-- [x] `EMPTY_MERGED_INPUT_TYPE`
-- [x] `OVERRIDE_SOURCE_HAS_OVERRIDE`
-- [x] `EXTERNAL_MISSING_ON_BASE`
-- [x] `REQUIRED_ARGUMENT_MISSING_IN_SOME_SUBGRAPH`
-- [x] `REQUIRED_INPUT_FIELD_MISSING_IN_SOME_SUBGRAPH`
-- [x] `EXTERNAL_ARGUMENT_MISSING`
-- [x] `INPUT_FIELD_DEFAULT_MISMATCH`
-- [x] `FIELD_ARGUMENT_DEFAULT_MISMATCH`
-- [x] `DEFAULT_VALUE_USES_INACCESSIBLE`
-- [x] `ONLY_INACCESSIBLE_CHILDREN`
-- [x] `REFERENCED_INACCESSIBLE`
-- [x] `INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE`
-- [x] `INVALID_FIELD_SHARING`
-- [x] `PROVIDES_INVALID_FIELDS_TYPE`
-- [x] `INVALID_GRAPHQL`
-- [x] `OVERRIDE_ON_INTERFACE`
-- [x] `OVERRIDE_FROM_SELF_ERROR`
-- [x] `QUERY_ROOT_TYPE_INACCESSIBLE`
-- [x] `PROVIDES_UNSUPPORTED_ON_INTERFACE`
-- [x] `REQUIRES_UNSUPPORTED_ON_INTERFACE`
-- [x] `KEY_UNSUPPORTED_ON_INTERFACE`
-- [x] `KEY_INVALID_FIELDS_TYPE`
-- [x] `KEY_FIELDS_HAS_ARGS`
-- [x] `KEY_FIELDS_SELECT_INVALID_TYPE`
-- [x] `KEY_INVALID_FIELDS`
-- [x] `REQUIRES_INVALID_FIELDS`
-- [x] `REQUIRES_INVALID_FIELDS_TYPE`
-- [x] `MERGED_DIRECTIVE_APPLICATION_ON_EXTERNAL`
-- [x] `INTERFACE_KEY_NOT_ON_IMPLEMENTATION`
-- [x] `PROVIDES_FIELDS_MISSING_EXTERNAL`
-- [x] `REQUIRES_FIELDS_MISSING_EXTERNAL`
-- [x] `PROVIDES_ON_NON_OBJECT_FIELD`
-- [x] `INVALID_SUBGRAPH_NAME`
-- [x] `PROVIDES_FIELDS_HAS_ARGS`
-- [x] `PROVIDES_INVALID_FIELDS`
-- [x] `EXTERNAL_UNUSED`
-- [x] `DIRECTIVE_COMPOSITION_ERROR`
-- [x] `ROOT_QUERY_USED`
-- [x] `ROOT_MUTATION_USED`
-- [x] `ROOT_SUBSCRIPTION_USED`
-- [x] `INVALID_SHAREABLE_USAGE`
-- [x] `DIRECTIVE_DEFINITION_INVALID`
-- [x] `KEY_DIRECTIVE_IN_FIELDS_ARG`
-- [x] `PROVIDES_DIRECTIVE_IN_FIELDS_ARG`
-- [x] `REQUIRES_DIRECTIVE_IN_FIELDS_ARG`
-- [x] `TYPE_DEFINITION_INVALID`
-- [x] `OVERRIDE_COLLISION_WITH_ANOTHER_DIRECTIVE`
+- ✅ `NO_QUERIES`
+- ✅ `TYPE_KIND_MISMATCH`
+- ✅ `EXTENSION_WITH_NO_BASE`
+- ✅ `FIELD_TYPE_MISMATCH`
+- ✅ `FIELD_ARGUMENT_TYPE_MISMATCH`
+- ✅ `EXTERNAL_TYPE_MISMATCH`
+- ✅ `ENUM_VALUE_MISMATCH`
+- ✅ `EMPTY_MERGED_ENUM_TYPE`
+- ✅ `EMPTY_MERGED_INPUT_TYPE`
+- ✅ `OVERRIDE_SOURCE_HAS_OVERRIDE`
+- ✅ `EXTERNAL_MISSING_ON_BASE`
+- ✅ `REQUIRED_ARGUMENT_MISSING_IN_SOME_SUBGRAPH`
+- ✅ `REQUIRED_INPUT_FIELD_MISSING_IN_SOME_SUBGRAPH`
+- ✅ `EXTERNAL_ARGUMENT_MISSING`
+- ✅ `INPUT_FIELD_DEFAULT_MISMATCH`
+- ✅ `FIELD_ARGUMENT_DEFAULT_MISMATCH`
+- ✅ `DEFAULT_VALUE_USES_INACCESSIBLE`
+- ✅ `ONLY_INACCESSIBLE_CHILDREN`
+- ✅ `REFERENCED_INACCESSIBLE`
+- ✅ `INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE`
+- ✅ `INVALID_FIELD_SHARING`
+- ✅ `PROVIDES_INVALID_FIELDS_TYPE`
+- ✅ `INVALID_GRAPHQL`
+- ✅ `OVERRIDE_ON_INTERFACE`
+- ✅ `OVERRIDE_FROM_SELF_ERROR`
+- ✅ `QUERY_ROOT_TYPE_INACCESSIBLE`
+- ✅ `PROVIDES_UNSUPPORTED_ON_INTERFACE`
+- ✅ `REQUIRES_UNSUPPORTED_ON_INTERFACE`
+- ✅ `KEY_UNSUPPORTED_ON_INTERFACE`
+- ✅ `KEY_INVALID_FIELDS_TYPE`
+- ✅ `KEY_FIELDS_HAS_ARGS`
+- ✅ `KEY_FIELDS_SELECT_INVALID_TYPE`
+- ✅ `KEY_INVALID_FIELDS`
+- ✅ `REQUIRES_INVALID_FIELDS`
+- ✅ `REQUIRES_INVALID_FIELDS_TYPE`
+- ✅ `MERGED_DIRECTIVE_APPLICATION_ON_EXTERNAL`
+- ✅ `INTERFACE_KEY_NOT_ON_IMPLEMENTATION`
+- ✅ `PROVIDES_FIELDS_MISSING_EXTERNAL`
+- ✅ `REQUIRES_FIELDS_MISSING_EXTERNAL`
+- ✅ `PROVIDES_ON_NON_OBJECT_FIELD`
+- ✅ `INVALID_SUBGRAPH_NAME`
+- ✅ `PROVIDES_FIELDS_HAS_ARGS`
+- ✅ `PROVIDES_INVALID_FIELDS`
+- ✅ `EXTERNAL_UNUSED`
+- ✅ `DIRECTIVE_COMPOSITION_ERROR`
+- ✅ `ROOT_QUERY_USED`
+- ✅ `ROOT_MUTATION_USED`
+- ✅ `ROOT_SUBSCRIPTION_USED`
+- ✅ `INVALID_SHAREABLE_USAGE`
+- ✅ `DIRECTIVE_DEFINITION_INVALID`
+- ✅ `KEY_DIRECTIVE_IN_FIELDS_ARG`
+- ✅ `PROVIDES_DIRECTIVE_IN_FIELDS_ARG`
+- ✅ `REQUIRES_DIRECTIVE_IN_FIELDS_ARG`
+- ✅ `TYPE_DEFINITION_INVALID`
+- ✅ `OVERRIDE_COLLISION_WITH_ANOTHER_DIRECTIVE`
+
+### TODOs
+
 - [ ] `INTERFACE_OBJECT_USAGE_ERROR`
 - [ ] `INTERFACE_FIELD_NO_IMPLEM`
 - [ ] `SATISFIABILITY_ERROR`
@@ -106,9 +180,6 @@ pnpm test
 - [ ] `SHAREABLE_HAS_MISMATCHED_RUNTIME_TYPES`
 - [ ] `UNSUPPORTED_FEATURE`
 - [ ] `UNSUPPORTED_LINKED_FEATURE`
-
-### TODOs
-
 - [ ] `SATISFIABILITY_ERROR` - deeply nested key fields
 - [ ] `SATISFIABILITY_ERROR` - fragments in keys
 - [ ] `SATISFIABILITY_ERROR` - support interfaces... (kill me)
