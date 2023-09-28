@@ -36,6 +36,5 @@ jobs:
           publish: pnpm build && changeset publish
           commit: 'chore(release): update package version'
           title: 'Upcoming Release Changes'
-          setupGitUser: theguild-bot
         env:
           GITHUB_TOKEN: ${{ secrets.GUILD_BOT_TOKEN }}
