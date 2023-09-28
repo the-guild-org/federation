@@ -2,7 +2,7 @@ name: PR
 on: [pull_request]
 jobs:
   test:
-    name: Build, bench and test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -18,10 +18,27 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: typecheck
         run: pnpm typecheck
-      - name: bench
-        run: pnpm bench
       - name: tests
         run: pnpm test
+
+
+  bench:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup pnpm
+        uses: pnpm/action-setup@v2
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: bench
+        run: pnpm bench
   
   release_snapshot:
     if: ${{ github.event.pull_request.title != 'Upcoming Release Changes' }}
