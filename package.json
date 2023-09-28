@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Open Source Composition library for Apollo Federation",
+  "repository": {
+    "type": "git",
+    "url": "the-guild-org/federation"
+  },
   "author": {
     "email": "contact@the-guild.dev",
     "name": "The Guild",
