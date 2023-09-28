@@ -4,37 +4,12 @@ on:
     branches:
       - main
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          token: ${{ secrets.GUILD_BOT_TOKEN }}
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: prepare npm credentials
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> $HOME/.npmrc
-
-      - name: publish stable
-        id: changesets
-        uses: changesets/action@v1.4.5
-        with:
-          publish: pnpm build && changeset publish
-          commit: 'chore(release): update package version'
-          title: 'Upcoming Release Changes'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GUILD_BOT_TOKEN }}
+  stable:
+    uses: the-guild-org/shared-config/.github/workflows/release-stable.yml@main
+    with:
+      releaseScript: release
+      nodeVersion: 20
+      packageManager: 'pnpm'
+    secrets:
+      githubToken: ${{ secrets.GUILD_BOT_TOKEN }}
+      npmToken: ${{ secrets.NPM_TOKEN }}

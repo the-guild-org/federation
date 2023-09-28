@@ -44,8 +44,9 @@
   ],
   "scripts": {
     "bench": "tsx ./benchmark.ts",
-    "build": "rimraf dist && bob check && bob build && rimraf dist/README.md",
+    "build": "rimraf dist && bob check && bob build",
     "format": "prettier --write .",
+    "release": "pnpm build && changeset publish",
     "test": "vitest --config ./vitest.config.js",
     "typecheck": "tsc --noEmit --project tsconfig.build.json"
   },
