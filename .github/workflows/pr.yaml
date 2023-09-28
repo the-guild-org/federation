@@ -38,6 +38,7 @@ jobs:
   
   release_candidate:
     uses: the-guild-org/shared-config/.github/workflows/release-snapshot.yml@main
+    name: Release candidate
     if: ${{ github.event.pull_request.title == 'Upcoming Release Changes' }}
     with:
       npmTag: rc
