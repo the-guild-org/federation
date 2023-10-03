@@ -12,6 +12,7 @@ Supports all Federation versions prior to v2.4.0. Drop-in replacement for `@apol
 - produces Supergraph SDL (can be used with Apollo Router and every tool that supports Supergraph
   SDL)
 - does not support Hints
+- a lot faster! 5x faster when composing and validating simple schemas, but 28x faster at big scale.
 
 ## Installation
 
