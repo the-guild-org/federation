@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.1.3
+
+### Patch Changes
+
+- [#17](https://github.com/the-guild-org/federation/pull/17)
+  [`a508ad2`](https://github.com/the-guild-org/federation/commit/a508ad247773e0bacca1773cafd2b7a39d93b4e7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - SATISFIABILITY_ERROR - allow to resolve
+  a field via entity type's child
+
 ## 0.1.2
 
 ### Patch Changes
