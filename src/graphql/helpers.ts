@@ -15,14 +15,22 @@ export function stripFederationFromSupergraph(supergraph: DocumentNode) {
     SchemaDefinition: remove,
     SchemaExtension: remove,
     EnumTypeDefinition: node => {
-      if (node.name.value === 'core__Purpose' || node.name.value === 'join__Graph') {
+      if (
+        node.name.value === 'core__Purpose' ||
+        node.name.value === 'join__Graph' ||
+        node.name.value === 'link__Purpose'
+      ) {
         return null;
       }
 
       return node;
     },
     ScalarTypeDefinition: node => {
-      if (node.name.value === '_FieldSet') {
+      if (
+        node.name.value === '_FieldSet' ||
+        node.name.value === 'link__Import' ||
+        node.name.value === 'join__FieldSet'
+      ) {
         return null;
       }
 
