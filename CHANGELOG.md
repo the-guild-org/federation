@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.1.2
+
+### Patch Changes
+
+- [#15](https://github.com/the-guild-org/federation/pull/15)
+  [`37e164c`](https://github.com/the-guild-org/federation/commit/37e164c66c0c3219791e4c074a602774accd08b2)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Add join**FieldSet, link**Import,
+  link\_\_Purpose to stripFederationFromSupergraph
+
 ## 0.1.1
 
 ### Patch Changes
