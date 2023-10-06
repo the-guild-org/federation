@@ -449,13 +449,7 @@ testImplementations(api => {
     }
 
     const subgraphs = await getSubgraphsOfHugeSchema();
-    const result = api.composeServices(
-      subgraphs,
-      {
-        disableValidationRules: ['SatisfiabilityRule'],
-      },
-      true,
-    );
+    const result = api.composeServices(subgraphs);
     assertCompositionSuccess(result);
   });
 
