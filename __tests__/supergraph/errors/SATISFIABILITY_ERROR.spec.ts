@@ -1392,6 +1392,56 @@ testVersions((api, version) => {
     );
   });
 
+  test(`field resolvable via entity type's child`, () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+            type Query {
+              foo: Foo
+            }
+
+            type Foo {
+              user: User
+            }
+
+            type User @key(fields: "id profile { id }") @extends {
+              id: ID!
+              profile: Profile! @external
+            }
+
+            type Profile @extends {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'bar',
+          typeDefs: graphql`
+            type Query {
+              bar: Bar
+            }
+
+            type Bar {
+              user: User
+            }
+
+            type User @key(fields: "id profile { id }") {
+              id: ID!
+              profile: Profile!
+            }
+
+            type Profile {
+              id: ID!
+              name: String
+            }
+          `,
+        },
+      ]),
+    );
+  });
+
   test('fed v1: same types but extra root field in a subgraph missing a field', () => {
     expect(
       api.composeServices([

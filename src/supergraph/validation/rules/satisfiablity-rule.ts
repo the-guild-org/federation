@@ -22,26 +22,28 @@ import type { SupergraphVisitorMap } from '../../composition/visitor.js';
 import type { SupergraphState } from '../../state.js';
 import type { SupergraphValidationContext } from '../validation-context.js';
 
-function canGraphMoveToGraph(
+function canGraphMoveToGraphByEntity(
   supergraphState: SupergraphState,
-  objectTypeState: ObjectTypeState,
+  entityName: string,
   sourceGraphId: string,
   targetGraphId: string,
 ): boolean {
-  const sourceGraphKeys = objectTypeState.byGraph.get(sourceGraphId)!.keys;
-  const targetGraphKeys = objectTypeState.byGraph.get(targetGraphId)!.keys;
+  const objectTypeState = supergraphState.objectTypes.get(entityName);
+
+  if (!objectTypeState) {
+    throw new Error(`Type "${entityName}" not found in supergraph state`);
+  }
+
+  const objectTypeStateInSourceGraph = objectTypeState.byGraph.get(sourceGraphId);
+  const objectTypeStateInTargetGraph = objectTypeState.byGraph.get(targetGraphId);
+
+  const sourceGraphKeys = objectTypeStateInSourceGraph?.keys || [];
+  const targetGraphKeys = objectTypeStateInTargetGraph?.keys || [];
 
   // no keys in both graphs? can't move.
   if (sourceGraphKeys.length === 0 && targetGraphKeys.length === 0) {
     return false;
   }
-
-  const fieldsOfSourceGraph = Array.from(objectTypeState.fields.values()).filter(f =>
-    f.byGraph.get(sourceGraphId),
-  );
-  const nonExternalFieldsOfSourceGraph = fieldsOfSourceGraph.filter(
-    f => f.byGraph.get(sourceGraphId)!.external === false,
-  );
 
   if (sourceGraphKeys.length === 0) {
     // if the source type has no keys,
@@ -354,46 +356,50 @@ export function SatisfiabilityRule(
   supergraphState: SupergraphState,
 ): SupergraphVisitorMap {
   const typeDependencies = buildOutputTypesDependencies(supergraphState);
-  /**
-   * Map of graph IDs to a set of graph IDs that the graph can move to.
-   */
-  let currentMovabilityGraphType: string;
-  let movabilityGraph: DepGraph<string>;
+  let movabilityGraph = new Map<string, DepGraph<string>>();
 
-  return {
-    // ObjectType runs before ObjectTypeField
-    ObjectType(objectState) {
-      // I want to check which graph can move to which graph.
-      // Once I know it,
-      // I can quickly check if a missing field
-      // can be resolved by talking to a graph
-      // that can move to the graph that has the field.
-      currentMovabilityGraphType = objectState.name;
-      movabilityGraph = new DepGraph({
-        circular: true,
-      });
+  function getMovabilityGraphForType(typeName: string) {
+    const existingMovabilityGraph = movabilityGraph.get(typeName);
 
-      const graphIds = Array.from(objectState.byGraph.keys());
+    if (existingMovabilityGraph) {
+      return existingMovabilityGraph;
+    }
 
-      for (const sourceGraphId of objectState.byGraph.keys()) {
-        movabilityGraph.addNode(sourceGraphId);
-      }
+    const objectState = supergraphState.objectTypes.get(typeName);
 
-      for (const sourceGraphId of objectState.byGraph.keys()) {
-        const otherGraphIds = graphIds.filter(g => g !== sourceGraphId);
+    if (!objectState) {
+      throw new Error(`State of object type "${typeName}" not found in Supergraph state`);
+    }
 
-        for (const destGraphId of otherGraphIds) {
-          if (canGraphMoveToGraph(supergraphState, objectState, sourceGraphId, destGraphId)) {
-            movabilityGraph.addDependency(sourceGraphId, destGraphId);
-          }
+    const graph = new DepGraph<string>({
+      circular: true,
+    });
+
+    const graphIds = Array.from(objectState.byGraph.keys());
+
+    for (const sourceGraphId of objectState.byGraph.keys()) {
+      graph.addNode(sourceGraphId);
+    }
+
+    for (const sourceGraphId of objectState.byGraph.keys()) {
+      const otherGraphIds = graphIds.filter(g => g !== sourceGraphId);
+
+      for (const destGraphId of otherGraphIds) {
+        if (
+          canGraphMoveToGraphByEntity(supergraphState, objectState.name, sourceGraphId, destGraphId)
+        ) {
+          graph.addDependency(sourceGraphId, destGraphId);
         }
       }
-    },
-    ObjectTypeField(objectState, fieldState) {
-      if (currentMovabilityGraphType !== objectState.name) {
-        throw new Error('ObjectTypeField runs before ObjectType! This should not happen.');
-      }
+    }
 
+    movabilityGraph.set(typeName, graph);
+
+    return graph;
+  }
+
+  return {
+    ObjectTypeField(objectState, fieldState) {
       if (
         objectState.name === 'Query' ||
         objectState.name === 'Mutation' ||
@@ -497,6 +503,14 @@ export function SatisfiabilityRule(
         },
       };
 
+      const currentObjectTypeMovabilityGraph = getMovabilityGraphForType(objectState.name);
+
+      if (!currentObjectTypeMovabilityGraph) {
+        throw new Error(
+          `Movability graph for object type "${objectState.name}" not found in Supergraph state`,
+        );
+      }
+
       if (uniqueKeyFieldsSet.size > 0) {
         //
         // We're dealing with entities
@@ -512,7 +526,13 @@ export function SatisfiabilityRule(
 
           // we need to run it for each root type
           if (
-            canGraphResolveField(objectState, fieldState, graphId, supergraphState, movabilityGraph)
+            canGraphResolveField(
+              objectState,
+              fieldState,
+              graphId,
+              supergraphState,
+              currentObjectTypeMovabilityGraph,
+            )
           ) {
             continue;
           }
@@ -576,11 +596,16 @@ export function SatisfiabilityRule(
             .map(([g, _]) => g);
 
           // Dependencies of current graph that cannot resolve the field by jumping between graphs
-          const leafs = graphsWithField.map(g => findLeafs(movabilityGraph, graphId, g)).flat(1);
+          const leafs = graphsWithField
+            .map(g => findLeafs(currentObjectTypeMovabilityGraph, graphId, g))
+            .flat(1);
 
           // If there are no leafs, it means that the field is resolvable by jumping between graphs.
           // It's only true if the graph can jump to at least one graph.
-          if (leafs.length === 0 && movabilityGraph.directDependenciesOf(graphId).length > 0) {
+          if (
+            leafs.length === 0 &&
+            currentObjectTypeMovabilityGraph.directDependenciesOf(graphId).length > 0
+          ) {
             continue;
           }
 
@@ -630,7 +655,10 @@ export function SatisfiabilityRule(
                     })
                     .flat(1)
                 : otherGraphIds
-                    .filter(g => !movabilityGraph.directDependenciesOf(graphId).includes(g))
+                    .filter(
+                      g =>
+                        !currentObjectTypeMovabilityGraph.directDependenciesOf(graphId).includes(g),
+                    )
                     .map(gid => {
                       const keys = objectState.byGraph.get(gid)!.keys.map(k => k.fields);
 
@@ -782,6 +810,40 @@ export function SatisfiabilityRule(
           );
 
           if (!graphHasAtLeastOneResolvableField) {
+            continue;
+          }
+
+          // Check if we can move to a graph that has the field via entity type
+
+          // find entity types referencing the object type
+          const entityTypesReferencingLookingObject = dependenciesOfObjectType
+            .map(typeName => supergraphState.objectTypes.get(typeName))
+            .filter(
+              (t): t is ObjectTypeState =>
+                // entity type is an object type with @key
+                !!t && Array.from(t.byGraph.values()).some(tg => tg.keys.length > 0),
+            );
+
+          const graphIdsUnableToResolveFieldViaEntityType: string[] = [];
+          for (const [graphId] of graphsWithoutField) {
+            // a list of entity types defined in the currently checked graph
+            const localEntityTypes = entityTypesReferencingLookingObject.filter(et =>
+              et.byGraph.has(graphId),
+            );
+            const isFieldResolvableThroughEntity = localEntityTypes.some(et =>
+              // check if a graph without the field
+              // can move (via entity type) to at least one graph with the field
+              graphsWithField.some(targetGraphId =>
+                canGraphMoveToGraphByEntity(supergraphState, et.name, graphId, targetGraphId),
+              ),
+            );
+
+            if (!isFieldResolvableThroughEntity) {
+              graphIdsUnableToResolveFieldViaEntityType.push(graphId);
+            }
+          }
+
+          if (graphIdsUnableToResolveFieldViaEntityType.length === 0) {
             continue;
           }
 

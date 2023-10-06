@@ -63,9 +63,7 @@ group('huge schema', () => {
   });
 
   bench('guild', () => {
-    assertCompositionSuccess(
-      guildComposeServices(hugeSchema, { disableValidationRules: ['SatisfiabilityRule'] }),
-    );
+    assertCompositionSuccess(guildComposeServices(hugeSchema));
   });
 });
 
