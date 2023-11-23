@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.1.4
+
+### Patch Changes
+
+- [#19](https://github.com/the-guild-org/federation/pull/19)
+  [`e0ef0bb`](https://github.com/the-guild-org/federation/commit/e0ef0bb1201225aa2f1e5b400803c07eeed6b29a)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Make `stripFederationFromSupergraph`
+  less strict and remove only Federation directives
+
 ## 0.1.3
 
 ### Patch Changes
