@@ -20,6 +20,7 @@ const federationDirectives = new Set([
   'join__unionMember',
   'join__enumValue',
   'join__field',
+  'inaccessible',
 ]);
 const specifiedDirectives = new Set(specifiedDirectivesArray.map(d => d.name));
 
