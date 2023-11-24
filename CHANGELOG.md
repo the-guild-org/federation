@@ -1,5 +1,17 @@
 # @theguild/federation-composition
 
+## 0.2.0
+
+### Minor Changes
+
+- [#21](https://github.com/the-guild-org/federation/pull/21)
+  [`443283e`](https://github.com/the-guild-org/federation/commit/443283e22e89934a268b7a6318c02ffc3bfbf464)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Remove `stripFederationFromSupergraph` in favor of
+  `transformSupergraphToPublicSchema`.
+
+  Instead of stripping only federation specific types, `transformSupergraphToPublicSchema` yields
+  the public api schema as served by the gateway.
+
 ## 0.1.4
 
 ### Patch Changes
