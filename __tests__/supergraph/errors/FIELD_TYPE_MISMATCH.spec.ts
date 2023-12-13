@@ -67,5 +67,75 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'auth',
+          typeDefs: graphql`
+            type User @key(fields: "id") {
+              id: ID!
+              name: String
+            }
+
+            type Query {
+              me: User
+            }
+          `,
+        },
+        {
+          name: 'images',
+          typeDefs: graphql`
+            type Image @key(fields: "url") {
+              url: Url
+              type: MimeType
+            }
+
+            type Query {
+              images: [Image]
+            }
+
+            extend type User {
+              favorite: Image
+            }
+
+            scalar Url
+            scalar MimeType
+          `,
+        },
+        {
+          name: 'albums',
+          typeDefs: graphql`
+            type Album @key(fields: "id") {
+              id: ID!
+              user: User
+              photos: [Image!]
+            }
+
+            extend type Image {
+              albums: [Album!]
+            }
+
+            extend type User {
+              albums: [Album!]
+              favorite: Album
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              `Type of field "User.favorite" is incompatible across subgraphs: it has type "Album" in subgraph "albums" but type "Image" in subgraph "images"`,
+            ),
+            extensions: expect.objectContaining({
+              code: 'FIELD_TYPE_MISMATCH',
+            }),
+          }),
+        ]),
+      }),
+    );
   });
 });

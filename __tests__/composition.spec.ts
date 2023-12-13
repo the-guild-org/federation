@@ -1,5 +1,6 @@
 import { parse, print } from 'graphql';
 import { describe, expect, test } from 'vitest';
+import { sortSDL } from '../src/graphql/sort-sdl.js';
 import { sdl as joinSDL } from '../src/specifications/join.js';
 import { sdl as linkSDL } from '../src/specifications/link.js';
 import { directive as tagDirective } from '../src/specifications/tag.js';
@@ -8,10 +9,9 @@ import {
   assertCompositionSuccess,
   testImplementations,
 } from './shared/testkit.js';
-import { normalizeAst } from './shared/utils.js';
 
 expect.addSnapshotSerializer({
-  serialize: value => print(normalizeAst(parse(value as string))),
+  serialize: value => print(sortSDL(parse(value as string))),
   test: value => typeof value === 'string' && value.includes('specs.apollo.dev'),
 });
 
@@ -23,6 +23,43 @@ testImplementations(api => {
     console.log('--', library, '--');
     console.log(result.supergraphSdl);
   }
+
+  test('duplicated Query fields', () => {
+    const result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String
+          }
+
+          type Query {
+            userById(id: ID!): User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String
+          }
+
+          type Query {
+            userById(id: ID!): User
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionFailure(result);
+  });
 
   describe.each(['v2.0', 'v2.1', 'v2.2', 'v2.3'] as const)('%s', version => {
     describe('shareable', () => {
@@ -323,6 +360,41 @@ testImplementations(api => {
         `);
       });
 
+      test('merge an argument (non-nullable vs missing)', () => {
+        const result = composeServices([
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
+
+              type Building @shareable {
+                # Argument is required
+                height(units: String!): Int!
+              }
+
+              type Query {
+                building: Building
+              }
+            `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
+
+              type Building @shareable {
+                # Argument is missing
+                height: Int!
+              }
+            `),
+          },
+        ]);
+
+        assertCompositionFailure(result);
+      });
+
       test('merge an argument (nullable vs non-nullable)', () => {
         const result = composeServices([
           {
@@ -539,7 +611,7 @@ testImplementations(api => {
       `);
     });
 
-    test('merge union types with different fields', () => {
+    test('merge union types with different members (some are overlapping)', () => {
       const result = composeServices([
         {
           name: 'a',
@@ -599,6 +671,64 @@ testImplementations(api => {
           @join__unionMember(graph: B, member: "Book") =
             Movie
           | Book
+      `);
+    });
+
+    test('merge union types with different members', () => {
+      const result = composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+              email: String!
+            }
+
+            union Media = Book
+
+            type Book @shareable {
+              title: String!
+            }
+          `),
+        },
+        {
+          name: 'b',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type User @key(fields: "id") {
+              id: ID!
+              age: Int!
+            }
+
+            union Media = Movie
+
+            type Movie {
+              title: String!
+            }
+
+            type Query {
+              user: User
+            }
+          `),
+        },
+      ]);
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        union Media
+          @join__type(graph: A)
+          @join__type(graph: B)
+          @join__unionMember(graph: A, member: "Book")
+          @join__unionMember(graph: B, member: "Movie") =
+            Book
+          | Movie
       `);
     });
 
@@ -2155,7 +2285,7 @@ testImplementations(api => {
       `);
     });
 
-    test.skipIf(api.library === 'guild')('@interfaceObject', () => {
+    test('@interfaceObject', () => {
       const result = composeServices([
         {
           name: 'a',
@@ -2208,6 +2338,37 @@ testImplementations(api => {
 
       if (version !== 'v2.3') {
         assertCompositionFailure(result);
+        if (api.library === 'apollo') {
+          console.log(JSON.stringify(result.errors));
+        }
+        expect(result.errors).toContainEqual(
+          expect.objectContaining({
+            message: '[a] Cannot import unknown element "@interfaceObject".',
+            extensions: expect.objectContaining({
+              code: 'INVALID_LINK_DIRECTIVE_USAGE',
+            }),
+          }),
+        );
+        expect(result.errors).toContainEqual(
+          expect.objectContaining({
+            message: '[b] Cannot import unknown element "@interfaceObject".',
+            extensions: expect.objectContaining({
+              code: 'INVALID_LINK_DIRECTIVE_USAGE',
+            }),
+          }),
+        );
+
+        return;
+      }
+
+      if (api.library === 'guild') {
+        // TODO: we don't support @interfaceObject yet
+        assertCompositionFailure(result);
+        expect(result.errors).toContainEqual(
+          expect.objectContaining({
+            message: expect.stringContaining('@interfaceObject is not yet supported'),
+          }),
+        );
         return;
       }
 
