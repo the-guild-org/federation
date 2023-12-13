@@ -26,8 +26,17 @@ export function InvalidFieldSharingRule(
         const fieldHasOverride = field.override;
         const fieldIsUsedAsKey = field.usedAsKey;
 
-        if (fieldIsExternal || fieldHasOverride) {
+        if (fieldIsExternal) {
           continue;
+        }
+
+        if (fieldHasOverride) {
+          const overrideGraphId = context.graphNameToId(fieldHasOverride);
+          if (overrideGraphId && fieldState.byGraph.has(overrideGraphId)) {
+            // if a field tries to override some graph, check if it actually exists there.
+            // if it does, exclude it from invalid-field-sharing rule as override is effective.
+            continue;
+          }
         }
 
         if (objectTypeIsShareable || fieldIsShareable || fieldIsUsedAsKey) {
