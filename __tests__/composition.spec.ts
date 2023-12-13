@@ -7,7 +7,9 @@ import { directive as tagDirective } from '../src/specifications/tag.js';
 import {
   assertCompositionFailure,
   assertCompositionSuccess,
+  satisfiesVersionRange,
   testImplementations,
+  versions,
 } from './shared/testkit.js';
 
 expect.addSnapshotSerializer({
@@ -61,7 +63,7 @@ testImplementations(api => {
     assertCompositionFailure(result);
   });
 
-  describe.each(['v2.0', 'v2.1', 'v2.2', 'v2.3'] as const)('%s', version => {
+  describe.each(versions)('%s', version => {
     describe('shareable', () => {
       test('merge two exact same types', () => {
         const result = composeServices([
@@ -2336,7 +2338,7 @@ testImplementations(api => {
         },
       ]);
 
-      if (version !== 'v2.3') {
+      if (satisfiesVersionRange('< v2.3', version)) {
         assertCompositionFailure(result);
         if (api.library === 'apollo') {
           console.log(JSON.stringify(result.errors));
@@ -2878,7 +2880,7 @@ testImplementations(api => {
         },
       ]);
 
-      if (version !== 'v2.3') {
+      if (satisfiesVersionRange('< v2.3', version)) {
         if (version === 'v2.0') {
           assertCompositionFailure(result);
         } else {

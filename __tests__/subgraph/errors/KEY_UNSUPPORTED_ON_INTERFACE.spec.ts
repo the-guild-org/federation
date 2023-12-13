@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('KEY_UNSUPPORTED_ON_INTERFACE', () => {
@@ -29,7 +29,7 @@ testVersions((api, version) => {
         },
       ]),
     ).toEqual(
-      version === 'v2.3'
+      satisfiesVersionRange('>= v2.3', version)
         ? expect.objectContaining({
             supergraphSdl: expect.any(String),
           })

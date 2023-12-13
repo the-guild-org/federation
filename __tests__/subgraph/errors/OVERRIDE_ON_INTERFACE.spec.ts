@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('OVERRIDE_ON_INTERFACE', () => {
@@ -28,7 +28,7 @@ testVersions((api, version) => {
     ).toEqual(
       expect.objectContaining({
         errors: expect.arrayContaining([
-          version === 'v2.3'
+          satisfiesVersionRange('>= v2.3', version)
             ? expect.objectContaining({
                 message: expect.stringContaining(
                   `@override cannot be used on field "Bill.amount" on subgraph "billing": @override is not supported on interface type fields.`,
