@@ -1,7 +1,7 @@
 import type { DocumentNode, TypeSystemDefinitionNode } from 'graphql';
 import { Kind, parse, print } from 'graphql';
 import { expect } from 'vitest';
-import { normalizeAst } from './utils.js';
+import { sortSDL } from '../../src/graphql/sort-sdl.js';
 
 function isStringOrNode(value: unknown): value is string | DocumentNode | TypeSystemDefinitionNode {
   return typeof value === 'string' || (!!value && typeof value === 'object' && 'kind' in value);
@@ -39,8 +39,8 @@ expect.extend({
     }
 
     const printed = {
-      received: print(normalizeAst(ensureDocumentNode(received))),
-      expected: print(normalizeAst(ensureDocumentNode(expected))),
+      received: print(sortSDL(ensureDocumentNode(received))),
+      expected: print(sortSDL(ensureDocumentNode(expected))),
     };
 
     if (printed.received !== printed.expected) {
@@ -75,8 +75,8 @@ expect.extend({
     }
 
     const printed = {
-      received: print(normalizeAst(ensureDocumentNode(received))),
-      expected: print(normalizeAst(ensureDocumentNode(expected))),
+      received: print(sortSDL(ensureDocumentNode(received))),
+      expected: print(sortSDL(ensureDocumentNode(expected))),
     };
 
     if (!printed.received.includes(printed.expected)) {

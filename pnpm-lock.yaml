@@ -11,11 +11,14 @@ dependencies:
   json5:
     specifier: ^2.2.0
     version: 2.2.3
+  lodash.sortby:
+    specifier: ^4.7.0
+    version: 4.7.0
 
 devDependencies:
   '@apollo/composition':
-    specifier: 2.5.4
-    version: 2.5.4(graphql@16.8.0)
+    specifier: 2.6.2
+    version: 2.6.2(graphql@16.8.0)
   '@changesets/changelog-github':
     specifier: 0.4.8
     version: 0.4.8
@@ -40,9 +43,6 @@ devDependencies:
   graphql:
     specifier: 16.8.0
     version: 16.8.0
-  lodash.sortby:
-    specifier: 4.7.0
-    version: 4.7.0
   mitata:
     specifier: 0.1.6
     version: 0.1.6
@@ -72,19 +72,19 @@ packages:
       '@jridgewell/trace-mapping': 0.3.19
     dev: true
 
-  /@apollo/composition@2.5.4(graphql@16.8.0):
-    resolution: {integrity: sha512-5fH6hlK1KnH/e5bnnnc81bp1sVIra/oorZ/yydcM5spaFpSGVKtIJRykKZmKtDnpkp3Z5MhTx8nD2j0GOjKT0A==}
+  /@apollo/composition@2.6.2(graphql@16.8.0):
+    resolution: {integrity: sha512-rbMRcnvEDtOT+e6OiKUY9virbhpIK9E8bQ6eGoakwCYz8bVXdBBPQdKuvhnvzNAe0LeOPMcsx3Pp9mPT9wz80g==}
     engines: {node: '>=14.15.0'}
     peerDependencies:
       graphql: ^16.5.0
     dependencies:
-      '@apollo/federation-internals': 2.5.4(graphql@16.8.0)
-      '@apollo/query-graphs': 2.5.4(graphql@16.8.0)
+      '@apollo/federation-internals': 2.6.2(graphql@16.8.0)
+      '@apollo/query-graphs': 2.6.2(graphql@16.8.0)
       graphql: 16.8.0
     dev: true
 
-  /@apollo/federation-internals@2.5.4(graphql@16.8.0):
-    resolution: {integrity: sha512-SJCbP90KNlk6QJqUfvBrL/PdYzXKz3aZx2vP2kqJE9Ccc6UrUVrI70XuJ09o6n080sgCArDTC9+ngjdh6P5vTg==}
+  /@apollo/federation-internals@2.6.2(graphql@16.8.0):
+    resolution: {integrity: sha512-L5Ppl+FQ2+ETpJ8NCa7T8ifAjAX8K/4NW8N08d6TRUJu0M/8rvIL0CgX033Jno/+FVIFhNBbVN2kGoSKDl1YPQ==}
     engines: {node: '>=14.15.0'}
     peerDependencies:
       graphql: ^16.5.0
@@ -96,13 +96,13 @@ packages:
       uuid: 9.0.0
     dev: true
 
-  /@apollo/query-graphs@2.5.4(graphql@16.8.0):
-    resolution: {integrity: sha512-Bl9SZUNGZLpAGFXuhDMeLYvZ/dYaKRYD2NfMnjS9h6tUa2aLAufvTxK84AhYTuXkqoGibYGk6IzXmRAUtK9uFQ==}
+  /@apollo/query-graphs@2.6.2(graphql@16.8.0):
+    resolution: {integrity: sha512-1pQABsPS38Sqz1u3pW1WDmq/xJDWkdZGUsHNSAaSbdRAQMT5Lf9M9uzBUcNR5g+byvzKOc6nnxkh2W/tls5kBw==}
     engines: {node: '>=14.15.0'}
     peerDependencies:
       graphql: ^16.5.0
     dependencies:
-      '@apollo/federation-internals': 2.5.4(graphql@16.8.0)
+      '@apollo/federation-internals': 2.6.2(graphql@16.8.0)
       deep-equal: 2.2.2
       graphql: 16.8.0
       ts-graphviz: 1.8.1
@@ -1370,7 +1370,7 @@ packages:
       object-is: 1.1.5
       object-keys: 1.1.1
       object.assign: 4.1.4
-      regexp.prototype.flags: 1.5.0
+      regexp.prototype.flags: 1.5.1
       side-channel: 1.0.4
       which-boxed-primitive: 1.0.2
       which-collection: 1.0.1
@@ -2232,7 +2232,7 @@ packages:
 
   /lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
-    dev: true
+    dev: false
 
   /lodash.startcase@4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
@@ -2723,15 +2723,6 @@ packages:
 
   /regenerator-runtime@0.14.0:
     resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
-    dev: true
-
-  /regexp.prototype.flags@1.5.0:
-    resolution: {integrity: sha512-0SutC3pNudRKgquxGoRGIz946MZVHqbNfPjBdxeOhBrdgDKlRoXmYLQN9xRbrR09ZXWeGAdPuif7egofn6v5LA==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      define-properties: 1.2.0
-      functions-have-names: 1.2.3
     dev: true
 
   /regexp.prototype.flags@1.5.1:
