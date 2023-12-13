@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.3.0
+
+### Minor Changes
+
+- [#23](https://github.com/the-guild-org/federation/pull/23)
+  [`2d72e03`](https://github.com/the-guild-org/federation/commit/2d72e039929022d3eefedacdc6e5a7a1d85f7650)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Add sortSDL function to sort
+  DocumentNode (type system definitions and extensions)
+
 ## 0.2.0
 
 ### Minor Changes
