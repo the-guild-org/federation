@@ -1,5 +1,21 @@
 # @theguild/federation-composition
 
+## 0.4.0
+
+### Minor Changes
+
+- [#25](https://github.com/the-guild-org/federation/pull/25)
+  [`c17a037`](https://github.com/the-guild-org/federation/commit/c17a037f8ed1ce151bac275a3a31f3d4cd2d0728)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - PROVIDES_INVALID_FIELDS: empty
+  selection set
+
+### Patch Changes
+
+- [#26](https://github.com/the-guild-org/federation/pull/26)
+  [`3c45c20`](https://github.com/the-guild-org/federation/commit/3c45c20e7356d5a133dd8c0fa0dcc549538f7718)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - INVALID_FIELD_SHARING: adjust the check
+  to detect valid override directive
+
 ## 0.3.0
 
 ### Minor Changes
