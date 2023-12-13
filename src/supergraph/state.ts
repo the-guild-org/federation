@@ -36,6 +36,9 @@ export type SupergraphState = {
   specs: {
     tag: boolean;
     inaccessible: boolean;
+    authenticated: boolean;
+    requiresScopes: boolean;
+    policy: boolean;
   };
 };
 
@@ -55,6 +58,9 @@ export function createSupergraphStateBuilder() {
     specs: {
       tag: false,
       inaccessible: false,
+      policy: false,
+      requiresScopes: false,
+      authenticated: false,
     },
   };
 
@@ -93,6 +99,18 @@ export function createSupergraphStateBuilder() {
 
       if (subgraphState.specs.inaccessible) {
         state.specs.inaccessible = true;
+      }
+
+      if (subgraphState.specs.requiresScopes) {
+        state.specs.requiresScopes = true;
+      }
+
+      if (subgraphState.specs.authenticated) {
+        state.specs.authenticated = true;
+      }
+
+      if (subgraphState.specs.policy) {
+        state.specs.policy = true;
       }
 
       for (const [typeName, type] of subgraphState.types) {

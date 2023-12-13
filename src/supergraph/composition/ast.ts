@@ -8,6 +8,7 @@ import {
   ASTNode,
   ConstArgumentNode,
   ConstDirectiveNode,
+  ConstValueNode,
   DirectiveDefinitionNode,
   DocumentNode,
   EnumTypeDefinitionNode,
@@ -120,6 +121,9 @@ export function createObjectTypeNode(objectType: {
   };
   tags?: string[];
   inaccessible?: boolean;
+  authenticated?: boolean;
+  policies?: string[][];
+  scopes?: string[][];
   description?: DescriptionAST;
   ast?: {
     directives?: ConstDirectiveNode[];
@@ -148,6 +152,9 @@ export function createInterfaceTypeNode(interfaceType: {
   };
   tags?: string[];
   inaccessible?: boolean;
+  authenticated?: boolean;
+  policies?: string[][];
+  scopes?: string[][];
   description?: DescriptionAST;
   ast?: {
     directives?: ConstDirectiveNode[];
@@ -234,6 +241,9 @@ export function createEnumTypeNode(enumType: {
   };
   tags?: string[];
   inaccessible?: boolean;
+  authenticated?: boolean;
+  policies?: string[][];
+  scopes?: string[][];
   description?: DescriptionAST;
   values: EnumValueAST[];
   ast?: {
@@ -259,6 +269,9 @@ export function createScalarTypeNode(scalarType: {
   };
   tags?: string[];
   inaccessible?: boolean;
+  authenticated?: boolean;
+  policies?: string[][];
+  scopes?: string[][];
   description?: DescriptionAST;
   specifiedBy?: string;
   ast?: {
@@ -690,6 +703,89 @@ function createInaccessibleDirectiveNode(): ConstDirectiveNode {
   };
 }
 
+function createAuthenticatedDirectiveNode(): ConstDirectiveNode {
+  return {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: Kind.NAME,
+      value: 'authenticated',
+    },
+    arguments: [],
+  };
+}
+
+function createPolicyDirectiveNode(policies: string[][]): ConstDirectiveNode {
+  // TODO: write deduplication logic
+  return {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: Kind.NAME,
+      value: 'policy',
+    },
+    arguments: [
+      {
+        kind: Kind.ARGUMENT,
+        name: {
+          kind: Kind.NAME,
+          value: 'policies',
+        },
+        value: {
+          kind: Kind.LIST,
+          values: policies.map(
+            group =>
+              ({
+                kind: Kind.LIST,
+                values: group.map(
+                  policy =>
+                    ({
+                      kind: Kind.STRING,
+                      value: policy,
+                    }) as ConstValueNode,
+                ),
+              }) as ConstValueNode,
+          ),
+        },
+      },
+    ],
+  };
+}
+
+function createRequiresScopesDirectiveNode(scopes: string[][]): ConstDirectiveNode {
+  // TODO: write deduplication logic
+  return {
+    kind: Kind.DIRECTIVE,
+    name: {
+      kind: Kind.NAME,
+      value: 'requiresScopes',
+    },
+    arguments: [
+      {
+        kind: Kind.ARGUMENT,
+        name: {
+          kind: Kind.NAME,
+          value: 'scopes',
+        },
+        value: {
+          kind: Kind.LIST,
+          values: scopes.map(
+            group =>
+              ({
+                kind: Kind.LIST,
+                values: group.map(
+                  scope =>
+                    ({
+                      kind: Kind.STRING,
+                      value: scope,
+                    }) as ConstValueNode,
+                ),
+              }) as ConstValueNode,
+          ),
+        },
+      },
+    ],
+  };
+}
+
 function createTagDirectiveNode(name: string): ConstDirectiveNode {
   return {
     kind: Kind.DIRECTIVE,
@@ -915,6 +1011,9 @@ function applyDirectives(common: {
   specifiedBy?: string;
   tags?: string[];
   inaccessible?: boolean;
+  authenticated?: boolean;
+  policies?: string[][];
+  scopes?: string[][];
 }) {
   return ([] as ConstDirectiveNode[]).concat(
     common.ast?.directives ?? [],
@@ -925,6 +1024,9 @@ function applyDirectives(common: {
     common.join?.enumValue?.map(createJoinEnumValueDirectiveNode) ?? [],
     common.tags?.map(createTagDirectiveNode) ?? [],
     common.inaccessible ? [createInaccessibleDirectiveNode()] : [],
+    common.authenticated ? [createAuthenticatedDirectiveNode()] : [],
+    common.policies?.length ? [createPolicyDirectiveNode(common.policies)] : [],
+    common.scopes?.length ? [createRequiresScopesDirectiveNode(common.scopes)] : [],
     common.deprecated ? [createDeprecatedDirectiveNode(common.deprecated)] : [],
     common.specifiedBy ? [createSpecifiedByDirectiveNode(common.specifiedBy)] : [],
   );

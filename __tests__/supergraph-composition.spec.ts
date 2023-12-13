@@ -464,4 +464,138 @@ testImplementations(api => {
     );
     assertCompositionSuccess(result);
   });
+
+  test('validate authentication', () => {
+    const result = api.composeServices([
+      {
+        name: 'feed',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.6"
+              import: ["@requiresScopes", "@policy", "@key", "@shareable"]
+            )
+
+          type Query {
+            feed: [Post!]!
+              @shareable
+              @requiresScopes(scopes: [["read:posts"]])
+              @policy(policies: [["read_posts"]])
+          }
+
+          type Post @key(fields: "id") {
+            id: ID!
+            title: String!
+          }
+        `,
+      },
+      {
+        name: 'comments',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.6"
+              import: [
+                "@authenticated"
+                "@requiresScopes"
+                "@policy"
+                "@key"
+                "@external"
+                "@shareable"
+              ]
+            )
+
+          extend type Post @key(fields: "id") {
+            id: ID! @external
+            comments: [Comment!]! @policy(policies: [["read_post_comments"]])
+          }
+
+          extend type Query {
+            feed: [Post!]!
+              @shareable
+              @policy(policies: [["read_post_comments"], ["read_post_comments"]])
+              @requiresScopes(scopes: [["read:post_comments"]])
+          }
+
+          type Mutation {
+            commentPost(input: CommentPostInput!): Comment! @authenticated
+          }
+
+          input CommentPostInput {
+            postId: ID!
+            comment: String!
+          }
+
+          type Comment {
+            id: ID!
+            body: String!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      schema
+        @link(url: "https://specs.apollo.dev/link/v1.0")
+        @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+        @link(url: "https://specs.apollo.dev/authenticated/v0.1", for: SECURITY)
+        @link(url: "https://specs.apollo.dev/policy/v0.1", for: SECURITY)
+        @link(url: "https://specs.apollo.dev/requiresScopes/v0.1", for: SECURITY) {
+        query: Query
+        mutation: Mutation
+      }
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      directive @requiresScopes(
+        scopes: [[requiresScopes__Scope!]!]!
+      ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      scalar requiresScopes__Scope
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      directive @policy(
+        policies: [[policy__Policy!]!]!
+      ) on ENUM | FIELD_DEFINITION | INTERFACE | OBJECT | SCALAR
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      scalar policy__Policy
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Mutation @join__type(graph: COMMENTS) {
+        commentPost(input: CommentPostInput!): Comment! @authenticated
+      }
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: COMMENTS) @join__type(graph: FEED) {
+        feed: [Post!]!
+          @policy(policies: [["read_post_comments"], ["read_post_comments"], ["read_posts"]])
+          @requiresScopes(scopes: [["read:post_comments"], ["read:posts"]])
+      }
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Post
+        @join__type(extension: true, graph: COMMENTS, key: "id")
+        @join__type(graph: FEED, key: "id") {
+        comments: [Comment!]!
+          @join__field(graph: COMMENTS)
+          @policy(policies: [["read_post_comments"]])
+        id: ID!
+        title: String! @join__field(graph: FEED)
+      }
+    `);
+  });
 });

@@ -1,8 +1,11 @@
 import { GraphQLError, Kind } from 'graphql';
 import { print } from './graphql/printer.js';
+import { sdl as authenticatedSDL } from './specifications/authenticated.js';
 import { sdl as inaccessibleSDL } from './specifications/inaccessible.js';
 import { sdl as joinSDL } from './specifications/join.js';
 import { sdl as linkSDL, printLink } from './specifications/link.js';
+import { sdl as policySDL } from './specifications/policy.js';
+import { sdl as requiresScopesSDL } from './specifications/requires-scopes.js';
 import { sdl as tagSDL } from './specifications/tag.js';
 import { ServiceDefinition } from './types.js';
 import { validate } from './validate.js';
@@ -52,6 +55,9 @@ export function composeServices(
 
   const usedTagSpec = validationResult.specs.tag;
   const usedInaccessibleSpec = validationResult.specs.inaccessible;
+  const usedPolicySpec = validationResult.specs.policy;
+  const usedRequiresScopesSpec = validationResult.specs.requiresScopes;
+  const usedAuthenticatedSpec = validationResult.specs.authenticated;
 
   return {
     supergraphSdl: `
@@ -62,6 +68,17 @@ schema
   ${
     usedInaccessibleSpec
       ? '@link(url: "https://specs.apollo.dev/inaccessible/v0.2", for: SECURITY)'
+      : ''
+  }
+  ${usedPolicySpec ? '@link(url: "https://specs.apollo.dev/policy/v0.1", for: SECURITY)' : ''}
+  ${
+    usedRequiresScopesSpec
+      ? '@link(url: "https://specs.apollo.dev/requiresScopes/v0.1", for: SECURITY)'
+      : ''
+  }
+  ${
+    usedAuthenticatedSpec
+      ? '@link(url: "https://specs.apollo.dev/authenticated/v0.1", for: SECURITY)'
       : ''
   }
   ${validationResult.links.map(printLink).join('\n  ')}
@@ -75,6 +92,9 @@ ${joinSDL}
 ${linkSDL}
 ${usedTagSpec ? tagSDL : ''}
 ${usedInaccessibleSpec ? inaccessibleSDL : ''}
+${usedPolicySpec ? policySDL : ''}
+${usedRequiresScopesSpec ? requiresScopesSDL : ''}
+${usedAuthenticatedSpec ? authenticatedSDL : ''}
 
 ${print({
   kind: Kind.DOCUMENT,

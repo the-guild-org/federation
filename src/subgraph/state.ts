@@ -51,6 +51,9 @@ export interface ScalarType {
   kind: TypeKind.SCALAR;
   name: string;
   inaccessible: boolean;
+  policies: string[][];
+  scopes: string[][];
+  authenticated: boolean;
   tags: Set<string>;
   description?: Description;
   specifiedBy?: string;
@@ -69,6 +72,9 @@ export interface ObjectType {
   keys: Key[];
   fieldsUsedAsKeys: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   shareable: boolean;
   tags: Set<string>;
   interfaces: Set<string>;
@@ -87,6 +93,9 @@ export interface InterfaceType {
   extension: boolean;
   keys: Key[];
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   tags: Set<string>;
   interfaces: Set<string>;
   isDefinition: boolean;
@@ -123,6 +132,9 @@ export interface EnumType {
   name: string;
   values: Map<string, EnumValue>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   tags: Set<string>;
   isDefinition: boolean;
   description?: Description;
@@ -138,6 +150,9 @@ export interface Field {
   args: Map<string, Argument>;
   external: boolean;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   override: string | null;
   provides: string | null;
   requires: string | null;
@@ -225,6 +240,9 @@ export interface SubgraphState {
     tag: boolean;
     inaccessible: boolean;
     link: boolean;
+    policy: boolean;
+    requiresScopes: boolean;
+    authenticated: boolean;
   };
   version: FederationVersion;
 }
@@ -260,6 +278,9 @@ export function createSubgraphStateBuilder(
     specs: {
       tag: false,
       inaccessible: false,
+      authenticated: false,
+      requiresScopes: false,
+      policy: false,
       link: isLinkSpecManuallyProvided,
     },
     version,
@@ -929,6 +950,15 @@ function scalarTypeFactory(state: SubgraphState) {
     setInaccessible(typeName: string) {
       getOrCreateScalarType(state, typeName).inaccessible = true;
     },
+    setAuthenticated(typeName: string) {
+      getOrCreateScalarType(state, typeName).authenticated = true;
+    },
+    setPolicies(typeName: string, policies: string[][]) {
+      getOrCreateScalarType(state, typeName).policies.push(...policies);
+    },
+    setScopes(typeName: string, scopes: string[][]) {
+      getOrCreateScalarType(state, typeName).scopes.push(...scopes);
+    },
     setTag(typeName: string, tag: string) {
       getOrCreateScalarType(state, typeName).tags.add(tag);
     },
@@ -987,6 +1017,16 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
       //   field.inaccessible = true;
       // }
     },
+    setAuthenticated(typeName: string) {
+      const objectType = getOrCreateObjectType(state, renameObject, typeName);
+      objectType.authenticated = true;
+    },
+    setPolicies(typeName: string, policies: string[][]) {
+      getOrCreateObjectType(state, renameObject, typeName).policies.push(...policies);
+    },
+    setScopes(typeName: string, scopes: string[][]) {
+      getOrCreateObjectType(state, renameObject, typeName).scopes.push(...scopes);
+    },
     setShareable(typeName: string) {
       getOrCreateObjectType(state, renameObject, typeName).shareable = true;
       // TODO: T10 set all fields to shareable but only if it's correct in Federation v2
@@ -1014,6 +1054,15 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
           reason,
           deprecated: true,
         };
+      },
+      setAuthenticated(typeName: string, fieldName: string) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).authenticated = true;
+      },
+      setPolicies(typeName: string, fieldName: string, policies: string[][]) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).policies.push(...policies);
+      },
+      setScopes(typeName: string, fieldName: string, scopes: string[][]) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).scopes.push(...scopes);
       },
       setExternal(typeName: string, fieldName: string) {
         getOrCreateObjectField(state, renameObject, typeName, fieldName).external = true;
@@ -1156,6 +1205,16 @@ function interfaceTypeFactory(state: SubgraphState) {
       //   field.inaccessible = true;
       // }
     },
+    setAuthenticated(typeName: string) {
+      const t = getOrCreateInterfaceType(state, typeName);
+      t.authenticated = true;
+    },
+    setPolicies(typeName: string, policies: string[][]) {
+      getOrCreateInterfaceType(state, typeName).policies.push(...policies);
+    },
+    setScopes(typeName: string, scopes: string[][]) {
+      getOrCreateInterfaceType(state, typeName).scopes.push(...scopes);
+    },
     setTag(typeName: string, tag: string) {
       getOrCreateInterfaceType(state, typeName).tags.add(tag);
     },
@@ -1174,6 +1233,15 @@ function interfaceTypeFactory(state: SubgraphState) {
       },
       setInaccessible(typeName: string, fieldName: string) {
         getOrCreateInterfaceField(state, typeName, fieldName).inaccessible = true;
+      },
+      setAuthenticated(typeName: string, fieldName: string) {
+        getOrCreateInterfaceField(state, typeName, fieldName).authenticated = true;
+      },
+      setPolicies(typeName: string, fieldName: string, policies: string[][]) {
+        getOrCreateInterfaceField(state, typeName, fieldName).policies.push(...policies);
+      },
+      setScopes(typeName: string, fieldName: string, scopes: string[][]) {
+        getOrCreateInterfaceField(state, typeName, fieldName).scopes.push(...scopes);
       },
       setOverride(typeName: string, fieldName: string, override: string) {
         getOrCreateInterfaceField(state, typeName, fieldName).override = override;
@@ -1331,6 +1399,15 @@ function enumTypeFactory(state: SubgraphState) {
     setInaccessible(typeName: string) {
       getOrCreateEnumType(state, typeName).inaccessible = true;
     },
+    setAuthenticated(typeName: string) {
+      getOrCreateEnumType(state, typeName).authenticated = true;
+    },
+    setPolicies(typeName: string, policies: string[][]) {
+      getOrCreateEnumType(state, typeName).policies.push(...policies);
+    },
+    setScopes(typeName: string, scopes: string[][]) {
+      getOrCreateEnumType(state, typeName).scopes.push(...scopes);
+    },
     setDescription(typeName: string, description: Description) {
       getOrCreateEnumType(state, typeName).description = description;
     },
@@ -1436,6 +1513,9 @@ function getOrCreateScalarType(state: SubgraphState, typeName: string): ScalarTy
     name: typeName,
     tags: new Set(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     ast: {
       directives: [],
     },
@@ -1471,6 +1551,9 @@ function getOrCreateObjectType(
     external: false,
     keys: [],
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     shareable: false,
     tags: new Set(),
     interfaces: new Set(),
@@ -1503,6 +1586,9 @@ function getOrCreateInterfaceType(state: SubgraphState, typeName: string): Inter
     extension: false,
     keys: [],
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     tags: new Set(),
     interfaces: new Set(),
     implementedBy: new Set(),
@@ -1559,6 +1645,9 @@ function getOrCreateEnumType(state: SubgraphState, typeName: string): EnumType {
     name: typeName,
     values: new Map(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     tags: new Set(),
     isDefinition: false,
     referencedByInputType: false,
@@ -1616,6 +1705,9 @@ function getOrCreateObjectField(
     type: MISSING,
     external: false,
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     used: false,
     required: false,
     provided: false,
@@ -1653,6 +1745,9 @@ function getOrCreateInterfaceField(
     type: MISSING,
     external: false,
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     used: false,
     override: null,
     provides: null,
