@@ -126,6 +126,15 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
         context,
         selectionSet,
         typeDefinition: targetType,
+        interceptFieldWithMissingSelectionSet(info) {
+          isValid = false;
+          context.reportError(
+            new GraphQLError(
+              `On field "${fieldCoordinate}", for @provides(fields: ${printedFieldsValue}): Invalid empty selection set for field "${info.typeDefinition.name.value}.${info.fieldName}" of non-leaf type ${info.outputType}`,
+              { nodes: directiveNode, extensions: { code: 'PROVIDES_INVALID_FIELDS' } },
+            ),
+          );
+        },
         interceptUnknownField(info) {
           isValid = false;
           context.reportError(

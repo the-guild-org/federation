@@ -171,11 +171,17 @@ export function visitFields({
   interceptInterfaceType,
   interceptExternalField,
   interceptNonExternalField,
+  interceptFieldWithMissingSelectionSet,
 }: {
   context: SubgraphValidationContext;
   selectionSet: SelectionSetNode;
   typeDefinition: ObjectOrInterface;
   interceptField?(info: { typeDefinition: ObjectOrInterface; fieldName: string }): void;
+  interceptFieldWithMissingSelectionSet?(info: {
+    typeDefinition: ObjectOrInterface;
+    fieldName: string;
+    outputType: string;
+  }): void;
   interceptArguments?(info: { typeDefinition: ObjectOrInterface; fieldName: string }): void;
   interceptUnknownField?(info: { typeDefinition: ObjectOrInterface; fieldName: string }): void;
   interceptDirective?(info: { directiveName: string; isKnown: boolean }): void;
@@ -322,6 +328,13 @@ export function visitFields({
     const innerSelection = selection.selectionSet;
 
     if (!innerSelection) {
+      if (interceptFieldWithMissingSelectionSet) {
+        interceptFieldWithMissingSelectionSet({
+          typeDefinition,
+          fieldName: selection.name.value,
+          outputType: print(selectionFieldDef.type),
+        });
+      }
       continue;
     }
 
