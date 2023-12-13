@@ -26,7 +26,7 @@ export function OverrideSourceHasOverrideRule(
         // If not, we want to use the next graph in the list, or the first graph in the list if we're at the end
         const anotherGraphId =
           graphFromOverride && graphFromOverride.override !== null
-            ? overrideValue
+            ? overrideValue!
             : graphsWithOverride[i + 1]
             ? graphsWithOverride[i + 1][0]
             : graphsWithOverride[0][0];
