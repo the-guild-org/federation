@@ -19,15 +19,14 @@ export function OverrideSourceHasOverrideRule(
 
       for (let i = 0; i < graphsWithOverride.length; i++) {
         const [graph, fieldStateInGraph] = graphsWithOverride[i];
-        // TODO: instead of using toUpperCase here, we should be able to translate subgraph's name to ID
-        const overrideValue = fieldStateInGraph.override.toUpperCase();
-        const graphFromOverride = fieldState.byGraph.get(overrideValue);
+        const overrideValue = context.graphNameToId(fieldStateInGraph.override);
+        const graphFromOverride = overrideValue ? fieldState.byGraph.get(overrideValue) : null;
 
         // We want to first check if the override value points to a graph with an override directive at the same field
         // If not, we want to use the next graph in the list, or the first graph in the list if we're at the end
         const anotherGraphId =
           graphFromOverride && graphFromOverride.override !== null
-            ? overrideValue
+            ? overrideValue!
             : graphsWithOverride[i + 1]
             ? graphsWithOverride[i + 1][0]
             : graphsWithOverride[0][0];

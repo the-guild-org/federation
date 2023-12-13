@@ -118,5 +118,75 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable"]
+              )
+
+              extend type Query {
+                foo: Foo
+              }
+
+              type Foo @shareable @key(fields: "id") {
+                id: ID!
+                name: String
+              }
+          `,
+        },
+        {
+          name: 'feed',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable", "@override"]
+              )
+
+              extend type Query {
+                foo: Foo @override(from: "noop")
+              }
+
+              type Foo @shareable @key(fields: "id") {
+                id: ID!
+                name: String
+              }
+          `,
+        },
+        {
+          name: 'noop',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable"]
+              )
+
+              type Query {
+                noop: String
+              }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              `Non-shareable field "Query.foo" is resolved from multiple subgraphs: it is resolved from subgraphs "feed" and "users" and defined as non-shareable in all of them`,
+            ),
+            extensions: expect.objectContaining({
+              code: 'INVALID_FIELD_SHARING',
+            }),
+          }),
+        ]),
+      }),
+    );
   });
 });
