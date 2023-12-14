@@ -1,5 +1,13 @@
 # @theguild/federation-composition
 
+## 0.5.0
+
+### Minor Changes
+
+- [#28](https://github.com/the-guild-org/federation/pull/28)
+  [`21fa482`](https://github.com/the-guild-org/federation/commit/21fa482171d286f94cecd57b10461a30d0044b64)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support v2.4, v2.5 and v2.6
+
 ## 0.4.0
 
 ### Minor Changes
