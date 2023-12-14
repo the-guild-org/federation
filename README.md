@@ -98,6 +98,21 @@ pnpm test
 - Look for `skipIf` or `skip` in the tests.
 - Refactor code (piece by piece) if you feel like it.
 
+### Compatibility
+
+The lack of a publicly available specification for Apollo Federation, coupled with the non
+open-source license of the Apollo Composition library, makes it difficult or even impossible to
+assure complete compatibility of our open-source composition library.
+
+Given that Apollo tools utilize their composition library, there is a potential for conflicting
+results between our composition library and Apollo's. This may lead to variations in the supergraph,
+differing composition errors, or, in some cases, conflicting composition outcomes.
+
+We are working to ensure that our composition library is as compatible as possible with Apollo's and
+will continue to do so as we learn more about the Federation specification.
+
+Your feedback and bug reports are welcome and appreciated.
+
 ## Supergraph SDL Composition
 
 ✅ Done
