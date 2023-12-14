@@ -233,6 +233,57 @@ testImplementations(api => {
         `);
       });
 
+      test('merge extension and definition of object type and print extension:true', () => {
+        const result = composeServices([
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+                extend schema
+                  @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+    
+                type User @key(fields: "id") @shareable {
+                  id: ID!
+                  name: String
+                }
+
+                type Query {
+                  user: User @shareable
+                }
+              `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+                extend schema
+                  @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+    
+                type User @key(fields: "id") @shareable {
+                  id: ID!
+                  name: String
+                }
+    
+                extend type User {
+                  email: String! @shareable
+                }
+    
+                type Query {
+                  user: User @shareable
+                }
+              `),
+          },
+        ]);
+
+        assertCompositionSuccess(result);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          type User @join__type(graph: A, key: "id") @join__type(graph: B, key: "id") {
+            email: String! @join__field(graph: B)
+            id: ID!
+            name: String
+          }
+        `);
+      });
+
       test('merge same types but one has an extra field (inaccessible)', () => {
         const result = composeServices([
           {

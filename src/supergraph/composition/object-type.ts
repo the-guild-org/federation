@@ -6,11 +6,25 @@ import type { Key, MapByGraph, TypeBuilder } from './common.js';
 import { convertToConst } from './common.js';
 
 export function isRealExtension(meta: ObjectTypeStateInGraph, version: FederationVersion) {
-  return meta.extension
-    ? meta.extensionType !== '@extends' && version === 'v1.0'
-      ? false
-      : true
-    : false;
+  const hasExtendsDirective = meta.extensionType === '@extends';
+
+  if (meta.extension) {
+    if (version === 'v1.0' && !hasExtendsDirective) {
+      return false;
+    }
+
+    if (hasExtendsDirective) {
+      return true;
+    }
+
+    if (meta.hasDefinition) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
@@ -56,6 +70,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
       type.interfaces.forEach(interfaceName => objectTypeState.interfaces.add(interfaceName));
 
       objectTypeState.byGraph.set(graph.id, {
+        hasDefinition: isDefinition,
         extension: type.extension,
         extensionType: type.extensionType,
         external: type.external,
@@ -64,6 +79,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         shareable: type.shareable,
         interfaces: type.interfaces,
       });
+      const typeInGraph = objectTypeState.byGraph.get(graph.id)!;
 
       for (const field of type.fields.values()) {
         const fieldState = getOrCreateField(objectTypeState, field.name, field.type);
@@ -79,7 +95,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         // It's the first time we visited a non-external field, we should force the type on that field to match the local type
         const isExternal =
           graph.version === 'v1.0'
-            ? field.external && isRealExtension(type, graph.version)
+            ? field.external && isRealExtension(typeInGraph, graph.version)
             : field.external;
         const shouldForceType =
           // If it's not an external field and it's first time we visited a non-external field,
@@ -474,6 +490,7 @@ export type ObjectTypeFieldArgState = {
 };
 
 export type ObjectTypeStateInGraph = {
+  hasDefinition: boolean;
   extension: boolean;
   extensionType?: '@extends' | 'extend';
   external: boolean;
