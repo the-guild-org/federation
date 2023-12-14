@@ -80,7 +80,7 @@ const both = [
     composeServices: composeServicesFactory(guildComposeServices),
   },
 ];
-const versions = ['v2.0', 'v2.1', 'v2.2', 'v2.3'] as const;
+export const versions = ['v2.0', 'v2.1', 'v2.2', 'v2.3', 'v2.4', 'v2.5', 'v2.6'] as const;
 
 type TestAPI = (typeof both)[number];
 
@@ -90,6 +90,27 @@ export function testVersions(runTests: (api: TestAPI, version: (typeof versions)
       runTests(api, version);
     });
   });
+}
+
+export type FederationVersion = (typeof versions)[number];
+
+export function satisfiesVersionRange(
+  range: `${'<' | '>=' | '>'} ${FederationVersion}`,
+  version: FederationVersion,
+) {
+  const [sign, ver] = range.split(' ') as ['<' | '>=' | '>', FederationVersion];
+  const versionInRange = parseFloat(ver.replace('v', ''));
+  const detectedVersion = parseFloat(version.replace('v', ''));
+
+  if (sign === '<') {
+    return detectedVersion < versionInRange;
+  }
+
+  if (sign === '>') {
+    return detectedVersion > versionInRange;
+  }
+
+  return detectedVersion >= versionInRange;
 }
 
 export function testImplementations(runTests: (api: TestAPI) => void) {

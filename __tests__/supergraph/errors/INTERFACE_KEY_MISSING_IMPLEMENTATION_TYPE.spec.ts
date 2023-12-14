@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE', () => {
@@ -61,7 +61,7 @@ testVersions((api, version) => {
     ).toEqual(
       expect.objectContaining({
         errors: expect.arrayContaining(
-          version === 'v2.3'
+          satisfiesVersionRange('>= v2.3', version)
             ? [
                 // Federation should ignore a situation where an interface has a `@key` field but the subgraph doesn't implement the interface.
                 // It should check if at least one subgraph does it and if it does, then it should ignore the missing implementation (or create a hint instead).
@@ -164,7 +164,7 @@ testVersions((api, version) => {
     ).toEqual(
       expect.objectContaining({
         errors: expect.arrayContaining(
-          version === 'v2.3'
+          satisfiesVersionRange('>= v2.3', version)
             ? [
                 // Federation should ignore a situation where an interface has a `@key` field but the subgraph doesn't implement the interface.
                 // It should check if at least one subgraph does it and if it does, then it should ignore the missing implementation (or create a hint instead).

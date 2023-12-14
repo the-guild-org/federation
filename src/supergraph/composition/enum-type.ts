@@ -13,6 +13,18 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
         enumTypeState.inaccessible = true;
       }
 
+      if (type.authenticated) {
+        enumTypeState.authenticated = true;
+      }
+
+      if (type.policies) {
+        enumTypeState.policies.push(...type.policies);
+      }
+
+      if (type.scopes) {
+        enumTypeState.scopes.push(...type.scopes);
+      }
+
       if (type.isDefinition) {
         enumTypeState.hasDefinition = true;
       }
@@ -97,6 +109,9 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
         })),
         tags: Array.from(enumType.tags),
         inaccessible: enumType.inaccessible,
+        authenticated: enumType.authenticated,
+        policies: enumType.policies,
+        scopes: enumType.scopes,
         description: enumType.description,
         join: {
           type: Array.from(enumType.byGraph.keys()).map(graphName => ({
@@ -136,6 +151,9 @@ export type EnumTypeState = {
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   hasDefinition: boolean;
   description?: Description;
   byGraph: MapByGraph<EnumTypeStateInGraph>;
@@ -176,6 +194,9 @@ function getOrCreateEnumType(state: Map<string, EnumTypeState>, typeName: string
     tags: new Set(),
     hasDefinition: false,
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     referencedByInputType: false,
     referencedByOutputType: false,
     inputTypeReferences: new Set(),

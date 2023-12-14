@@ -24,6 +24,18 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         objectTypeState.inaccessible = true;
       }
 
+      if (type.authenticated) {
+        objectTypeState.authenticated = true;
+      }
+
+      if (type.policies) {
+        objectTypeState.policies.push(...type.policies);
+      }
+
+      if (type.scopes) {
+        objectTypeState.scopes.push(...type.scopes);
+      }
+
       const isDefinition =
         type.isDefinition && (graph.version === 'v1.0' ? type.extensionType !== '@extends' : true);
 
@@ -94,6 +106,18 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
 
         if (field.inaccessible) {
           fieldState.inaccessible = true;
+        }
+
+        if (field.authenticated) {
+          fieldState.authenticated = true;
+        }
+
+        if (field.policies) {
+          fieldState.policies.push(...field.policies);
+        }
+
+        if (field.scopes) {
+          fieldState.scopes.push(...field.scopes);
         }
 
         if (field.override) {
@@ -306,6 +330,9 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             name: field.name,
             type: field.type,
             inaccessible: field.inaccessible,
+            authenticated: field.authenticated,
+            policies: field.policies,
+            scopes: field.scopes,
             tags: Array.from(field.tags),
             description: field.description,
             deprecated: field.deprecated,
@@ -343,6 +370,9 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         interfaces: Array.from(objectType.interfaces),
         tags: Array.from(objectType.tags),
         inaccessible: objectType.inaccessible,
+        authenticated: objectType.authenticated,
+        policies: objectType.policies,
+        scopes: objectType.scopes,
         join: {
           type: isQuery
             ? // if it's a Query, we need to annotate the object type with `@join__type` pointing to all subgraphs
@@ -394,6 +424,9 @@ export type ObjectTypeState = {
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   hasDefinition: boolean;
   byGraph: MapByGraph<ObjectTypeStateInGraph>;
   interfaces: Set<string>;
@@ -409,6 +442,9 @@ export type ObjectTypeFieldState = {
   type: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   usedAsKey: boolean;
   override: string | null;
   byGraph: MapByGraph<FieldStateInGraph>;
@@ -479,6 +515,9 @@ function getOrCreateObjectType(state: Map<string, ObjectTypeState>, typeName: st
     tags: new Set(),
     hasDefinition: false,
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     interfaces: new Set(),
     byGraph: new Map(),
     fields: new Map(),
@@ -504,6 +543,9 @@ function getOrCreateField(objectTypeState: ObjectTypeState, fieldName: string, f
     type: fieldType,
     tags: new Set(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     usedAsKey: false,
     override: null,
     byGraph: new Map(),

@@ -14,6 +14,18 @@ export function scalarTypeBuilder(): TypeBuilder<ScalarType, ScalarTypeState> {
         scalarTypeState.inaccessible = true;
       }
 
+      if (type.authenticated) {
+        scalarTypeState.authenticated = true;
+      }
+
+      if (type.policies) {
+        scalarTypeState.policies.push(...type.policies);
+      }
+
+      if (type.scopes) {
+        scalarTypeState.scopes.push(...type.scopes);
+      }
+
       if (type.description && !scalarTypeState.description) {
         scalarTypeState.description = type.description;
       }
@@ -35,6 +47,9 @@ export function scalarTypeBuilder(): TypeBuilder<ScalarType, ScalarTypeState> {
         name: scalarType.name,
         tags: Array.from(scalarType.tags),
         inaccessible: scalarType.inaccessible,
+        authenticated: scalarType.authenticated,
+        policies: scalarType.policies,
+        scopes: scalarType.scopes,
         description: scalarType.description,
         specifiedBy: scalarType.specifiedBy,
         join: {
@@ -54,6 +69,9 @@ export type ScalarTypeState = {
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   byGraph: MapByGraph<ScalarTypeStateInGraph>;
   description?: Description;
   specifiedBy?: string;
@@ -77,6 +95,9 @@ function getOrCreateScalarType(state: Map<string, ScalarTypeState>, typeName: st
     name: typeName,
     tags: new Set(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     byGraph: new Map(),
     ast: {
       directives: [],

@@ -15,6 +15,18 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         interfaceTypeState.inaccessible = true;
       }
 
+      if (type.authenticated) {
+        interfaceTypeState.authenticated = true;
+      }
+
+      if (type.policies) {
+        interfaceTypeState.policies.push(...type.policies);
+      }
+
+      if (type.scopes) {
+        interfaceTypeState.scopes.push(...type.scopes);
+      }
+
       if (type.isDefinition) {
         interfaceTypeState.hasDefinition = true;
       }
@@ -52,6 +64,18 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
 
         if (field.inaccessible) {
           fieldState.inaccessible = true;
+        }
+
+        if (field.authenticated) {
+          fieldState.authenticated = true;
+        }
+
+        if (field.policies) {
+          fieldState.policies.push(...field.policies);
+        }
+
+        if (field.scopes) {
+          fieldState.scopes.push(...field.scopes);
         }
 
         // First deprecation wins
@@ -116,6 +140,9 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
             name: field.name,
             type: field.type,
             inaccessible: field.inaccessible,
+            authenticated: field.authenticated,
+            policies: field.policies,
+            scopes: field.scopes,
             tags: Array.from(field.tags),
             deprecated: field.deprecated,
             description: field.description,
@@ -163,6 +190,9 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         }),
         tags: Array.from(interfaceType.tags),
         inaccessible: interfaceType.inaccessible,
+        authenticated: interfaceType.authenticated,
+        policies: interfaceType.policies,
+        scopes: interfaceType.scopes,
         description: interfaceType.description,
         interfaces: Array.from(interfaceType.interfaces),
         ast: {
@@ -211,6 +241,9 @@ export type InterfaceTypeState = {
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   hasDefinition: boolean;
   description?: Description;
   byGraph: MapByGraph<InterfaceTypeInGraph>;
@@ -227,6 +260,9 @@ type InterfaceTypeFieldState = {
   type: string;
   tags: Set<string>;
   inaccessible: boolean;
+  authenticated: boolean;
+  policies: string[][];
+  scopes: string[][];
   deprecated?: Deprecated;
   description?: Description;
   byGraph: MapByGraph<FieldStateInGraph>;
@@ -279,6 +315,9 @@ function getOrCreateInterfaceType(state: Map<string, InterfaceTypeState>, typeNa
     name: typeName,
     tags: new Set(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     hasDefinition: false,
     byGraph: new Map(),
     fields: new Map(),
@@ -310,6 +349,9 @@ function getOrCreateInterfaceField(
     type: fieldType,
     tags: new Set(),
     inaccessible: false,
+    authenticated: false,
+    policies: [],
+    scopes: [],
     byGraph: new Map(),
     args: new Map(),
     ast: {

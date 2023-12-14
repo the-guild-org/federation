@@ -19,41 +19,6 @@ import {
 import sortBy from 'lodash.sortby';
 import { print } from './printer.js';
 
-export function stripFederationFromSupergraph(supergraph: DocumentNode) {
-  function remove() {
-    return null;
-  }
-
-  return visit(supergraph, {
-    DirectiveDefinition: remove,
-    Directive: remove,
-    SchemaDefinition: remove,
-    SchemaExtension: remove,
-    EnumTypeDefinition: node => {
-      if (
-        node.name.value === 'core__Purpose' ||
-        node.name.value === 'join__Graph' ||
-        node.name.value === 'link__Purpose'
-      ) {
-        return null;
-      }
-
-      return node;
-    },
-    ScalarTypeDefinition: node => {
-      if (
-        node.name.value === '_FieldSet' ||
-        node.name.value === 'link__Import' ||
-        node.name.value === 'join__FieldSet'
-      ) {
-        return null;
-      }
-
-      return node;
-    },
-  });
-}
-
 // Used to normalize the AST of Supergraph SDLs so that they can be compared without worrying about ordering
 export function sortSDL(doc: DocumentNode) {
   try {

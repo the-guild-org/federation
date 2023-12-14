@@ -18,6 +18,7 @@ import { TypeNodeInfo, visitWithTypeNodeInfo } from '../../graphql/type-node-inf
 import { createSpecSchema, FederationVersion } from '../../specifications/federation.js';
 import { Link, LinkImport, parseLinkDirective } from '../../specifications/link.js';
 import { SubgraphStateBuilder } from '../state.js';
+import { AuthenticatedRule } from './rules/elements/authenticated.js';
 import { ComposeDirectiveRules } from './rules/elements/compose-directive.js';
 import { ExtendsRules } from './rules/elements/extends.js';
 import { ExternalRules } from './rules/elements/external.js';
@@ -26,7 +27,9 @@ import { InaccessibleRules } from './rules/elements/inaccessible.js';
 import { InterfaceObjectRules } from './rules/elements/interface-object.js';
 import { KeyRules } from './rules/elements/key.js';
 import { OverrideRules } from './rules/elements/override.js';
+import { PolicyRule } from './rules/elements/policy.js';
 import { ProvidesRules } from './rules/elements/provides.js';
+import { RequiresScopesRule } from './rules/elements/requires-scopes.js';
 import { RequiresRules } from './rules/elements/requires.js';
 import { ShareableRules } from './rules/elements/shareable.js';
 import { TagRules } from './rules/elements/tag.js';
@@ -107,6 +110,9 @@ export function validateSubgraph(
     FieldSetRules,
     InaccessibleRules,
     InterfaceObjectRules,
+    AuthenticatedRule,
+    PolicyRule,
+    RequiresScopesRule,
     OverrideRules,
     ExtendsRules,
     QueryRootTypeInaccessibleRule,

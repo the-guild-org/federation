@@ -1,6 +1,6 @@
 # Federation Composition
 
-Supports all Federation versions prior to v2.4.0. Drop-in replacement for `@apollo/composition`.
+Supports all Federation versions. Drop-in replacement for `@apollo/composition`.
 
 🚧 Work in progress, so please check [TODOs](#todos).
 

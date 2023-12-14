@@ -165,6 +165,91 @@ const federationSpecFactory = {
       prefix,
       imports,
     ),
+  'v2.4': (prefix: string, imports?: readonly LinkImport[]) =>
+    createTypeDefinitions(
+      /* GraphQL */ `
+        directive @composeDirective(name: String!) repeatable on SCHEMA
+        directive @extends on OBJECT | INTERFACE
+        directive @external on OBJECT | FIELD_DEFINITION
+        directive @key(
+          fields: FieldSet!
+          resolvable: Boolean = true
+        ) repeatable on OBJECT | INTERFACE
+        directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ENUM | ENUM_VALUE | SCALAR | INPUT_OBJECT | INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+        directive @interfaceObject on OBJECT
+        directive @override(from: String!) on FIELD_DEFINITION
+        directive @provides(fields: FieldSet!) on FIELD_DEFINITION
+        directive @requires(fields: FieldSet!) on FIELD_DEFINITION
+        directive @shareable repeatable on FIELD_DEFINITION | OBJECT
+        directive @tag(
+          name: String!
+        ) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+        scalar FieldSet
+      `,
+      prefix,
+      imports,
+    ),
+  'v2.5': (prefix: string, imports?: readonly LinkImport[]) =>
+    createTypeDefinitions(
+      /* GraphQL */ `
+        directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+        directive @requiresScopes(
+          scopes: [[Scope!]!]!
+        ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+        directive @composeDirective(name: String!) repeatable on SCHEMA
+        directive @extends on OBJECT | INTERFACE
+        directive @external on OBJECT | FIELD_DEFINITION
+        directive @key(
+          fields: FieldSet!
+          resolvable: Boolean = true
+        ) repeatable on OBJECT | INTERFACE
+        directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ENUM | ENUM_VALUE | SCALAR | INPUT_OBJECT | INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+        directive @interfaceObject on OBJECT
+        directive @override(from: String!) on FIELD_DEFINITION
+        directive @provides(fields: FieldSet!) on FIELD_DEFINITION
+        directive @requires(fields: FieldSet!) on FIELD_DEFINITION
+        directive @shareable repeatable on FIELD_DEFINITION | OBJECT
+        directive @tag(
+          name: String!
+        ) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+        scalar FieldSet
+        scalar Scope
+      `,
+      prefix,
+      imports,
+    ),
+  'v2.6': (prefix: string, imports?: readonly LinkImport[]) =>
+    createTypeDefinitions(
+      /* GraphQL */ `
+        directive @policy(
+          policies: [[federation__Policy!]!]!
+        ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+        directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+        directive @requiresScopes(
+          scopes: [[Scope!]!]!
+        ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+        directive @composeDirective(name: String!) repeatable on SCHEMA
+        directive @extends on OBJECT | INTERFACE
+        directive @external on OBJECT | FIELD_DEFINITION
+        directive @key(
+          fields: FieldSet!
+          resolvable: Boolean = true
+        ) repeatable on OBJECT | INTERFACE
+        directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ENUM | ENUM_VALUE | SCALAR | INPUT_OBJECT | INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+        directive @interfaceObject on OBJECT
+        directive @override(from: String!) on FIELD_DEFINITION
+        directive @provides(fields: FieldSet!) on FIELD_DEFINITION
+        directive @requires(fields: FieldSet!) on FIELD_DEFINITION
+        directive @shareable repeatable on FIELD_DEFINITION | OBJECT
+        directive @tag(
+          name: String!
+        ) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+        scalar FieldSet
+        scalar Policy
+      `,
+      prefix,
+      imports,
+    ),
 };
 
 // TODO: T03 support prefixes (imports could have them) of Federation directives

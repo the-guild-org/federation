@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test.skipIf(api.library === 'guild')('INTERFACE_OBJECT_USAGE_ERROR', () => {
@@ -48,7 +48,7 @@ testVersions((api, version) => {
     ).toEqual(
       expect.objectContaining({
         errors: expect.arrayContaining([
-          version === 'v2.3'
+          satisfiesVersionRange('>= v2.3', version)
             ? expect.objectContaining({
                 message: expect.stringContaining(
                   `The @interfaceObject directive can only be applied to entity types but type "Media" has no @key in this subgraph.`,
