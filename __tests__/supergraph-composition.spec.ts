@@ -514,7 +514,7 @@ testImplementations(api => {
             feed: [Post!]!
               @shareable
               @policy(policies: [["read_post_comments"], ["read_post_comments"]])
-              @requiresScopes(scopes: [["read:post_comments"]])
+              @requiresScopes(scopes: [["read:posts"]])
           }
 
           type Mutation {
@@ -578,11 +578,19 @@ testImplementations(api => {
       }
     `);
 
+    const policies =
+      api.library === 'apollo'
+        ? // The top-level array means "OR".
+          // The inner arrays mean "AND".
+          // So this means "read_post_comments OR read_posts".
+          `[["read_post_comments"], ["read_post_comments"], ["read_posts"]]`
+        : // we do deduplication as it does not change the behavior of a gateway and feels like a bug in Apollo
+          `[["read_post_comments"], ["read_posts"]]`;
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type Query @join__type(graph: COMMENTS) @join__type(graph: FEED) {
         feed: [Post!]!
-          @policy(policies: [["read_post_comments"], ["read_post_comments"], ["read_posts"]])
-          @requiresScopes(scopes: [["read:post_comments"], ["read:posts"]])
+          @policy(policies: ${policies})
+          @requiresScopes(scopes: [["read:posts"]])
       }
     `);
 

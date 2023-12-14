@@ -714,8 +714,19 @@ function createAuthenticatedDirectiveNode(): ConstDirectiveNode {
   };
 }
 
+function deduplicatePoliciesOrScopes(items: string[][]) {
+  const stringified = items.map(group => group.sort().join('ɵ'));
+  const indexesToRemove: number[] = [];
+
+  for (let index = 0; index < stringified.length; index++) {
+    if (stringified.indexOf(stringified[index]) !== index) {
+      indexesToRemove.push(index);
+    }
+  }
+  return items.filter((_, index) => !indexesToRemove.includes(index));
+}
+
 function createPolicyDirectiveNode(policies: string[][]): ConstDirectiveNode {
-  // TODO: write deduplication logic
   return {
     kind: Kind.DIRECTIVE,
     name: {
@@ -731,7 +742,7 @@ function createPolicyDirectiveNode(policies: string[][]): ConstDirectiveNode {
         },
         value: {
           kind: Kind.LIST,
-          values: policies.map(
+          values: deduplicatePoliciesOrScopes(policies).map(
             group =>
               ({
                 kind: Kind.LIST,
@@ -751,7 +762,6 @@ function createPolicyDirectiveNode(policies: string[][]): ConstDirectiveNode {
 }
 
 function createRequiresScopesDirectiveNode(scopes: string[][]): ConstDirectiveNode {
-  // TODO: write deduplication logic
   return {
     kind: Kind.DIRECTIVE,
     name: {
@@ -767,7 +777,7 @@ function createRequiresScopesDirectiveNode(scopes: string[][]): ConstDirectiveNo
         },
         value: {
           kind: Kind.LIST,
-          values: scopes.map(
+          values: deduplicatePoliciesOrScopes(scopes).map(
             group =>
               ({
                 kind: Kind.LIST,
