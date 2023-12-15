@@ -1,5 +1,38 @@
 # @theguild/federation-composition
 
+## 0.6.0
+
+### Minor Changes
+
+- [`9195942`](https://github.com/the-guild-org/federation/commit/9195942c97646d5bcd326632358713a8676115b3)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Detect composed directives without spec
+
+### Patch Changes
+
+- [`3196317`](https://github.com/the-guild-org/federation/commit/3196317a479d289d52f051255c5d24db1c673936)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix field sharing logic for Federation
+  v1
+
+- [`af15843`](https://github.com/the-guild-org/federation/commit/af15843269c919ead82cec7d8c37d61c9bcde9ec)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix OVERRIDE_SOURCE_HAS_OVERRIDE rule
+  to find circular refs
+
+- [`c182a8a`](https://github.com/the-guild-org/federation/commit/c182a8a581fcc1cff2e08253b70f39592ed796b7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix discoverability of directive
+  definitions
+
+- [`c182a8a`](https://github.com/the-guild-org/federation/commit/c182a8a581fcc1cff2e08253b70f39592ed796b7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix descriptions on arguments of object
+  type fields
+
+- [`cab3b49`](https://github.com/the-guild-org/federation/commit/cab3b49195a8a2e920c4d1d08ddb4bd030e8b3b8)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix adding unnecessary
+  `@join__type(extension:true)`
+
+- [`af15843`](https://github.com/the-guild-org/federation/commit/af15843269c919ead82cec7d8c37d61c9bcde9ec)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Prevent shareable fields on root level
+  subscription object
+
 ## 0.5.0
 
 ### Minor Changes
