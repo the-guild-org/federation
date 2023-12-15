@@ -50,7 +50,7 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
           fieldState.deprecated = field.deprecated;
         }
 
-        if (typeof field.defaultValue === 'string') {
+        if (typeof field.defaultValue !== 'undefined') {
           fieldState.defaultValue = field.defaultValue;
         }
 
@@ -76,16 +76,17 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
             return true;
           })
           .map(field => {
-            const hasDifferentType = Array.from(field.byGraph.values()).some(
-              f => f.type !== field.type,
-            );
+            const fieldStateInGraphs = Array.from(field.byGraph.values());
+            const hasDifferentType = fieldStateInGraphs.some(f => f.type !== field.type);
 
             return {
               name: field.name,
               type: field.type,
               tags: Array.from(field.tags),
               inaccessible: field.inaccessible,
-              defaultValue: field.defaultValue,
+              defaultValue: fieldStateInGraphs.every(f => typeof f.defaultValue !== 'undefined')
+                ? field.defaultValue
+                : undefined,
               description: field.description,
               deprecated: field.deprecated,
               join: {

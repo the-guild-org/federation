@@ -240,7 +240,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
-    
+
                 type User @key(fields: "id") @shareable {
                   id: ID!
                   name: String
@@ -256,16 +256,16 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
-    
+
                 type User @key(fields: "id") @shareable {
                   id: ID!
                   name: String
                 }
-    
+
                 extend type User {
                   email: String! @shareable
                 }
-    
+
                 type Query {
                   user: User @shareable
                 }
@@ -2198,7 +2198,7 @@ testImplementations(api => {
           name: 'users',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type User @key(fields: "email") {
               email: ID!
               name: String
@@ -2216,7 +2216,7 @@ testImplementations(api => {
           name: 'pandas',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Query {
               allPandas: [Panda]
               panda(name: ID!): Panda
@@ -2572,11 +2572,10 @@ testImplementations(api => {
     });
 
     test('@override', () => {
-      const result = composeServices(
-        [
-          {
-            name: 'a',
-            typeDefs: parse(/* GraphQL */ `
+      let result = composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
 
             type Product @key(fields: "id") {
@@ -2588,10 +2587,10 @@ testImplementations(api => {
               products: [Product]
             }
           `),
-          },
-          {
-            name: 'b',
-            typeDefs: parse(/* GraphQL */ `
+        },
+        {
+          name: 'b',
+          typeDefs: parse(/* GraphQL */ `
             extend schema
               @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@override"])
 
@@ -2600,10 +2599,8 @@ testImplementations(api => {
               inStock: Boolean! @override(from: "a")
             }
           `),
-          },
-        ],
-        true,
-      );
+        },
+      ]);
 
       assertCompositionSuccess(result);
 
@@ -2611,6 +2608,69 @@ testImplementations(api => {
         type Product @join__type(graph: A, key: "id") @join__type(graph: B, key: "id") {
           id: ID!
           inStock: Boolean! @join__field(graph: B, override: "a")
+        }
+      `);
+
+      result = api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable", "@override"]
+              )
+
+            type User @key(fields: "id") @shareable {
+              id: ID!
+              name: String
+            }
+
+            type Query {
+              user: User
+            }
+          `),
+        },
+        {
+          name: 'bar',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable", "@override"]
+              )
+
+            type User @key(fields: "id") @shareable {
+              id: ID!
+              name: String @override(from: "main")
+            }
+          `),
+        },
+        {
+          name: 'main',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@key", "@shareable", "@override"]
+              )
+
+            type User @shareable {
+              name: String
+            }
+          `),
+        },
+      ]);
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        type User
+          @join__type(graph: FOO, key: "id")
+          @join__type(graph: MAIN)
+          @join__type(graph: BAR, key: "id") {
+          id: ID! @join__field(graph: BAR) @join__field(graph: FOO)
+          name: String @join__field(graph: FOO) @join__field(graph: BAR, override: "main")
         }
       `);
     });
@@ -3041,7 +3101,7 @@ testImplementations(api => {
           name: 'users',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type User @key(fields: "email") {
               email: ID!
               name: String
@@ -3059,7 +3119,7 @@ testImplementations(api => {
           name: 'pandas',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Query {
               allPandas: [Panda]
               panda(name: ID!): Panda
@@ -3093,7 +3153,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-            
+
             extend type Product @key(fields: "id") {
               id: ID! @external
               reviews: [Review]
@@ -3110,7 +3170,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3151,7 +3211,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-            
+
             extend type Product @key(fields: "id") {
               id: ID! @external
               reviews: [Review]
@@ -3168,7 +3228,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3194,7 +3254,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-            
+
             extend type Product @key(fields: "id") {
               id: ID! @external
               reviews: [Review]
@@ -3211,7 +3271,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3290,7 +3350,7 @@ testImplementations(api => {
           typeDefs: parse(/* GraphQL */ `
             extend schema
               @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id name") {
               id: ID!
               name: String!
@@ -3307,7 +3367,7 @@ testImplementations(api => {
           typeDefs: parse(/* GraphQL */ `
             extend schema
               @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-            
+
             type Product @key(fields: "id name") {
               id: ID!
               name: String! @external
@@ -3335,7 +3395,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-            
+
             extend type Product @key(fields: "id") {
               id: ID! @external
               reviews: [Review]
@@ -3352,7 +3412,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3404,7 +3464,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Review @key(fields: "id") {
               id: ID!
               rating: Float
@@ -3416,7 +3476,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3447,7 +3507,7 @@ testImplementations(api => {
           name: 'reviews',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@shareable"])
-            
+
             extend type Query {
               review(id: ID!): Review
               product(id: ID!): Product @shareable
@@ -3469,7 +3529,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
-            
+
             type Product @key(fields: "id") {
               id: ID!
               title: String
@@ -3556,7 +3616,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product @key(fields: "id", resolvable: false) {
               id: ID!
               title: String
@@ -3585,7 +3645,7 @@ testImplementations(api => {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Product implements Node & SellingItem @key(fields: "id")  {
               id: ID!
               name: String!
@@ -3701,13 +3761,13 @@ testImplementations(api => {
               products
               """
               scalar DateTime
-              
+
               type Product @key(fields: "id") {
                 id: ID!
                 title: String
                 createdAt: DateTime
               }
-  
+
               extend type Query {
                 product(
                   id: ID!
@@ -3733,7 +3793,7 @@ testImplementations(api => {
             name: 'reviews',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-              
+
               """reviews"""
               type Query {
                 """
@@ -3746,7 +3806,7 @@ testImplementations(api => {
                   id: ID!
                 ): Review
               }
-  
+
               extend type Product @key(fields: "id") {
                 """
                 it will be removed
@@ -3757,7 +3817,7 @@ testImplementations(api => {
                 """
                 reviews: [Review]
               }
-  
+
               """
               reviews
               """
@@ -3781,7 +3841,7 @@ testImplementations(api => {
             name: 'pricing',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@extends"])
-              
+
               type Product @key(fields: "id") @extends {
                 """
                 pricing
@@ -3789,7 +3849,7 @@ testImplementations(api => {
                 id: ID! @external
                 promoCodes: [PromoCode]
               }
-  
+
               type PromoCode {
                 id: ID!
                 code: String!
@@ -3800,7 +3860,7 @@ testImplementations(api => {
             name: 'products',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-              
+
               """
               products
               """
@@ -3818,7 +3878,7 @@ testImplementations(api => {
                 """
                 price(currency: String = "USD"): Price!
               }
-  
+
               """
               products
               """
@@ -3828,7 +3888,7 @@ testImplementations(api => {
                 """
                 amount: Float
               }
-  
+
               type Query {
                 """
                 products
@@ -3944,13 +4004,13 @@ testImplementations(api => {
             name: 'reviews',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@extends"])
-              
+
               type Query {
                 review(
                   id: ID!
                 ): Review
               }
-  
+
               """
               reviews
               """
@@ -3964,7 +4024,7 @@ testImplementations(api => {
                 """
                 reviews: [Review]
               }
-  
+
               type Review {
                 id: ID!
                 rating: Float
@@ -3976,7 +4036,7 @@ testImplementations(api => {
             name: 'products',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-              
+
               type Product @key(fields: "id") {
                 """
                 products
@@ -3987,7 +4047,7 @@ testImplementations(api => {
                 """
                 title: String
               }
-  
+
               type Query {
                 product(
                   id: ID!
@@ -4028,7 +4088,7 @@ testImplementations(api => {
             name: 'reviews',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@shareable"])
-              
+
               """reviews"""
               type Query {
                 """
@@ -4041,7 +4101,7 @@ testImplementations(api => {
                   id: ID!
                 ): Review
               }
-  
+
               extend type Product @key(fields: "id") {
                 """
                 it will be removed
@@ -4066,7 +4126,7 @@ testImplementations(api => {
                   currency: String = "USD"
                 ): Price! @shareable
               }
-  
+
               """
               reviews
               """
@@ -4100,7 +4160,7 @@ testImplementations(api => {
             name: 'pricing',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@extends", "@shareable"])
-              
+
               type Product @key(fields: "id") @extends {
                 """
                 pricing
@@ -4117,7 +4177,7 @@ testImplementations(api => {
                   currency: String = "USD"
                 ): Price! @shareable
               }
-  
+
               type PromoCode {
                 id: ID!
                 code: String!
@@ -4138,7 +4198,7 @@ testImplementations(api => {
             name: 'products',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
-              
+
               """
               products
               """
@@ -4161,7 +4221,7 @@ testImplementations(api => {
                   currency: String = "USD"
                 ): Price! @shareable
               }
-  
+
               """
               products
               """
@@ -4171,7 +4231,7 @@ testImplementations(api => {
                 """
                 amount: Float @shareable
               }
-  
+
               type Query {
                 """
                 products
@@ -4306,7 +4366,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 """
                 b
                 """
@@ -4320,11 +4380,11 @@ testImplementations(api => {
                   """
                   email: String
                 }
-    
+
                 type Library @shareable {
                   book(title: String, section: String): String
                 }
-    
+
                 type Query {
                   library: Library
                 }
@@ -4335,7 +4395,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 input UserInput {
                   """
                   a
@@ -4346,7 +4406,7 @@ testImplementations(api => {
                   """
                   age: Int
                 }
-    
+
                 type Library @shareable {
                   book(title: String, author: String): String
                 }
@@ -4377,12 +4437,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 """
                 a
                 """
@@ -4399,12 +4459,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 """
                 b
                 """
@@ -4414,7 +4474,7 @@ testImplementations(api => {
                   """
                   REGULAR
                 }
-    
+
                 type Query {
                   users: [User]
                 }
@@ -4449,11 +4509,11 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                 }
-    
+
                 """
                 a
                 """
@@ -4474,11 +4534,11 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                 }
-    
+
                 """
                 b
                 """
@@ -4492,7 +4552,7 @@ testImplementations(api => {
                   """
                   ANONYMOUS
                 }
-    
+
                 type Query {
                   users(type: UserType): [User]
                 }
@@ -4522,12 +4582,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 """
                 b
                 """
@@ -4541,7 +4601,7 @@ testImplementations(api => {
                   """
                   ADMIN
                 }
-    
+
                 type Query {
                   users(type: UserType): [User]
                 }
@@ -4552,12 +4612,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 """
                 a
                 """
@@ -4600,7 +4660,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
               extend schema
                 @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
                 union Media = Movie
 
                 type Movie {
@@ -4618,7 +4678,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
               extend schema
                 @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
                 """
                 c
                 """
@@ -4639,7 +4699,7 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
               extend schema
                 @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
                 """
                 b
                 """
@@ -4653,7 +4713,7 @@ testImplementations(api => {
                 type User @key(fields: "id") {
                   id: ID!
                 }
-  
+
                 type Query {
                   media(id: ID!): Media
                 }
@@ -4686,12 +4746,12 @@ testImplementations(api => {
             name: 'c',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
               type User @key(fields: "id") {
                 id: ID!
                 age: Int!
               }
-  
+
               """
               c
               """
@@ -4707,12 +4767,12 @@ testImplementations(api => {
             name: 'a',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
               type User @key(fields: "id") {
                 id: ID!
                 name: String!
               }
-  
+
               interface Details {
                 """
                 a
@@ -4725,12 +4785,12 @@ testImplementations(api => {
             name: 'b',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-  
+
               type User @key(fields: "id") {
                 id: ID!
                 email: String!
               }
-  
+
               """
               b
               """
@@ -4744,7 +4804,7 @@ testImplementations(api => {
                 """
                 age: Int
               }
-  
+
               type Query {
                 user: User
               }
@@ -4783,18 +4843,18 @@ testImplementations(api => {
             name: 'a',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
-              
+
               extend type Query {
                 reviews(
                   limit: Int @deprecated
                 ): [Review] @deprecated
               }
-  
+
               extend type Product @key(fields: "id") {
                 id: ID! @external @deprecated(reason: "a")
                 reviews: [Review] @deprecated
               }
-  
+
               type Review @key(fields: "id") {
                 id: ID! @deprecated
                 rating: Float @deprecated
@@ -4806,17 +4866,17 @@ testImplementations(api => {
             name: 'b',
             typeDefs: parse(/* GraphQL */ `
               extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-              
+
               type Product @key(fields: "id") {
                 id: ID! @deprecated(reason: "b")
                 title: String @deprecated
                 price: Price! @deprecated
               }
-  
+
               type Price {
                 amount: Float @deprecated
               }
-  
+
               extend type Query {
                 product(
                   id: ID!
@@ -4869,16 +4929,16 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 input UserInput {
                   name: String @deprecated(reason: "b")
                   email: String @deprecated(reason: "b")
                 }
-    
+
                 type Library @shareable {
                   book(title: String, section: String): String
                 }
-    
+
                 type Query {
                   library: Library
                 }
@@ -4889,13 +4949,13 @@ testImplementations(api => {
             typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 input UserInput {
                   name: String
                   email: String @deprecated(reason: "a")
                   age: Int @deprecated(reason: "a")
                 }
-    
+
                 type Library @shareable {
                   book(title: String, author: String): String
                 }
@@ -4921,12 +4981,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 enum UserType {
                   ADMIN @deprecated(reason: "a")
                 }
@@ -4937,16 +4997,16 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 enum UserType {
                   REGULAR @deprecated(reason: "b")
                 }
-    
+
                 type Query {
                   users: [User]
                 }
@@ -4971,11 +5031,11 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                 }
-    
+
                 enum UserType {
                   ADMIN @deprecated(reason: "a")
                   REGULAR
@@ -4987,16 +5047,16 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                 }
-    
+
                 enum UserType {
                   REGULAR @deprecated(reason: "b")
                   ANONYMOUS @deprecated(reason: "b")
                 }
-    
+
                 type Query {
                   users(type: UserType): [User]
                 }
@@ -5020,17 +5080,17 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 enum UserType {
                   REGULAR @deprecated(reason: "b")
                   ADMIN
                 }
-    
+
                 type Query {
                   users(type: UserType): [User]
                 }
@@ -5041,12 +5101,12 @@ testImplementations(api => {
               typeDefs: parse(/* GraphQL */ `
                 extend schema
                   @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
-    
+
                 type User @shareable {
                   name: String!
                   type: UserType
                 }
-    
+
                 enum UserType {
                   ADMIN
                   REGULAR @deprecated(reason: "a")
@@ -5073,7 +5133,7 @@ testImplementations(api => {
           name: 'users',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type User @key(fields: "email") {
               email: ID!
               name: String
@@ -5086,7 +5146,7 @@ testImplementations(api => {
           name: 'pandas',
           typeDefs: parse(/* GraphQL */ `
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
-            
+
             type Query {
               allPandas: [Panda]
               panda(name: ID!): Panda

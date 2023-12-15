@@ -25,6 +25,9 @@ export interface TypeBuilder<T, S> {
   composeSupergraphNode(
     type: S,
     graphMap: Map<string, Graph>,
+    helpers: {
+      graphNameToId(graphName: string): string | null;
+    },
   ): TypeDefinitionNode | DirectiveDefinitionNode;
 }
 

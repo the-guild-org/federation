@@ -197,7 +197,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             argState.ast.directives.push(directive);
           });
 
-          if (typeof arg.defaultValue === 'string') {
+          if (typeof arg.defaultValue !== 'undefined') {
             argState.defaultValue = arg.defaultValue;
           }
 
@@ -209,8 +209,34 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         }
       }
     },
-    composeSupergraphNode(objectType, graphs) {
+    composeSupergraphNode(objectType, graphs, { graphNameToId }) {
       const isQuery = objectType.name === 'Query';
+
+      const joinTypes = isQuery
+        ? // if it's a Query, we need to annotate the object type with `@join__type` pointing to all subgraphs
+          Array.from(graphs.values()).map(graph => ({
+            graph: graph.id,
+          }))
+        : // If it's not a Query, we follow the regular logic
+          Array.from(objectType.byGraph.entries())
+            .map(([graphId, meta]) => {
+              if (meta.keys.length) {
+                return meta.keys.map(key => ({
+                  graph: graphId,
+                  key: key.fields,
+                  // To support Fed v1, we need to only apply `extension: true` when it's a type annotated with @extends (not by using `extend type` syntax, this needs to be ignored)
+                  extension: isRealExtension(meta, graphs.get(graphId)!.version),
+                  resolvable: key.resolvable,
+                }));
+              }
+
+              return [
+                {
+                  graph: graphId,
+                },
+              ];
+            })
+            .flat(1);
 
       return createObjectTypeNode({
         name: objectType.name,
@@ -290,20 +316,36 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
               value => value === true,
             );
 
-            // An override is a special case, we need to emit `@join__field` only for graphs where @override was applied
+            // We probably need to emit `@join__field` for every graph, except the one where the override was applied
             if (differencesBetweenGraphs.override) {
-              const graphsWithOverride = fieldInGraphs.filter(
-                ([_, meta]) => meta.override !== null,
+              const mutedGraphs = fieldInGraphs
+                .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
+                .filter((graphId): graphId is string => typeof graphId === 'string');
+
+              // the exception is when a field is external, we need to emit `@join__field` for that graph,
+              // so gateway knows that it's an external field
+              const graphsToEmit = fieldInGraphs.filter(
+                ([graphId, f]) => f.external || !mutedGraphs.includes(graphId),
               );
 
-              joinFields = graphsWithOverride.map(([graphId, meta]) => ({
-                graph: graphId,
-                override: meta.override ?? undefined,
-                type: differencesBetweenGraphs.type ? meta.type : undefined,
-                external: meta.external ?? undefined,
-                provides: meta.provides ?? undefined,
-                requires: meta.requires ?? undefined,
-              }));
+              // Do not emit `@join__field` if there's only one graph left
+              // and the type has a single `@join__type` matching the graph.
+              if (
+                !(
+                  graphsToEmit.length === 1 &&
+                  joinTypes.length === 1 &&
+                  joinTypes[0].graph === graphsToEmit[0][0]
+                )
+              ) {
+                joinFields = graphsToEmit.map(([graphId, meta]) => ({
+                  graph: graphId,
+                  override: meta.override ?? undefined,
+                  type: differencesBetweenGraphs.type ? meta.type : undefined,
+                  external: meta.external ?? undefined,
+                  provides: meta.provides ?? undefined,
+                  requires: meta.requires ?? undefined,
+                }));
+              }
             } else if (hasDifferencesBetweenGraphs) {
               joinFields = fieldInGraphs.map(([graphId, meta]) => ({
                 graph: graphId,
@@ -360,7 +402,18 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
               directives: convertToConst(field.ast.directives),
             },
             join: {
-              field: joinFields,
+              field:
+                // If there's only one graph on both field and type
+                // and it has no properties, we don't need to emit `@join__field`
+                joinFields.length === 1 &&
+                joinTypes.length === 1 &&
+                !joinFields[0].external &&
+                !joinFields[0].override &&
+                !joinFields[0].provides &&
+                !joinFields[0].requires &&
+                !joinFields[0].type
+                  ? []
+                  : joinFields,
             },
             arguments: Array.from(field.args.values())
               .filter(arg => {
@@ -394,31 +447,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         policies: objectType.policies,
         scopes: objectType.scopes,
         join: {
-          type: isQuery
-            ? // if it's a Query, we need to annotate the object type with `@join__type` pointing to all subgraphs
-              Array.from(graphs.values()).map(graph => ({
-                graph: graph.id,
-              }))
-            : // If it's not a Query, we follow the regular logic
-              Array.from(objectType.byGraph.entries())
-                .map(([graphId, meta]) => {
-                  if (meta.keys.length) {
-                    return meta.keys.map(key => ({
-                      graph: graphId,
-                      key: key.fields,
-                      // To support Fed v1, we need to only apply `extension: true` when it's a type annotated with @extends (not by using `extend type` syntax, this needs to be ignored)
-                      extension: isRealExtension(meta, graphs.get(graphId)!.version),
-                      resolvable: key.resolvable,
-                    }));
-                  }
-
-                  return [
-                    {
-                      graph: graphId,
-                    },
-                  ];
-                })
-                .flat(1),
+          type: joinTypes,
           implements:
             objectType.interfaces.size > 0
               ? Array.from(objectType.byGraph.entries())

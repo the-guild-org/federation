@@ -117,7 +117,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
             argState.description = arg.description;
           }
 
-          if (typeof arg.defaultValue === 'string') {
+          if (typeof arg.defaultValue !== 'undefined') {
             argState.defaultValue = arg.defaultValue;
           }
 

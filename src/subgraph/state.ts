@@ -8,6 +8,8 @@ import {
   Kind,
   OperationTypeNode,
   SchemaDefinitionNode,
+  specifiedDirectives as specifiedDirectiveTypes,
+  specifiedScalarTypes,
   TypeNode,
 } from 'graphql';
 import { print } from '../graphql/printer.js';
@@ -267,6 +269,8 @@ export function createSubgraphStateBuilder(
       def.name.value === 'link' &&
       def.locations.every(loc => loc.value === 'SCHEMA'),
   );
+  const specifiedScalars = specifiedScalarTypes.map(type => type.name);
+  const specifiedDirectives = specifiedDirectiveTypes.map(directive => directive.name);
   const state: SubgraphState = {
     graph: {
       ...graph,
@@ -581,7 +585,9 @@ export function createSubgraphStateBuilder(
           inputObjectTypeBuilder.setDefinition(node.name.value);
         },
         ScalarTypeDefinition(node) {
-          scalarTypeBuilder.setDefinition(node.name.value);
+          if (!specifiedScalars.includes(node.name.value)) {
+            scalarTypeBuilder.setDefinition(node.name.value);
+          }
         },
         ScalarTypeExtension() {
           // TODO: T06 implement scalar type extension
@@ -756,6 +762,10 @@ export function createSubgraphStateBuilder(
         },
         DirectiveDefinition(node) {
           const directiveName = node.name.value;
+
+          if (specifiedDirectives.includes(directiveName)) {
+            return;
+          }
 
           if (node.repeatable) {
             directiveBuilder.setRepeatable(directiveName);
@@ -1042,7 +1052,6 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
     },
     setShareable(typeName: string) {
       getOrCreateObjectType(state, renameObject, typeName).shareable = true;
-      // TODO: T10 set all fields to shareable but only if it's correct in Federation v2
     },
     setTag(typeName: string, tag: string) {
       getOrCreateObjectType(state, renameObject, typeName).tags.add(tag);

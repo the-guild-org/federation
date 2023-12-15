@@ -96,6 +96,7 @@ testVersions((api, version) => {
       }),
     );
   });
+
   test('insufficient key fields to move between graphs', () => {
     // Cannot resolve User.name from Query.randomUser because key field "id" from subgraph "feed"
     // is not enough to fullfil the @key(fields: "id name") of User from subgraph "users"
@@ -1986,6 +1987,117 @@ testVersions((api, version) => {
           // Apollo returns errors in a different order
           .sort((a, b) => a[1] - b[1])
           .map(([error]) => error),
+      }),
+    );
+  });
+
+  test('cannot move subgraphs without @key and common query path', () => {
+    expect(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
+
+            type User {
+              id: String!
+              name: String!
+            }
+
+            type Query {
+              users: [User]
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
+
+            extend type User {
+              tags: [Tag]
+            }
+
+            type Tag {
+              id: String!
+              name: String!
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              'The following supergraph API query:\n' +
+                '{\n' +
+                '  users {\n' +
+                '    tags {\n' +
+                '      ...\n' +
+                '    }\n' +
+                '  }\n' +
+                '}\n' +
+                'cannot be satisfied by the subgraphs because:\n' +
+                '- from subgraph "a":\n' +
+                '  - cannot find field "User.tags".\n' +
+                '  - cannot move to subgraph "b", which has field "User.tags", because type "User" has no @key defined in subgraph "b".',
+            ),
+          }),
+        ]),
+      }),
+    );
+
+    // Federation v1
+    expect(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            type User {
+              id: String!
+              name: String!
+            }
+
+            type Query {
+              users: [User]
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend type User {
+              tags: [Tag]
+            }
+
+            type Tag {
+              id: String!
+              name: String!
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              'The following supergraph API query:\n' +
+                '{\n' +
+                '  users {\n' +
+                '    tags {\n' +
+                '      ...\n' +
+                '    }\n' +
+                '  }\n' +
+                '}\n' +
+                'cannot be satisfied by the subgraphs because:\n' +
+                '- from subgraph "a":\n' +
+                '  - cannot find field "User.tags".\n' +
+                '  - cannot move to subgraph "b", which has field "User.tags", because type "User" has no @key defined in subgraph "b".',
+            ),
+          }),
+        ]),
       }),
     );
   });

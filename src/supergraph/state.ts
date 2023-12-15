@@ -164,6 +164,17 @@ export function createSupergraphStateBuilder() {
     },
     build() {
       const transformFields = createFieldsTransformer(state);
+      const graphNameToIdMap: Record<string, string | undefined> = {};
+
+      for (const [id, graph] of state.graphs) {
+        graphNameToIdMap[graph.name] = id;
+      }
+
+      const helpers = {
+        graphNameToId(graphName: string) {
+          return graphNameToIdMap[graphName] ?? null;
+        },
+      };
 
       // It's important to keep that number correct.
       const numberOfExpectedNodes =
@@ -190,34 +201,39 @@ export function createSupergraphStateBuilder() {
       );
 
       for (const directiveState of state.directives.values()) {
-        nodes[i++] = directive.composeSupergraphNode(directiveState, state.graphs);
+        nodes[i++] = directive.composeSupergraphNode(directiveState, state.graphs, helpers);
       }
 
       for (const scalarTypeState of state.scalarTypes.values()) {
-        nodes[i++] = scalarType.composeSupergraphNode(scalarTypeState, state.graphs);
+        nodes[i++] = scalarType.composeSupergraphNode(scalarTypeState, state.graphs, helpers);
       }
 
       for (const objectTypeState of state.objectTypes.values()) {
         nodes[i++] = objectType.composeSupergraphNode(
           transformFields(objectTypeState),
           state.graphs,
+          helpers,
         );
       }
 
       for (const interfaceTypeState of state.interfaceTypes.values()) {
-        nodes[i++] = interfaceType.composeSupergraphNode(interfaceTypeState, state.graphs);
+        nodes[i++] = interfaceType.composeSupergraphNode(interfaceTypeState, state.graphs, helpers);
       }
 
       for (const unionTypeState of state.unionTypes.values()) {
-        nodes[i++] = unionType.composeSupergraphNode(unionTypeState, state.graphs);
+        nodes[i++] = unionType.composeSupergraphNode(unionTypeState, state.graphs, helpers);
       }
 
       for (const enumTypeState of state.enumTypes.values()) {
-        nodes[i++] = enumType.composeSupergraphNode(enumTypeState, state.graphs);
+        nodes[i++] = enumType.composeSupergraphNode(enumTypeState, state.graphs, helpers);
       }
 
       for (const inputObjectTypeState of state.inputObjectTypes.values()) {
-        nodes[i++] = inputObjectType.composeSupergraphNode(inputObjectTypeState, state.graphs);
+        nodes[i++] = inputObjectType.composeSupergraphNode(
+          inputObjectTypeState,
+          state.graphs,
+          helpers,
+        );
       }
 
       return nodes;

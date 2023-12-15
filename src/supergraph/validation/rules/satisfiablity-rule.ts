@@ -935,7 +935,9 @@ export function SatisfiabilityRule(
                   : undefined;
 
               if (!localRootTypeName) {
-                return true;
+                // gateway won't be able to call the graph and resolve the field,
+                // so we should mark the graph as not resolvable and not shared.
+                return false;
               }
 
               const localRootType = localSubgraph.types.get(localRootTypeName) as ObjectType;
