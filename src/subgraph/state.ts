@@ -392,6 +392,19 @@ export function createSubgraphStateBuilder(
             node.name.value,
             printOutputType(node.type),
           );
+
+          // In Federation v1, all fields are shareable by default, but only in object type definition.
+          // Extensions are not shareable.
+          // The exception are root types, all their fields are shareable.
+          if (
+            version === 'v1.0' &&
+            (typeDef.kind === Kind.OBJECT_TYPE_DEFINITION ||
+              typeDef.name.value === expectedQueryTypeName ||
+              typeDef.name.value === expectedMutationTypeName ||
+              typeDef.name.value === expectedSubscriptionTypeName)
+          ) {
+            objectTypeBuilder.field.setShareable(typeDef.name.value, node.name.value);
+          }
         },
         InputValueDefinition(node) {
           const typeDef = typeNodeInfo.getTypeDef();
@@ -1714,7 +1727,8 @@ function getOrCreateObjectField(
     override: null,
     provides: null,
     requires: null,
-    shareable: state.version === 'v1.0' ? true : false, // In Fed v1 - it should be true by default, as all fields are shareable by default, even though there's not @shareable directive
+    shareable: false,
+    // shareable: state.version === 'v1.0' ? true : false, // In Fed v1 - it should be true by default, as all fields are shareable by default, even though there's not @shareable directive
     tags: new Set(),
     args: new Map(),
     ast: {

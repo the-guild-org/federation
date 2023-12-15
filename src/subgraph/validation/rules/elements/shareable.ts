@@ -30,6 +30,15 @@ export function ShareableRules(context: SubgraphValidationContext): ASTVisitor {
           );
         } else {
           context.stateBuilder.objectType.setShareable(typeDef.name.value);
+          // mark all fields as shareable
+          if (typeDef.fields) {
+            for (const fieldDef of typeDef.fields) {
+              context.stateBuilder.objectType.field.setShareable(
+                typeDef.name.value,
+                fieldDef.name.value,
+              );
+            }
+          }
         }
       }
 

@@ -42,7 +42,6 @@ export function InvalidFieldSharingRule(
       const resolvableIn: string[] = [];
 
       for (const [graphId, field] of fieldState.byGraph) {
-        const objectTypeIsShareable = objectTypeState.byGraph.get(graphId)!.shareable;
         const fieldIsShareable = field.shareable;
         const fieldIsExternal = field.external;
         const fieldHasOverride = field.override;
@@ -61,7 +60,7 @@ export function InvalidFieldSharingRule(
           }
         }
 
-        if (objectTypeIsShareable || fieldIsShareable || fieldIsUsedAsKey) {
+        if (fieldIsShareable || fieldIsUsedAsKey) {
           resolvableIn.push(graphId);
           continue;
         }

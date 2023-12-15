@@ -189,6 +189,120 @@ testVersions((api, version) => {
           ]),
         }),
       );
+
+      expect(
+        api.composeServices([
+          {
+            name: 'foo',
+            typeDefs: graphql`
+              extend schema
+              @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@shareable"]
+                )
+              
+              extend type Note {
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                foo: String! @shareable
+              }
+            `,
+          },
+          {
+            name: 'bar',
+            typeDefs: graphql`
+              extend schema
+              @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@shareable"]
+                )
+
+              extend type Note {
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                bar: String! @shareable
+              }
+            `,
+          },
+        ]),
+      ).toEqual(
+        expect.objectContaining({
+          errors: expect.arrayContaining([
+            expect.objectContaining({
+              message: expect.stringContaining(
+                `Non-shareable field "Note.url" is resolved from multiple subgraphs: it is resolved from subgraphs "bar" and "foo" and defined as non-shareable in all of them`,
+              ),
+              extensions: expect.objectContaining({
+                code: 'INVALID_FIELD_SHARING',
+              }),
+            }),
+          ]),
+        }),
+      );
+    });
+
+    test('fed v1', () => {
+      expect(
+        api.composeServices([
+          {
+            name: 'foo',
+            typeDefs: graphql`
+              extend type Note {
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                foo: String!
+              }
+            `,
+          },
+          {
+            name: 'bar',
+            typeDefs: graphql`
+              extend type Note {
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                bar: String!
+              }
+            `,
+          },
+        ]),
+      ).toEqual(
+        expect.objectContaining({
+          errors: expect.arrayContaining([
+            expect.objectContaining({
+              message: expect.stringContaining(
+                `Non-shareable field "Note.url" is resolved from multiple subgraphs: it is resolved from subgraphs "bar" and "foo" and defined as non-shareable in all of them`,
+              ),
+              extensions: expect.objectContaining({
+                code: 'INVALID_FIELD_SHARING',
+              }),
+            }),
+          ]),
+        }),
+      );
     });
 
     test('subscription fields (fed v1)', () => {
