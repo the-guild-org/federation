@@ -58,5 +58,37 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+          directive @composeDirective(name: String!) repeatable on SCHEMA
+          directive @block on FIELD_DEFINITION
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@composeDirective"]) @composeDirective(name: "@block")
+
+         type Query {
+          foo: String @block
+         } 
+        `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          version === 'v2.0'
+            ? expect.any(Object)
+            : expect.objectContaining({
+                message: expect.stringContaining(
+                  `Directive "@block" in subgraph "foo" cannot be composed because it is not a member of a core feature`,
+                ),
+                extensions: expect.objectContaining({
+                  code: 'DIRECTIVE_COMPOSITION_ERROR',
+                }),
+              }),
+        ]),
+      }),
+    );
   });
 });

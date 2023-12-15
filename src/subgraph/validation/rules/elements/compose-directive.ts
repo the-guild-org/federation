@@ -28,6 +28,30 @@ export function ComposeDirectiveRules(context: SubgraphValidationContext): ASTVi
       const matchingDirective = definedDirectives.find(directive => directive.name.value === name);
 
       if (matchingDirective) {
+        // check if it has a linked spec
+        const hasSpec = context.stateBuilder.state.links.some(link =>
+          link.imports.some(
+            im =>
+              im.kind === 'directive' &&
+              (im.alias ? im.alias.replace(/^@/, '') === name : im.name.replace(/^@/, '') === name),
+          ),
+        );
+
+        if (!hasSpec) {
+          context.reportError(
+            new GraphQLError(
+              `Directive "@${name}" in subgraph "${context.getSubgraphName()}" cannot be composed because it is not a member of a core feature`,
+              {
+                extensions: {
+                  code: 'DIRECTIVE_COMPOSITION_ERROR',
+                  subgraphName: context.getSubgraphName(),
+                },
+              },
+            ),
+          );
+          return;
+        }
+
         context.stateBuilder.directive.setComposed(matchingDirective.name.value);
         context.stateBuilder.composedDirectives.add(matchingDirective.name.value);
       } else {
