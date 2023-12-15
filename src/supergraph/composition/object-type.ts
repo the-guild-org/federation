@@ -180,8 +180,12 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             argState.inaccessible = true;
           }
 
-          if (!field.external) {
-            // If the field is not external, it means that it's defined in the current graph
+          // if (!field.external) {
+          //   // If the field is not external, it means that it's defined in the current graph
+          //   argState.description = arg.description;
+          // }
+          // First description wins
+          if (arg.description && !argState.description) {
             argState.description = arg.description;
           }
 

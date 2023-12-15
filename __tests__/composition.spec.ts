@@ -1464,6 +1464,80 @@ testImplementations(api => {
       `);
     });
 
+    test('preserve directive if not applied on a field in all subgraphs but included in @composeDirective', () => {
+      const result = composeServices([
+        {
+          name: 'b',
+          typeDefs: parse(/* GraphQL */ `
+              directive @lowercase on FIELD_DEFINITION
+
+              extend type Query {
+                " users "
+                users: [String] @lowercase @override(from: "a")
+              }
+
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@composeDirective", "@override"]
+                )
+                @link(url: "https://specs.community.graphql.org/lowercase/v1.0", import: ["@lowercase"])
+                @composeDirective(name: "@lowercase")
+            `),
+        },
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+            type Query {
+              users: [String]
+            }
+          `),
+        },
+        {
+          name: 'c',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+            extend type Query {
+              comments: [String]
+            }
+          `),
+        },
+      ]);
+
+      if (version === 'v2.0') {
+        assertCompositionFailure(result);
+        return;
+      }
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        directive @lowercase on FIELD_DEFINITION
+      `);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        type Query @join__type(graph: A) @join__type(graph: B) @join__type(graph: C) {
+          comments: [String] @join__field(graph: C)
+          """
+          users
+          """
+          users: [String] @join__field(graph: B, override: "a") @lowercase
+        }
+      `);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        schema
+          @link(url: "https://specs.apollo.dev/link/v1.0")
+          @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+          @link(url: "https://specs.community.graphql.org/lowercase/v1.0", import: ["@lowercase"]) {
+          query: Query
+        }
+      `);
+    });
+
     test('ignore directive if defined identically in all subgraphs and not included in @composeDirective', () => {
       const result = composeServices([
         {
@@ -3944,6 +4018,278 @@ testImplementations(api => {
             reviews
             """
             reviews: [Review] @join__field(graph: REVIEWS)
+          }
+        `);
+      });
+
+      test('on object types with arguments', () => {
+        const result = composeServices([
+          {
+            name: 'reviews',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@shareable"])
+              
+              """reviews"""
+              type Query {
+                """
+                reviews
+                """
+                review(
+                  """
+                  reviews
+                  """
+                  id: ID!
+                ): Review
+              }
+  
+              extend type Product @key(fields: "id") {
+                """
+                it will be removed
+                """
+                id: ID! @external
+                """
+                reviews
+                """
+                reviews(
+                  """
+                  reviews
+                  """
+                  limit: Int
+                ): [Review]
+                """
+                reviews
+                """
+                price(
+                  """
+                  reviews
+                  """
+                  currency: String = "USD"
+                ): Price! @shareable
+              }
+  
+              """
+              reviews
+              """
+              type Review @key(fields: "id") {
+                """
+                reviews
+                """
+                id: ID!
+                """
+                reviews
+                """
+                rating: Float
+                """
+                reviews
+                """
+                content: String
+              }
+
+              """
+              reviews
+              """
+              type Price {
+                """
+                reviews
+                """
+                amount: Float @shareable
+              }
+            `),
+          },
+          {
+            name: 'pricing',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external", "@extends", "@shareable"])
+              
+              type Product @key(fields: "id") @extends {
+                """
+                pricing
+                """
+                id: ID! @external
+                promoCodes: [PromoCode]
+                """
+                pricing
+                """
+                price(
+                  """
+                  pricing
+                  """
+                  currency: String = "USD"
+                ): Price! @shareable
+              }
+  
+              type PromoCode {
+                id: ID!
+                code: String!
+              }
+
+              """
+              pricing
+              """
+              type Price {
+                """
+                pricing
+                """
+                amount: Float @shareable
+              }
+            `),
+          },
+          {
+            name: 'products',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+              
+              """
+              products
+              """
+              type Product @key(fields: "id") {
+                """
+                products
+                """
+                id: ID!
+                """
+                products
+                """
+                title: String
+                """
+                products
+                """
+                price(
+                  """
+                  products
+                  """
+                  currency: String = "USD"
+                ): Price! @shareable
+              }
+  
+              """
+              products
+              """
+              type Price {
+                """
+                products
+                """
+                amount: Float @shareable
+              }
+  
+              type Query {
+                """
+                products
+                """
+                product(
+                  """
+                  products
+                  """
+                  id: ID!
+                ): Product
+              }
+            `),
+          },
+        ]);
+
+        assertCompositionSuccess(result);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          """
+          pricing
+          """
+          type Price
+            @join__type(graph: PRICING)
+            @join__type(graph: PRODUCTS)
+            @join__type(graph: REVIEWS) {
+            """
+            pricing
+            """
+            amount: Float
+          }
+        `);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          """
+          products
+          """
+          type Product
+            @join__type(extension: true, graph: PRICING, key: "id")
+            @join__type(extension: true, graph: REVIEWS, key: "id")
+            @join__type(graph: PRODUCTS, key: "id") {
+            """
+            pricing
+            """
+            id: ID!
+            """
+            pricing
+            """
+            price(
+              """
+              pricing
+              """
+              currency: String = "USD"
+            ): Price!
+            promoCodes: [PromoCode] @join__field(graph: PRICING)
+            """
+            reviews
+            """
+            reviews(
+              """
+              reviews
+              """
+              limit: Int
+            ): [Review] @join__field(graph: REVIEWS)
+            """
+            products
+            """
+            title: String @join__field(graph: PRODUCTS)
+          }
+        `);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          """
+          reviews
+          """
+          type Review @join__type(graph: REVIEWS, key: "id") {
+            """
+            reviews
+            """
+            id: ID!
+
+            """
+            reviews
+            """
+            rating: Float
+
+            """
+            reviews
+            """
+            content: String
+          }
+        `);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          """
+          reviews
+          """
+          type Query
+            @join__type(graph: PRODUCTS)
+            @join__type(graph: REVIEWS)
+            @join__type(graph: PRICING) {
+            """
+            products
+            """
+            product(
+              """
+              products
+              """
+              id: ID!
+            ): Product @join__field(graph: PRODUCTS)
+            """
+            reviews
+            """
+            review(
+              """
+              reviews
+              """
+              id: ID!
+            ): Review @join__field(graph: REVIEWS)
           }
         `);
       });

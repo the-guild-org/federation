@@ -1,5 +1,6 @@
 import { constantCase } from 'constant-case';
 import { DocumentNode, GraphQLError } from 'graphql';
+import { moveSchemaAndDirectiveDefinitionsToTop } from './graphql/helpers.js';
 import { detectFederationVersion } from './specifications/federation.js';
 import {
   cleanSubgraphStateFromFederationSpec,
@@ -72,7 +73,7 @@ function buildGraphList(
         name,
         id: proposedId + '_' + (count + 1),
         url,
-        typeDefs,
+        typeDefs: moveSchemaAndDirectiveDefinitionsToTop(typeDefs),
       });
 
       // Increase the counter
@@ -84,7 +85,7 @@ function buildGraphList(
         name,
         id: proposedId,
         url,
-        typeDefs,
+        typeDefs: moveSchemaAndDirectiveDefinitionsToTop(typeDefs),
       });
     }
   }
