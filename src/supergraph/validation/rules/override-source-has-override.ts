@@ -18,35 +18,45 @@ export function OverrideSourceHasOverrideRule(
       }
 
       for (let i = 0; i < graphsWithOverride.length; i++) {
+        // find any circular references
+        const visitedGraphs = new Set<string>();
         const [graph, fieldStateInGraph] = graphsWithOverride[i];
-        const overrideValue = context.graphNameToId(fieldStateInGraph.override);
-        const graphFromOverride = overrideValue ? fieldState.byGraph.get(overrideValue) : null;
+        let overrideValue = context.graphNameToId(fieldStateInGraph.override);
 
-        // We want to first check if the override value points to a graph with an override directive at the same field
-        // If not, we want to use the next graph in the list, or the first graph in the list if we're at the end
-        const anotherGraphId =
-          graphFromOverride && graphFromOverride.override !== null
-            ? overrideValue!
-            : graphsWithOverride[i + 1]
-            ? graphsWithOverride[i + 1][0]
-            : graphsWithOverride[0][0];
+        while (overrideValue) {
+          if (visitedGraphs.has(overrideValue)) {
+            context.reportError(
+              new GraphQLError(
+                `Field "${objectTypeState.name}.${
+                  fieldState.name
+                }" on subgraph "${context.graphIdToName(
+                  graph,
+                )}" is also marked with directive @override in subgraph "${context.graphIdToName(
+                  overrideValue,
+                )}". Only one @override directive is allowed per field.`,
+                {
+                  extensions: {
+                    code: 'OVERRIDE_SOURCE_HAS_OVERRIDE',
+                  },
+                },
+              ),
+            );
+            break;
+          }
 
-        context.reportError(
-          new GraphQLError(
-            `Field "${objectTypeState.name}.${
-              fieldState.name
-            }" on subgraph "${context.graphIdToName(
-              graph,
-            )}" is also marked with directive @override in subgraph "${context.graphIdToName(
-              anotherGraphId,
-            )}". Only one @override directive is allowed per field.`,
-            {
-              extensions: {
-                code: 'OVERRIDE_SOURCE_HAS_OVERRIDE',
-              },
-            },
-          ),
-        );
+          visitedGraphs.add(overrideValue);
+          const graphFromOverride = overrideValue ? fieldState.byGraph.get(overrideValue) : null;
+
+          if (!graphFromOverride) {
+            break;
+          }
+
+          if (!graphFromOverride.override) {
+            break;
+          }
+
+          overrideValue = context.graphNameToId(graphFromOverride.override);
+        }
       }
     },
   };

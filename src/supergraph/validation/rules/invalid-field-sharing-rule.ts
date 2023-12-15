@@ -8,6 +8,28 @@ export function InvalidFieldSharingRule(
 ): SupergraphVisitorMap {
   return {
     ObjectTypeField(objectTypeState, fieldState) {
+      // check if it's Subscription
+      if (
+        Array.from(objectTypeState.byGraph.keys()).some(
+          graph =>
+            context.subgraphStates.get(graph)?.schema.subscriptionType === objectTypeState.name,
+        )
+      ) {
+        if (fieldState.byGraph.size > 1) {
+          context.reportError(
+            new GraphQLError(
+              `Fields on root level subscription object cannot be marked as shareable`,
+              {
+                extensions: {
+                  code: 'INVALID_FIELD_SHARING',
+                },
+              },
+            ),
+          );
+        }
+        return;
+      }
+
       if (
         fieldState.usedAsKey &&
         Array.from(fieldState.byGraph.values()).every(field => field.usedAsKey)
