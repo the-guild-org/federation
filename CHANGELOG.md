@@ -1,5 +1,23 @@
 # @theguild/federation-composition
 
+## 0.6.1
+
+### Patch Changes
+
+- [`55343ba`](https://github.com/the-guild-org/federation/commit/55343baf4a71984bc938c0f89d49a86bb8407a26)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix missing join\_\_field
+
+- [`55343ba`](https://github.com/the-guild-org/federation/commit/55343baf4a71984bc938c0f89d49a86bb8407a26)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix default values
+
+- [`55343ba`](https://github.com/the-guild-org/federation/commit/55343baf4a71984bc938c0f89d49a86bb8407a26)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - fix: cannot move subgraphs without @key
+  and common query path
+
+- [`55343ba`](https://github.com/the-guild-org/federation/commit/55343baf4a71984bc938c0f89d49a86bb8407a26)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Ignore specified directives and scalars
+  when printing supergraph
+
 ## 0.6.0
 
 ### Minor Changes
