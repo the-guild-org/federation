@@ -722,6 +722,59 @@ testVersions((api, version) => {
       );
     });
 
+    test('federation__FieldSet should be accepted', () => {
+      assertCompositionSuccess(
+        api.composeServices([
+          {
+            name: 'users',
+            typeDefs: graphql`
+          schema @link(url: "https://specs.apollo.dev/link/v1.0") {
+          query: Query
+        }
+
+        extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable", "@external", "@provides"])
+
+        directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+
+        scalar federation__FieldSet
+
+        type User @key(fields: "id") {
+          id: ID!
+          name: String
+        }
+
+        type Query {
+          users: [User]
+        }
+
+        `,
+          },
+        ]),
+      );
+    });
+
+    test('Fed v1: fields of [String!]! type should be accepted', () => {
+      assertCompositionSuccess(
+        api.composeServices([
+          {
+            name: 'users',
+            typeDefs: graphql`
+              directive @key(fields: [String!]!) on OBJECT
+
+              type User @key(fields: "id") {
+                id: ID!
+                name: String
+              }
+
+              type Query {
+                users: [User]
+              }
+            `,
+          },
+        ]),
+      );
+    });
+
     test('missing default value for resolvable', () => {
       expect(
         api.composeServices([
