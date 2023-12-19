@@ -108,10 +108,18 @@ export function RequiresRules(context: SubgraphValidationContext): ASTVisitor {
         return;
       }
 
+      const mergedTypeDef = context
+        .getSubgraphObjectOrInterfaceTypes()
+        .get(annotatedType.name.value);
+
+      if (!mergedTypeDef) {
+        throw new Error(`Could not find type "${annotatedType.name.value}"`);
+      }
+
       visitFields({
         context,
         selectionSet,
-        typeDefinition: annotatedType,
+        typeDefinition: mergedTypeDef,
         interceptField(info) {
           if (
             info.typeDefinition.kind === Kind.OBJECT_TYPE_DEFINITION ||

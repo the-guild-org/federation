@@ -107,22 +107,47 @@ export function createSubgraphValidationContext(
   // Directives and types available in the spec (some parts may not be available to a subgraph)
   const knownSpec = createSpecSchema(version);
   // Object and interface types defined in a subgraph
-  const knownSubgraphEntities = new Map(
-    (
-      subgraph.typeDefs.definitions.filter(
-        def =>
-          def.kind === Kind.OBJECT_TYPE_DEFINITION ||
-          def.kind === Kind.OBJECT_TYPE_EXTENSION ||
-          def.kind === Kind.INTERFACE_TYPE_DEFINITION ||
-          def.kind === Kind.INTERFACE_TYPE_EXTENSION,
-      ) as Array<
-        | ObjectTypeDefinitionNode
-        | ObjectTypeExtensionNode
-        | InterfaceTypeDefinitionNode
-        | InterfaceTypeExtensionNode
-      >
-    ).map(def => [def.name.value, def]),
-  );
+  const knownSubgraphEntities = new Map<
+    string,
+    | ObjectTypeDefinitionNode
+    | ObjectTypeExtensionNode
+    | InterfaceTypeDefinitionNode
+    | InterfaceTypeExtensionNode
+  >();
+
+  //
+  for (const def of subgraph.typeDefs.definitions.filter(
+    def =>
+      def.kind === Kind.OBJECT_TYPE_DEFINITION ||
+      def.kind === Kind.OBJECT_TYPE_EXTENSION ||
+      def.kind === Kind.INTERFACE_TYPE_DEFINITION ||
+      def.kind === Kind.INTERFACE_TYPE_EXTENSION,
+  ) as Array<
+    | ObjectTypeDefinitionNode
+    | ObjectTypeExtensionNode
+    | InterfaceTypeDefinitionNode
+    | InterfaceTypeExtensionNode
+  >) {
+    const found = knownSubgraphEntities.get(def.name.value);
+
+    if (!found) {
+      knownSubgraphEntities.set(def.name.value, { ...def });
+      continue;
+    }
+
+    (found as any).fields = (found.fields ?? []).concat(def.fields ?? []);
+    (found as any).interfaces = (found.interfaces ?? []).concat(def.interfaces ?? []);
+    (found as any).directives = (found.directives ?? []).concat(def.directives ?? []);
+
+    if (def.kind === Kind.OBJECT_TYPE_DEFINITION && found.kind === Kind.OBJECT_TYPE_EXTENSION) {
+      (found as any).kind = Kind.OBJECT_TYPE_DEFINITION;
+    } else if (
+      def.kind === Kind.INTERFACE_TYPE_DEFINITION &&
+      found.kind === Kind.INTERFACE_TYPE_EXTENSION
+    ) {
+      (found as any).kind = Kind.INTERFACE_TYPE_DEFINITION;
+    }
+  }
 
   // Directive definitions defined in a subgraph
   const knownSubgraphDirectiveDefinitions = new Map(

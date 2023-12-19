@@ -222,12 +222,19 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
 
             if (fieldsArg) {
               const keyFields = parseFields((fieldsArg.value as any).value);
+              const mergedTypeDef = context
+                .getSubgraphObjectOrInterfaceTypes()
+                .get(info.typeDefinition.name.value);
+
+              if (!mergedTypeDef) {
+                throw new Error(`Could not find type "${info.typeDefinition.name.value}"`);
+              }
 
               if (keyFields) {
                 visitFields({
                   context,
                   selectionSet: keyFields,
-                  typeDefinition: info.typeDefinition,
+                  typeDefinition: mergedTypeDef,
                   interceptField(keyFieldInfo) {
                     if (
                       keyFieldInfo.typeDefinition.name.value === info.typeDefinition.name.value &&

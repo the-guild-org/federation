@@ -4413,7 +4413,6 @@ testImplementations(api => {
               `),
           },
         ]);
-
         assertCompositionSuccess(result);
 
         expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `

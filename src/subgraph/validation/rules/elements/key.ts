@@ -112,10 +112,16 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
 
       const fieldsUsedInKey = new Set<string>();
 
+      const mergedTypeDef = context.getSubgraphObjectOrInterfaceTypes().get(typeDef.name.value);
+
+      if (!mergedTypeDef) {
+        throw new Error(`Could not find type "${typeDef.name.value}"`);
+      }
+
       visitFields({
         context,
         selectionSet,
-        typeDefinition: typeDef,
+        typeDefinition: mergedTypeDef,
         interceptField(info) {
           // Mark the field as used in the key when it's a field of the type annotated with @key
           if (info.typeDefinition.name.value === typeDef.name.value) {
