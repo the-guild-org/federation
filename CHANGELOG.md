@@ -1,5 +1,21 @@
 # @theguild/federation-composition
 
+## 0.6.2
+
+### Patch Changes
+
+- [`1ddf34e`](https://github.com/the-guild-org/federation/commit/1ddf34e0d3e55815cf2d9393a4ea58547cf2157e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix EXTERNAL_ARGUMENT_MISSING - include
+  nullable arguments as well
+
+- [`1ddf34e`](https://github.com/the-guild-org/federation/commit/1ddf34e0d3e55815cf2d9393a4ea58547cf2157e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Merge type definitions and type
+  extensions when validating fields used in @requires, @provides and @key
+
+- [`2525a24`](https://github.com/the-guild-org/federation/commit/2525a24e07f758d9b6898aa11f885bafd90e504e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support [T!]! type in @key(fields),
+  @provides(fields) and @requires(fields)
+
 ## 0.6.1
 
 ### Patch Changes
