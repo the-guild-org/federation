@@ -23,10 +23,13 @@ export function KnownDirectivesRule(context: {
   }
 
   for (const specifiedDirective of specifiedDirectives) {
-    locationsMap.set(
-      specifiedDirective.name,
-      new Set(specifiedDirective.locations.map(loc => String(loc))),
-    );
+    // If the directive is already defined by the schema, leave it be.
+    if (!locationsMap.has(specifiedDirective.name)) {
+      locationsMap.set(
+        specifiedDirective.name,
+        new Set(specifiedDirective.locations.map(loc => String(loc))),
+      );
+    }
   }
 
   return {

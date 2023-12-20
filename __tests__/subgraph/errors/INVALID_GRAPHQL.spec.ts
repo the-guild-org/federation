@@ -439,4 +439,38 @@ testVersions((api, version) => {
       }),
     );
   });
+
+  test('directive overwritten specified directive (like @deprecated) on wrong location', () => {
+    assertCompositionFailure(
+      api.composeServices([
+        {
+          name: 'mono',
+          typeDefs: graphql`
+            schema
+              @link(url: "https://specs.apollo.dev/link/v1.0")
+              @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"]) {
+              query: Query
+            }
+
+            directive @deprecated(reason: String = "No longer supported") on FIELD_DEFINITION
+
+            directive @shareable repeatable on OBJECT | FIELD_DEFINITION
+
+            type Query @shareable {
+              view(input: Input): View!
+            }
+
+            type View @shareable {
+              user: String
+              post: String!
+            }
+
+            input Input {
+              input: String @deprecated(reason: "impossibru")
+            }
+          `,
+        },
+      ]),
+    );
+  });
 });
