@@ -29,6 +29,16 @@ export function ExtensionWithBaseRule(context: SupergraphValidationContext): Sup
           return;
         }
 
+        // Valid (but fails to detect)
+        //  fed v1 - type @extends
+        //  fed v1 - type @extends
+        //  fed v1 - extend type
+        //
+        // Invalid (but fails to detect)
+        //  fed v1 - type @extends
+        //  fed v1 - extend type
+        //
+
         objectTypeState.byGraph.forEach((_, graph) => {
           context.reportError(
             new GraphQLError(

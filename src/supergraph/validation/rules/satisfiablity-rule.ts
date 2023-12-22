@@ -16,11 +16,18 @@ import { ObjectType, TypeKind } from '../../../subgraph/state.js';
 import { DepGraph } from '../../../utils/dependency-graph.js';
 import { isDefined } from '../../../utils/helpers.js';
 import { isList, isNonNull, stripNonNull, stripTypeModifiers } from '../../../utils/state.js';
+import { InterfaceTypeState } from '../../composition/interface-type.js';
 import { ObjectTypeFieldState, ObjectTypeState } from '../../composition/object-type.js';
 import { UnionTypeState } from '../../composition/union-type.js';
 import type { SupergraphVisitorMap } from '../../composition/visitor.js';
 import type { SupergraphState } from '../../state.js';
 import type { SupergraphValidationContext } from '../validation-context.js';
+
+// The whole satisfiability rule is a mess and could be reduced to a much simpler piece of code.
+// 1. Find a field that does exist only in some graphs and is not external.
+// 2. Check if the field can be resolved by resolving an entity (via Query._entities) by only using keys.
+// 3. Check if the missing key fields can be added to the internal query (created by the query planner) and fill the gaps by resolving the missing key fields from other graphs that have the field.
+// And probably more and more things that will create a mess anyway :D
 
 function canGraphMoveToGraphByEntity(
   supergraphState: SupergraphState,
@@ -351,6 +358,102 @@ function findLeafs(
   return Array.from(leafs);
 }
 
+function createMemoizedQueryPathFinder() {
+  const memoizedQueryPaths = new Map<
+    string,
+    Array<
+      Array<
+        | {
+            fieldName: string;
+            typeName: string;
+          }
+        | {
+            typeName: string;
+          }
+      >
+    >
+  >();
+
+  return function findQueryPathsMemoized(
+    supergraphState: SupergraphState,
+    rootTypeName: 'Query' | 'Mutation' | 'Subscription',
+    /**
+     * Fields to start with. These fields should belong to a root type that is owned by the subgraph.
+     */
+    rootTypeFieldsToStartWith: string[],
+    leafTypeName: string,
+    leafFieldName: string,
+    typesInBetweenRootAndLeaf: string[] = [],
+  ) {
+    const rootType = supergraphState.objectTypes.get(rootTypeName)!;
+    const paths: Array<
+      Array<
+        | { typeName: string; fieldName: string }
+        | {
+            typeName: string;
+          }
+      >
+    > = [];
+
+    for (const rootFieldName of rootTypeFieldsToStartWith) {
+      const key = JSON.stringify({
+        rootFieldName,
+        rootTypeName,
+        leafTypeName,
+        leafFieldName,
+        typesInBetweenRootAndLeaf, // it's always equal, but let's make it more safe
+      });
+
+      const memoized = memoizedQueryPaths.get(key);
+      if (memoized) {
+        return memoized;
+      }
+
+      const rootFieldState = rootType.fields.get(rootFieldName);
+      if (rootFieldState) {
+        const fieldOutputTypeName = stripTypeModifiers(rootFieldState.type);
+
+        const referencedType =
+          supergraphState.objectTypes.get(fieldOutputTypeName) ??
+          supergraphState.unionTypes.get(fieldOutputTypeName) ??
+          supergraphState.interfaceTypes.get(fieldOutputTypeName);
+
+        if (!referencedType) {
+          // console.warn('Only object types and union types are supported:', fieldOutputTypeName);
+          continue;
+        }
+
+        findQueryPathInType(
+          new Set(),
+          supergraphState,
+          referencedType,
+          leafTypeName,
+          leafFieldName,
+          path => {
+            const memoized = memoizedQueryPaths.get(key);
+
+            if (memoized) {
+              memoized.push(path);
+            } else {
+              memoizedQueryPaths.set(key, [path]);
+            }
+            paths.push(path);
+          },
+          typesInBetweenRootAndLeaf,
+          [
+            {
+              typeName: rootTypeName,
+              fieldName: rootFieldName,
+            },
+          ],
+        );
+      }
+    }
+
+    return paths;
+  };
+}
+
 export function SatisfiabilityRule(
   context: SupergraphValidationContext,
   supergraphState: SupergraphState,
@@ -511,6 +614,8 @@ export function SatisfiabilityRule(
         );
       }
 
+      const findQueryPaths = createMemoizedQueryPathFinder();
+
       if (uniqueKeyFieldsSet.size > 0) {
         //
         // We're dealing with entities
@@ -610,15 +715,141 @@ export function SatisfiabilityRule(
           }
 
           for (const [normalizedName, rootType] of rootTypes) {
-            const query = printExampleQuery(
+            const paths = findQueryPaths(
               supergraphState,
               normalizedName,
               Array.from(rootType.fields.keys()),
               objectState.name,
               fieldState.name,
-              graphId,
               dependenciesOfObjectType,
             );
+
+            // to validate a query path, we need to
+            // check if the query path can be extended with some set of fields,
+            // to query a missing field using Query._entities of a subgraph that has the field
+            // It's obviously not ideal, as we would like to check if the query path can be resolved at every step
+            // leading to the possible extension of selection set.
+            // For now, it's good enough, we're still experimenting here anyway... We will add it soon.
+
+            const nonResolvablePaths = paths.filter(queryPath => {
+              const root = queryPath[0];
+
+              if ('fieldName' in root) {
+                const graphsWithoutTheRootField = graphsWithField.filter(gid => {
+                  const rootType = supergraphState.objectTypes.get(normalizedName);
+
+                  if (!rootType) {
+                    throw new Error(`Type "${normalizedName}" not found in Supergraph state`);
+                  }
+
+                  const rootField = rootType.fields.get(root.fieldName);
+
+                  if (!rootField) {
+                    throw new Error(
+                      `Field "${normalizedName}.${root.fieldName}" not found in Supergraph state`,
+                    );
+                  }
+
+                  return !rootField.byGraph.has(gid);
+                });
+
+                // can this graph resolve fields that are needed to resolve (via entity call) the missing field?
+                // Given { users { creditCardNumber } } where creditCardNumber is missing in the graph A.
+                // Can graph B resolve { users { bankId } } where bankId is needed to resolve creditCardNumber?
+                // If yes, we can ignore the error as the gateway will be able to resolve the field by doing _entities call.
+                const canExtendTheInternalQuery = graphsWithoutTheRootField.some(
+                  graphIdWithoutRootField => {
+                    if (graphIdWithoutRootField === graphId) {
+                      return false;
+                    }
+
+                    const canMove = canGraphMoveToGraphBasedOnMovabilityGraph(
+                      getMovabilityGraphForType(objectState.name),
+                      graphId,
+                      graphIdWithoutRootField,
+                    );
+
+                    let canMoveDirectlyByExtendingSelectionSet = false;
+
+                    const requiredKeys = objectState.byGraph
+                      .get(graphIdWithoutRootField)!
+                      .keys.map(key =>
+                        resolveFieldsFromFieldSet(
+                          key.fields,
+                          objectState.name,
+                          graphIdWithoutRootField,
+                          supergraphState,
+                        ),
+                      );
+
+                    canMoveDirectlyByExtendingSelectionSet = requiredKeys.some(k => {
+                      const coordinates = Array.from(k.coordinates);
+
+                      if (coordinates.length === 0) {
+                        return false;
+                      }
+
+                      for (const coordinate of coordinates) {
+                        const [typeName, fieldName] = coordinate.split('.') as [string, string];
+                        const objectTypeState = supergraphState.objectTypes.get(typeName);
+
+                        if (!objectTypeState) {
+                          throw new Error(`Type "${typeName}" not found in Supergraph state`);
+                        }
+
+                        const fieldState = objectTypeState.fields.get(fieldName);
+
+                        if (!fieldState) {
+                          throw new Error(
+                            `Field "${typeName}.${fieldName}" not found in Supergraph state`,
+                          );
+                        }
+
+                        const isAvailable = fieldState.byGraph.get(graphId)?.external === false;
+
+                        if (!isAvailable) {
+                          // break the loop as the requirement was to have all fields available, this one is not
+                          return false;
+                        }
+                      }
+
+                      return true;
+                    });
+
+                    return canMove || canMoveDirectlyByExtendingSelectionSet;
+                  },
+                );
+
+                if (canExtendTheInternalQuery) {
+                  // can resolve
+                  return false;
+                }
+              } else {
+                throw new Error('Root field is missing in the query path');
+              }
+
+              // cannot resolve
+              return true;
+            });
+
+            if (nonResolvablePaths.length === 0) {
+              continue;
+            }
+
+            let shortestPath = nonResolvablePaths[0];
+            for (let i = 0; i < nonResolvablePaths.length; i++) {
+              const curr = nonResolvablePaths[i];
+
+              if (shortestPath.length > curr.length) {
+                shortestPath = curr;
+              }
+
+              if (shortestPath.length === curr.length) {
+                shortestPath = curr;
+              }
+            }
+
+            const query = printQueryPath(supergraphState, shortestPath);
             const reasons: Array<[string, string[]]> = [];
 
             const canBeIndirectlyResolved = leafs.length > 0;
@@ -903,6 +1134,15 @@ export function SatisfiabilityRule(
               continue;
             }
 
+            // findQueryPaths(
+            //   supergraphState,
+            //   normalizedName,
+            //   Array.from(rootType.fields.keys()),
+            //   objectState.name,
+            //   fieldState.name,
+            //   dependenciesOfObjectType,
+            // );
+
             const graphIdsImplementingObjectType = Array.from(objectState.byGraph.keys());
             // if root field pointing to the object type is the same in all subgraphs implementing the object type, we can ignore it
             if (
@@ -1054,6 +1294,186 @@ function buildOutputTypesDependencies(supergraphState: SupergraphState) {
   }
 
   return graph;
+}
+
+function printLine(msg: string, indentLevel: number) {
+  return '  '.repeat(indentLevel + 1) + msg;
+}
+
+function printQueryPath(
+  supergraphState: SupergraphState,
+  queryPath: Array<
+    | { typeName: string; fieldName: string }
+    | {
+        typeName: string;
+      }
+  >,
+) {
+  const lines: string[] = [];
+
+  let endsWithScalar = false;
+
+  for (let i = 0; i < queryPath.length; i++) {
+    const point = queryPath[i];
+
+    if ('fieldName' in point) {
+      const fieldState = supergraphState.objectTypes
+        .get(point.typeName)
+        ?.fields.get(point.fieldName);
+
+      if (!fieldState) {
+        throw new Error(
+          `Field "${point.typeName}.${point.fieldName}" not found in Supergraph state`,
+        );
+      }
+
+      const args = Array.from(fieldState.args)
+        .filter(([_, argState]) => isNonNull(argState.type))
+        .map(
+          ([name, argState]) =>
+            `${name}: ${print(createEmptyValueNode(argState.type, supergraphState))}`,
+        )
+        .join(', ');
+      const argsPrinted = args.length > 0 ? `(${args})` : '';
+
+      if (i == queryPath.length - 1) {
+        const outputTypeName = stripTypeModifiers(fieldState.type);
+        endsWithScalar =
+          supergraphState.scalarTypes.has(outputTypeName) ||
+          supergraphState.enumTypes.has(outputTypeName) ||
+          specifiedScalarTypes.some(s => s.name === outputTypeName);
+
+        if (endsWithScalar) {
+          lines.push(printLine(`${point.fieldName}${argsPrinted}`, i));
+        } else {
+          lines.push(printLine(`${point.fieldName}${argsPrinted} {`, i));
+        }
+      } else {
+        lines.push(printLine(`${point.fieldName}${argsPrinted} {`, i));
+      }
+    } else {
+      lines.push(printLine(`... on ${point.typeName} {`, i));
+    }
+  }
+
+  if (!endsWithScalar) {
+    lines.push(printLine('...', lines.length));
+  }
+
+  const len = lines.length - 1;
+  for (let i = 0; i < len; i++) {
+    lines.push(printLine('}', len - i - 1));
+  }
+
+  if (queryPath[0].typeName === 'Query') {
+    lines.unshift('{');
+  } else if (queryPath[0].typeName === 'Mutation') {
+    lines.unshift('mutation {');
+  } else {
+    lines.unshift('subscription {');
+  }
+  lines.push('}');
+
+  return lines.join('\n');
+}
+
+function findQueryPathInType(
+  visitedTypes: Set<string>,
+  supergraphState: SupergraphState,
+  typeState: ObjectTypeState | InterfaceTypeState | UnionTypeState,
+  leafTypeName: string,
+  leafFieldName: string,
+  onQueryPathFound: (
+    path: Array<
+      | { typeName: string; fieldName: string }
+      | {
+          typeName: string;
+        }
+    >,
+  ) => void,
+  typesInBetweenRootAndLeaf: string[] = [],
+  currentPath: Array<
+    | { typeName: string; fieldName: string }
+    | {
+        typeName: string;
+      }
+  > = [],
+) {
+  if (typeState.name !== leafTypeName) {
+    if (!typesInBetweenRootAndLeaf.includes(typeState.name)) {
+      return;
+    }
+
+    if (visitedTypes.has(typeState.name)) {
+      return;
+    }
+
+    visitedTypes.add(typeState.name);
+  }
+
+  if ('fields' in typeState) {
+    for (const [fieldName, fieldState] of typeState.fields) {
+      if (fieldName === leafFieldName && typeState.name === leafTypeName) {
+        onQueryPathFound(currentPath.concat([{ typeName: typeState.name, fieldName }]));
+        return;
+      }
+
+      const fieldOutputTypeName = stripTypeModifiers(fieldState.type);
+      const referencedType =
+        supergraphState.objectTypes.get(fieldOutputTypeName) ??
+        supergraphState.unionTypes.get(fieldOutputTypeName) ??
+        supergraphState.interfaceTypes.get(fieldOutputTypeName);
+
+      if (!referencedType) {
+        // console.warn('Only object types and union types are supported:', fieldOutputTypeName);
+        continue;
+      }
+
+      if (referencedType.name === typeState.name) {
+        // circular reference
+        return;
+      }
+
+      findQueryPathInType(
+        visitedTypes,
+        supergraphState,
+        referencedType,
+        leafTypeName,
+        leafFieldName,
+        onQueryPathFound,
+        typesInBetweenRootAndLeaf,
+        currentPath.concat([{ typeName: typeState.name, fieldName }]),
+      );
+    }
+  } else {
+    for (const member of typeState.members) {
+      const referencedType =
+        supergraphState.objectTypes.get(member) ??
+        supergraphState.unionTypes.get(member) ??
+        supergraphState.interfaceTypes.get(member);
+
+      if (!referencedType) {
+        // console.warn('Only object types and union types are supported:', member);
+        continue;
+      }
+
+      if (referencedType.name === typeState.name) {
+        // circular reference
+        return;
+      }
+
+      findQueryPathInType(
+        visitedTypes,
+        supergraphState,
+        referencedType,
+        leafTypeName,
+        leafFieldName,
+        onQueryPathFound,
+        typesInBetweenRootAndLeaf,
+        currentPath.concat([{ typeName: member }]),
+      );
+    }
+  }
 }
 
 // Why only one query? To match what Apollo does and cut of the performance cost of checking all possible queries.
