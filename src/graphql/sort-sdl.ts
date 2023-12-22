@@ -46,7 +46,7 @@ export function sortSDL(doc: DocumentNode) {
           ...node,
           directives: sortNodes(node.directives),
           fields: sortNodes(node.fields),
-          // TODO: interfaces: sortNodes(node.interfaces),
+          interfaces: sortNodes(node.interfaces),
         };
       },
       InterfaceTypeDefinition(node) {
