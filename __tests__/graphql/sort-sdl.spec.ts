@@ -45,7 +45,7 @@ describe('sort-sdl', () => {
       expect(firstDirective?.name.value).toBe('a');
     });
 
-    test.skip('should sort interfaces for object types', () => {
+    test('should sort interfaces for object types', () => {
       const document = parse(`
                 interface C
                 interface B
@@ -53,8 +53,11 @@ describe('sort-sdl', () => {
                 type D implements C & B & A
                 `);
       const result = sortSDL(document);
-      const first = result.definitions[0] as ObjectTypeDefinitionNode;
-      const firstInterface = first.interfaces ? first.interfaces[0] : null; // FIXME: interfaces are empty array here
+      const first = result.definitions.find(
+        d => d.kind === 'ObjectTypeDefinition',
+      ) as ObjectTypeDefinitionNode;
+      const firstInterface = first.interfaces ? first.interfaces[0] : null;
+      expect(firstInterface?.name.value).toBe('A');
     });
   });
   describe('scalars', () => {
