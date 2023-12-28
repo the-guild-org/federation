@@ -5,6 +5,7 @@ import type {
   TypeDefinitionNode,
 } from 'graphql';
 import type { FederationVersion } from '../../specifications/federation.js';
+import type { SupergraphState } from '../state.js';
 
 export type MapByGraph<T> = Map<string, T>;
 
@@ -27,6 +28,7 @@ export interface TypeBuilder<T, S> {
     graphMap: Map<string, Graph>,
     helpers: {
       graphNameToId(graphName: string): string | null;
+      supergraphState: SupergraphState;
     },
   ): TypeDefinitionNode | DirectiveDefinitionNode;
 }

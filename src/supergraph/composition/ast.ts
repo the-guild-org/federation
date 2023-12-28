@@ -539,6 +539,7 @@ function createJoinFieldDirectiveNode(join: {
   graph?: string;
   type?: string;
   override?: string;
+  usedOverridden?: boolean;
   external?: boolean;
   provides?: string;
   requires?: string;
@@ -586,6 +587,19 @@ function createJoinFieldDirectiveNode(join: {
             value: {
               kind: Kind.STRING,
               value: join.override,
+            },
+          } as const)
+        : null,
+      join.usedOverridden
+        ? ({
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'usedOverridden',
+            },
+            value: {
+              kind: Kind.BOOLEAN,
+              value: true,
             },
           } as const)
         : null,

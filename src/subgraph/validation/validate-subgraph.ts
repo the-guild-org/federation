@@ -8,6 +8,7 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
+  OperationTypeNode,
   parse,
   SchemaDefinitionNode,
   SchemaExtensionNode,
@@ -447,6 +448,16 @@ function onlyDocumentNode(item: DocumentNode | null | undefined): item is Docume
 function cleanSubgraphTypeDefsFromSubgraphSpec(typeDefs: DocumentNode) {
   let queryTypes: Array<ObjectTypeDefinitionNode | ObjectTypeExtensionNode> = [];
 
+  const schemaDef = typeDefs.definitions.find(
+    node =>
+      (node.kind === Kind.SCHEMA_DEFINITION || node.kind === Kind.SCHEMA_EXTENSION) &&
+      node.operationTypes?.some(op => op.operation === OperationTypeNode.QUERY),
+  ) as SchemaDefinitionNode | SchemaExtensionNode | undefined;
+
+  const queryTypeName =
+    schemaDef?.operationTypes?.find(op => op.operation === OperationTypeNode.QUERY)?.type.name
+      .value ?? 'Query';
+
   (typeDefs.definitions as unknown as DefinitionNode[]) = typeDefs.definitions.filter(def => {
     if (def.kind === Kind.SCALAR_TYPE_DEFINITION && def.name.value === '_Any') {
       return false;
@@ -462,7 +473,7 @@ function cleanSubgraphTypeDefsFromSubgraphSpec(typeDefs: DocumentNode) {
 
     if (
       (def.kind === Kind.OBJECT_TYPE_DEFINITION || def.kind === Kind.OBJECT_TYPE_EXTENSION) &&
-      def.name.value === 'Query'
+      def.name.value === queryTypeName
     ) {
       queryTypes.push(def);
     }

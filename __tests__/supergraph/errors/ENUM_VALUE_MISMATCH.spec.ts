@@ -66,5 +66,53 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@shareable"])
+            
+            type Query {
+              users: [User]
+            }
+
+            type User @key(fields: "id") {
+              id: ID
+              type: UserType @shareable
+            }
+
+            enum UserType {
+              REGULAR
+            }
+          `,
+        },
+        {
+          name: 'feed',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@inaccessible", "@shareable"])
+            
+            type Query {
+              usersByType(type: UserType): [User!]!
+            }
+
+            extend type User @key(fields: "id") {
+              id: ID
+              type: UserType @shareable
+            }
+
+            enum UserType {
+              ANONYMOUS @inaccessible
+              REGULAR
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        supergraphSdl: expect.any(String),
+      }),
+    );
   });
 });

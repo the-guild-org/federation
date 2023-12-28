@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('KEY_INVALID_FIELDS_TYPE', () => {
@@ -35,4 +35,23 @@ testVersions((api, version) => {
       }),
     );
   });
+
+  assertCompositionSuccess(
+    api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          type User @key(fields: ["id", "uuid"]) {
+            id: ID!
+            uuid: ID!
+            name: String
+          }
+
+          type Query {
+            users: [User]
+          }
+        `,
+      },
+    ]),
+  );
 });

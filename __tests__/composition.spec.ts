@@ -63,6 +63,501 @@ testImplementations(api => {
     assertCompositionFailure(result);
   });
 
+  test('@join__field(usedOverridden: true) when field is overridden but defined in an interface', () => {
+    let result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          interface Post {
+            id: ID!
+            createdAt: String!
+          }
+
+          type ImagePost implements Post @key(fields: "id") {
+            id: ID!
+            createdAt: String!
+          }
+
+          type Query {
+            feed: [Post]
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@shareable", "@override"]
+            )
+
+          interface Post {
+            id: ID!
+            createdAt: String!
+          }
+
+          type TextPost implements Post @key(fields: "id") {
+            id: ID!
+            createdAt: String!
+            body: String!
+          }
+
+          interface AnotherPost {
+            id: ID!
+            createdAt: String!
+          }
+
+          type ImagePost implements AnotherPost @key(fields: "id") {
+            id: ID!
+            createdAt: String! @override(from: "a")
+          }
+
+          type Query {
+            anotherFeed: [AnotherPost]
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type ImagePost implements Post & AnotherPost
+        @join__implements(graph: A, interface: "Post")
+        @join__implements(graph: B, interface: "AnotherPost")
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id") {
+        createdAt: String!
+          @join__field(graph: A, usedOverridden: true)
+          @join__field(graph: B, override: "a")
+        id: ID!
+      }
+    `);
+
+    result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          type ImagePost @key(fields: "id") {
+            id: ID!
+            createdAt: String!
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@shareable", "@override"]
+            )
+
+          interface Post {
+            id: ID!
+            createdAt: String!
+          }
+
+          type TextPost implements Post @key(fields: "id") {
+            id: ID!
+            createdAt: String!
+            body: String!
+          }
+
+          interface AnotherPost {
+            id: ID!
+            createdAt: String!
+          }
+
+          type ImagePost implements AnotherPost @key(fields: "id") {
+            id: ID!
+            createdAt: String! @override(from: "a")
+          }
+
+          type Query {
+            anotherFeed: [AnotherPost]
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type ImagePost implements AnotherPost
+        @join__implements(graph: B, interface: "AnotherPost")
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id") {
+        createdAt: String! @join__field(graph: B, override: "a")
+        id: ID!
+      }
+    `);
+  });
+
+  test('@join__field(external: true) when field is overridden', () => {
+    let result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            aName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userA: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @override(from: "c")
+          }
+
+          type Query {
+            userB: User
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            cName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userC: User
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        id: ID!
+        name: String!
+          @join__field(external: true, graph: A)
+          @join__field(external: true, graph: C)
+          @join__field(graph: B, override: "c")
+        aName: String! @join__field(graph: A, requires: "name")
+        cName: String! @join__field(graph: C, requires: "name")
+      }
+    `);
+
+    result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            aName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userA: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @override(from: "c")
+          }
+
+          type Query {
+            userB: User
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            cName: String!
+          }
+
+          type Query {
+            userC: User
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        id: ID!
+        name: String! @join__field(external: true, graph: A) @join__field(graph: B, override: "c")
+        aName: String! @join__field(graph: A, requires: "name")
+        cName: String! @join__field(graph: C)
+      }
+    `);
+
+    result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            aName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userA: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @override(from: "c")
+          }
+
+          type Query {
+            userB: User
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            cName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userC: User
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        id: ID!
+        name: String!
+          @join__field(external: true, graph: A)
+          @join__field(external: true, graph: C)
+          @join__field(graph: B, override: "c")
+        aName: String! @join__field(graph: A, requires: "name")
+        cName: String! @join__field(graph: C, requires: "name")
+      }
+    `);
+
+    result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@requires", "@external"]
+            )
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @external
+            aName: String! @requires(fields: "name")
+          }
+
+          type Query {
+            userA: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String! @override(from: "c")
+          }
+
+          type Query {
+            userB: User
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") {
+            id: ID!
+            "it should not be in supergraph"
+            name: String! @external
+          }
+
+          type Foo @key(fields: "id") {
+            id: ID!
+            foo: String
+          }
+
+          scalar _Any
+          union _Entity = Foo | User
+
+          type _Service {
+            sdl: String!
+          }
+
+          type Query {
+            _entities(representations: [_Any!]!): [_Entity]!
+            _service: _Service
+            c: String!
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        id: ID!
+        name: String! @join__field(external: true, graph: A) @join__field(graph: B, override: "c")
+        aName: String! @join__field(graph: A, requires: "name")
+      }
+    `);
+  });
+
+  test('print @join__field on shareable field defined twice (once with non-effective override)', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type Mutation {
+            a: String!
+            b: String!
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@shareable", "@override"]
+            )
+
+          type Mutation {
+            a: String! @shareable @override(from: "non-existing")
+            b: String! @shareable @override(from: "non-existing")
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+          type Mutation {
+            c: String!
+          }
+
+          type Query {
+            c: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Mutation @join__type(graph: A) @join__type(graph: B) @join__type(graph: C) {
+        a: String! @join__field(graph: A) @join__field(graph: B, override: "non-existing")
+        b: String! @join__field(graph: A) @join__field(graph: B, override: "non-existing")
+        c: String! @join__field(graph: C)
+      }
+    `);
+  });
+
   describe.each(versions)('%s', version => {
     describe('shareable', () => {
       test('merge two exact same types', () => {
@@ -3998,6 +4493,153 @@ testImplementations(api => {
         `);
       });
 
+      test('on fields with @override (entity types)', () => {
+        const result = composeServices([
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@requires", "@external"]
+                )
+    
+              type User @key(fields: "id") {
+                id: ID!
+                name: String! @external
+                aName: String! @requires(fields: "name")
+              }
+    
+              type Query {
+                userA: User
+              }
+            `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@override"])
+    
+              type User @key(fields: "id") {
+                id: ID!
+                name: String! @override(from: "c")
+              }
+    
+              type Query {
+                userB: User
+              }
+            `),
+          },
+          {
+            name: 'c',
+            typeDefs: parse(/* GraphQL */ `
+              type User @key(fields: "id") {
+                id: ID!
+                "it should not be in supergraph"
+                name: String! @external
+              }
+
+              type Foo @key(fields: "id") {
+                id: ID!
+                foo: String
+              }
+
+              scalar _Any
+              union _Entity = Foo | User
+
+              type _Service {
+                sdl: String!
+              }
+
+              type Query {
+                _entities(representations: [_Any!]!): [_Entity]!
+                _service: _Service
+                c: String!
+              }
+            `),
+          },
+        ]);
+
+        assertCompositionSuccess(result);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          type User
+            @join__type(graph: A, key: "id")
+            @join__type(graph: B, key: "id")
+            @join__type(graph: C, key: "id") {
+            id: ID!
+            name: String!
+              @join__field(external: true, graph: A)
+              @join__field(graph: B, override: "c")
+            aName: String! @join__field(graph: A, requires: "name")
+          }
+        `);
+      });
+
+      test('on fields with @override (not entity types)', () => {
+        const result = composeServices([
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@shareable", "@override", "@key"]
+                )
+    
+              type User @shareable {
+                id: ID!
+                name: String! @override(from: "b")
+              }
+
+              type Organization @key(fields: "id") {
+                id: ID!
+                owner: User @shareable
+              }
+    
+              type Query {
+                organizationA: Organization
+              }
+            `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable", "@key"])
+    
+              type User @shareable {
+                id: ID! @shareable
+                """should be preserved"""
+                name: String! @shareable
+              }
+
+              type Organization @key(fields: "id") {
+                id: ID!
+                owner: User @shareable
+              }
+    
+              type Query {
+                organizationB: Organization
+              }
+            `),
+          },
+        ]);
+
+        assertCompositionSuccess(result);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          type User @join__type(graph: A) @join__type(graph: B) {
+            id: ID!
+            """
+            should be preserved
+            """
+            name: String! @join__field(graph: A, override: "b")
+          }
+        `);
+      });
+
       test('on object type definition with @extends', () => {
         const result = composeServices([
           {
@@ -5250,7 +5892,7 @@ testImplementations(api => {
 
   describe('Federation v1 only', () => {
     test('delete subgraph spec', () => {
-      const result = composeServices([
+      let result = composeServices([
         {
           name: 'users',
           typeDefs: parse(/* GraphQL */ `
@@ -5268,6 +5910,56 @@ testImplementations(api => {
             }
 
             extend type Query {
+              _service: _Service!
+            }
+
+            scalar _FieldSet
+            scalar _Any
+
+            union _Entity = User
+
+            type _Service {
+              sdl: String
+            }
+          `),
+        },
+      ]);
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        type Query @join__type(graph: USERS) {
+          users: [User]!
+        }
+      `);
+
+      expect(result.supergraphSdl).not.toEqual(expect.stringContaining('type _Service'));
+      expect(result.supergraphSdl).not.toEqual(expect.stringContaining('scalar _Any'));
+      expect(result.supergraphSdl).not.toEqual(expect.stringContaining('scalar _FieldSet'));
+      expect(result.supergraphSdl).not.toEqual(expect.stringContaining('union _Entity'));
+
+      result = composeServices([
+        {
+          name: 'users',
+          typeDefs: parse(/* GraphQL */ `
+            type User {
+              name: String!
+              blocked: Boolean!
+            }
+
+            type RootQuery {
+              _entities(representations: [_Any!]!): [_Entity]!
+            }
+
+            schema {
+              query: RootQuery
+            }
+
+            extend type RootQuery {
+              users: [User]!
+            }
+
+            extend type RootQuery {
               _service: _Service!
             }
 

@@ -1,4 +1,11 @@
-import { ASTVisitor, BooleanValueNode, GraphQLError, Kind, SelectionSetNode } from 'graphql';
+import {
+  ASTVisitor,
+  BooleanValueNode,
+  GraphQLError,
+  Kind,
+  SelectionSetNode,
+  StringValueNode,
+} from 'graphql';
 import { print } from '../../../../graphql/printer.js';
 import {
   getFieldsArgument,
@@ -64,24 +71,52 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
       const printedFieldsValue = print(fieldsArg.value);
 
       if (fieldsArg.value.kind !== Kind.STRING) {
-        context.reportError(
-          new GraphQLError(
-            `On type "${typeCoordinate}", for @key(fields: ${printedFieldsValue}): Invalid value for argument "fields": must be a string.`,
-            {
-              nodes: directiveNode,
-              extensions: {
-                code: 'KEY_INVALID_FIELDS_TYPE',
+        // In Federation v1, a string ["id", "name"] is equal to "id name" (that is not true for Federation v2)
+        const isListWithStrings =
+          fieldsArg.value.kind === Kind.LIST &&
+          fieldsArg.value.values.every(value => value.kind === Kind.STRING);
+        if (context.satisfiesVersionRange('> v1.0') || !isListWithStrings) {
+          // V2
+          context.reportError(
+            new GraphQLError(
+              `On type "${typeCoordinate}", for @key(fields: ${printedFieldsValue}): Invalid value for argument "fields": must be a string.`,
+              {
+                nodes: directiveNode,
+                extensions: {
+                  code: 'KEY_INVALID_FIELDS_TYPE',
+                },
               },
-            },
-          ),
-        );
-        return;
+            ),
+          );
+          return;
+        }
       }
 
       let selectionSet: SelectionSetNode | undefined;
+      let normalizedFieldsArgValue =
+        fieldsArg.value.kind === Kind.STRING
+          ? fieldsArg.value
+          : ({
+              kind: Kind.STRING,
+              value: fieldsArg.value.values
+                .map(v => {
+                  if (v.kind !== Kind.STRING) {
+                    // We checked if it's a string before, it should be at this point
+                    throw new Error('Expected fields argument value to be a string');
+                  }
+
+                  return v.value;
+                })
+                .join(' '),
+            } satisfies StringValueNode);
+
+      if (normalizedFieldsArgValue.kind !== Kind.STRING) {
+        // We checked if it's a string before, it should be at this point
+        throw new Error('Expected fields argument value to be a string');
+      }
 
       try {
-        selectionSet = parseFields(fieldsArg.value.value);
+        selectionSet = parseFields(normalizedFieldsArgValue.value);
       } catch (error) {
         if (error instanceof GraphQLError) {
           context.reportError(
@@ -186,7 +221,7 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
 
       if (usedOnInterface) {
         // TODO: It's a poor's man implementation of the check, we should compare the selected fields, but just a string
-        const expectedFieldsValue = fieldsArg.value.value;
+        const expectedFieldsValue = normalizedFieldsArgValue.value;
         knownObjectsAndInterfaces.forEach(def => {
           if (def.interfaces?.some(i => i.name.value === typeDef.name.value)) {
             let shouldError = true;
@@ -234,7 +269,7 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
         if (usedOnInterface) {
           context.stateBuilder.interfaceType.setKey(
             typeDef.name.value,
-            fieldsArg.value.value,
+            normalizedFieldsArgValue.value,
             fieldsUsedInKey,
             resolvable,
           );
@@ -243,7 +278,7 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
 
         context.stateBuilder.objectType.setKey(
           typeDef.name.value,
-          fieldsArg.value.value,
+          normalizedFieldsArgValue.value,
           fieldsUsedInKey,
           resolvable,
         );

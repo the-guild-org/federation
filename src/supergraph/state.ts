@@ -174,6 +174,7 @@ export function createSupergraphStateBuilder() {
         graphNameToId(graphName: string) {
           return graphNameToIdMap[graphName] ?? null;
         },
+        supergraphState: state,
       };
 
       // It's important to keep that number correct.

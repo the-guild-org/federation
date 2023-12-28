@@ -12,7 +12,10 @@ export function EnumValuesRule(context: SupergraphValidationContext): Supergraph
         for (const [valueName, valueState] of enumTypeState.values) {
           // If it's not used in all the subgraphs, it's missing in some of them
           if (valueState.byGraph.size !== total) {
-            missingValues.push(valueName);
+            // if it's inaccessible, don't report it as missing
+            if (!valueState.inaccessible) {
+              missingValues.push(valueName);
+            }
           }
         }
 

@@ -29,6 +29,113 @@ import type { SupergraphValidationContext } from '../validation-context.js';
 // 3. Check if the missing key fields can be added to the internal query (created by the query planner) and fill the gaps by resolving the missing key fields from other graphs that have the field.
 // And probably more and more things that will create a mess anyway :D
 
+function canTraverseToField(
+  fieldName: string,
+  supergraphState: SupergraphState,
+  entityState: ObjectTypeState,
+  sourceGraphId: string,
+  visitedGraphs: Set<string> = new Set(),
+  collectedCoordinates: Set<string> = new Set(),
+) {
+  const objectTypeStateInSourceGraph = entityState.byGraph.get(sourceGraphId);
+  const sourceGraphKeys = objectTypeStateInSourceGraph?.keys || [];
+
+  for (const targetGraphId of entityState.byGraph.keys()) {
+    if (targetGraphId === sourceGraphId) {
+      continue;
+    }
+
+    if (visitedGraphs.has(targetGraphId)) {
+      continue;
+    }
+
+    const fieldState = entityState.fields.get(fieldName);
+
+    if (!fieldState) {
+      throw new Error(`Field "${entityState.name}.${fieldName}" not found in Supergraph state`);
+    }
+
+    const objectTypeStateInTargetGraph = entityState.byGraph.get(targetGraphId);
+    const targetGraphKeys = objectTypeStateInTargetGraph?.keys || [];
+
+    // no keys in both graphs? can't move.
+    if (sourceGraphKeys.length === 0 && targetGraphKeys.length === 0) {
+      continue;
+    }
+
+    for (const targetKey of targetGraphKeys) {
+      if (!targetKey.resolvable) {
+        continue;
+      }
+
+      const targetKeyFields = resolveFieldsFromFieldSet(
+        targetKey.fields,
+        entityState.name,
+        targetGraphId,
+        supergraphState,
+      );
+
+      let resolvableCoordinates = new Set<string>();
+
+      for (const requiredCoordinate of targetKeyFields.coordinates) {
+        if (collectedCoordinates.has(requiredCoordinate)) {
+          resolvableCoordinates.add(requiredCoordinate);
+          continue;
+        }
+
+        const [typeName, fieldName] = requiredCoordinate.split('.');
+
+        const objectType = supergraphState.objectTypes.get(typeName);
+        if (!objectType) {
+          throw new Error(`Type "${typeName}" not found in Supergraph state`);
+        }
+
+        const field = objectType.fields.get(fieldName);
+        if (!field) {
+          throw new Error(`Field "${typeName}.${fieldName}" not found in Supergraph state`);
+        }
+
+        const fieldInGraph = field.byGraph.get(sourceGraphId);
+
+        if (!fieldInGraph) {
+          break;
+        }
+
+        if (fieldInGraph.external === true) {
+          break;
+        }
+
+        resolvableCoordinates.add(requiredCoordinate);
+      }
+
+      if (resolvableCoordinates.size !== targetKeyFields.coordinates.size) {
+        continue;
+      }
+
+      // looks like we can traverse to the graph
+
+      if (fieldState.byGraph.has(targetGraphId)) {
+        return true;
+      }
+
+      const canResolve = canTraverseToField(
+        fieldName,
+        supergraphState,
+        entityState,
+        targetGraphId,
+        new Set([...visitedGraphs, targetGraphId]),
+        new Set([...collectedCoordinates, ...resolvableCoordinates]),
+      );
+
+      if (canResolve) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 function canGraphMoveToGraphByEntity(
   supergraphState: SupergraphState,
   entityName: string,
@@ -735,92 +842,32 @@ export function SatisfiabilityRule(
               const root = queryPath[0];
 
               if ('fieldName' in root) {
-                const graphsWithoutTheRootField = graphsWithField.filter(gid => {
-                  const rootType = supergraphState.objectTypes.get(normalizedName);
+                const rootType = supergraphState.objectTypes.get(normalizedName);
+                if (!rootType) {
+                  throw new Error(`Type "${normalizedName}" not found in Supergraph state`);
+                }
+                const rootField = rootType.fields.get(root.fieldName);
 
-                  if (!rootType) {
-                    throw new Error(`Type "${normalizedName}" not found in Supergraph state`);
-                  }
+                if (!rootField) {
+                  throw new Error(
+                    `Field "${normalizedName}.${root.fieldName}" not found in Supergraph state`,
+                  );
+                }
 
-                  const rootField = rootType.fields.get(root.fieldName);
+                const graphsWithRootField = Array.from(rootField.byGraph)
+                  .filter(([_, f]) => f.external === false)
+                  .map(([g, _]) => g);
 
-                  if (!rootField) {
-                    throw new Error(
-                      `Field "${normalizedName}.${root.fieldName}" not found in Supergraph state`,
-                    );
-                  }
-
-                  return !rootField.byGraph.has(gid);
-                });
-
-                // can this graph resolve fields that are needed to resolve (via entity call) the missing field?
-                // Given { users { creditCardNumber } } where creditCardNumber is missing in the graph A.
-                // Can graph B resolve { users { bankId } } where bankId is needed to resolve creditCardNumber?
-                // If yes, we can ignore the error as the gateway will be able to resolve the field by doing _entities call.
-                const canExtendTheInternalQuery = graphsWithoutTheRootField.some(
-                  graphIdWithoutRootField => {
-                    if (graphIdWithoutRootField === graphId) {
-                      return false;
-                    }
-
-                    const canMove = canGraphMoveToGraphBasedOnMovabilityGraph(
-                      getMovabilityGraphForType(objectState.name),
-                      graphId,
-                      graphIdWithoutRootField,
-                    );
-
-                    let canMoveDirectlyByExtendingSelectionSet = false;
-
-                    const requiredKeys = objectState.byGraph
-                      .get(graphIdWithoutRootField)!
-                      .keys.map(key =>
-                        resolveFieldsFromFieldSet(
-                          key.fields,
-                          objectState.name,
-                          graphIdWithoutRootField,
-                          supergraphState,
-                        ),
-                      );
-
-                    canMoveDirectlyByExtendingSelectionSet = requiredKeys.some(k => {
-                      const coordinates = Array.from(k.coordinates);
-
-                      if (coordinates.length === 0) {
-                        return false;
-                      }
-
-                      for (const coordinate of coordinates) {
-                        const [typeName, fieldName] = coordinate.split('.') as [string, string];
-                        const objectTypeState = supergraphState.objectTypes.get(typeName);
-
-                        if (!objectTypeState) {
-                          throw new Error(`Type "${typeName}" not found in Supergraph state`);
-                        }
-
-                        const fieldState = objectTypeState.fields.get(fieldName);
-
-                        if (!fieldState) {
-                          throw new Error(
-                            `Field "${typeName}.${fieldName}" not found in Supergraph state`,
-                          );
-                        }
-
-                        const isAvailable = fieldState.byGraph.get(graphId)?.external === false;
-
-                        if (!isAvailable) {
-                          // break the loop as the requirement was to have all fields available, this one is not
-                          return false;
-                        }
-                      }
-
-                      return true;
-                    });
-
-                    return canMove || canMoveDirectlyByExtendingSelectionSet;
-                  },
-                );
-
-                if (canExtendTheInternalQuery) {
+                if (
+                  graphsWithRootField.some(graphWithRootField =>
+                    canTraverseToField(
+                      fieldState.name,
+                      supergraphState,
+                      objectState,
+                      graphWithRootField,
+                    ),
+                  )
+                ) {
                   // can resolve
                   return false;
                 }
