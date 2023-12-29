@@ -1,24 +1,28 @@
 import { parse } from 'graphql';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { composeServices } from '../src';
+import { composeServices, CompositionFailure, CompositionSuccess } from '../src';
 import { testImplementations } from './shared/testkit';
 
 testImplementations(_ => {
   describe('interface object composition', () => {
-    test.skip('if link directive is not present on all subgraphs, composition should fail', () => {
+    test('if link directive is not present on all subgraphs, composition should fail', () => {
       const result = composeServices([
         {
           name: 'subgraphA',
           typeDefs: parse(/* GraphQL */ `
-          @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
 
             type Query {
               hello: String
             }
 
             interface MyInterface @key(fields: "id") {
-                id: ID!
-                field: String
+              id: ID!
+              field: String
             }
           `),
         },
@@ -35,31 +39,48 @@ testImplementations(_ => {
             }
           `),
         },
-      ]);
-      // compoisition must fail
+      ]) as CompositionFailure;
+      expect(result.errors).toMatchInlineSnapshot(`
+        [
+          [GraphQLError: [subgraphB] Unknown directive "@interfaceObject".],
+        ]
+      `);
     });
 
-    test.skip('link directive should have url pointing to federation > 2.3 to enable @interfaceObject on all subgraphs', () => {
+    test('link directive should have url pointing to federation > 2.3 to enable @interfaceObject on all subgraphs', () => {
       const result = composeServices([
         {
           name: 'subgraphA',
           typeDefs: parse(/* GraphQL */ `
-          @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.1"
+                import: ["@key", "@interfaceObject"]
+              )
 
             type Query {
               hello: String
             }
 
             interface MyInterface @key(fields: "id") {
-                id: ID!
-                field: String
+              id: ID!
+              field: String
+            }
+
+            type MyType implements MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
             }
           `),
         },
         {
           name: 'subgraphB',
           typeDefs: parse(/* GraphQL */ `
-          @link(url: "https://specs.apollo.dev/federation/v2.1", import: ["@key", "@interfaceObject"])
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
             type Query {
               otherField: String
             }
@@ -70,8 +91,59 @@ testImplementations(_ => {
             }
           `),
         },
-      ]);
-      // should fail
+      ]) as CompositionFailure;
+      expect(result.errors).toMatchInlineSnapshot(`
+        [
+          [GraphQLError: [subgraphA] Cannot import unknown element "@interfaceObject".],
+        ]
+      `);
+
+      // define success case
+      const result2 = composeServices([
+        {
+          name: 'subgraphA',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Query {
+              hello: String
+            }
+
+            interface MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+
+            type MyType implements MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+          `),
+        },
+        {
+          name: 'subgraphB',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+            type Query {
+              otherField: String
+            }
+
+            type MyInterface @key(fields: "id") @interfaceObject {
+              id: ID!
+              newField: String
+            }
+          `),
+        },
+      ]) as CompositionSuccess;
+      expect(result2.supergraphSdl).toBeDefined();
     });
 
     test.skip(`link directive should have @interfaceObject in 'import' array on all subgraphs`, () => {
@@ -79,7 +151,7 @@ testImplementations(_ => {
         {
           name: 'subgraphA',
           typeDefs: parse(/* GraphQL */ `
-              @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+              extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
     
                 type Query {
                   hello: String
@@ -89,12 +161,17 @@ testImplementations(_ => {
                     id: ID!
                     field: String
                 }
+
+                type MyType implements MyInterface @key(fields: "id") {
+                    id: ID!
+                    field: String
+                }
               `),
         },
         {
           name: 'subgraphB',
           typeDefs: parse(/* GraphQL */ `
-              @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
+              extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
                 type Query {
                   otherField: String
                 }
@@ -105,7 +182,8 @@ testImplementations(_ => {
                 }
               `),
         },
-      ]);
+      ]) as CompositionFailure;
+      expect(result.errors).toMatchInlineSnapshot(``); // This must fail, but currently it doesn't
       // should fail
     });
 

@@ -372,7 +372,7 @@ export function createSubgraphValidationContext(
     markAsExternal(coordinate: string) {
       markedAsExternal.add(coordinate);
     },
-    markAsUsed(
+    markAsUsed( // (trkohler) this can be useful for me
       reason: 'fields' | '@extends' | 'references @shareable',
       kind:
         | Kind.OBJECT_TYPE_DEFINITION
