@@ -1,5 +1,10 @@
 import { expect, test } from 'vitest';
-import { assertCompositionFailure, graphql, testVersions } from '../../shared/testkit.js';
+import {
+  assertCompositionFailure,
+  assertCompositionSuccess,
+  graphql,
+  testVersions,
+} from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INVALID_GRAPHQL - invalid value for fields (input object)', () => {
@@ -437,6 +442,29 @@ testVersions((api, version) => {
               }),
         ]),
       }),
+    );
+  });
+
+  test('No INVALID_GRAPHQL when directive gets [] instead of [STRING]', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: ["@shareable"]
+            )
+
+          directive @hello(names: [String]) on FIELD_DEFINITION
+
+          type Query {
+            words: [String!]! @shareable @hello(names: [])
+          }
+        `,
+        },
+      ]),
     );
   });
 

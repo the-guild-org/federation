@@ -38,6 +38,17 @@ export function ProvidedArgumentsOnDirectivesRule(context: SimpleValidationConte
               }
 
               if (printedType !== 'Any' && printedType !== printedValue) {
+                // received empty list
+                if (printedValue === '[]') {
+                  // if the argument's type is a list, but the list item type is not non-null, then it's valid
+                  if (
+                    argDefinition.type.kind === Kind.LIST_TYPE &&
+                    argDefinition.type.type.kind !== Kind.NON_NULL_TYPE
+                  ) {
+                    continue;
+                  }
+                }
+
                 const namedType = namedTypeFromTypeNode(argDefinition.type);
                 const typeName = namedType.name.value;
 
