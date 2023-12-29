@@ -14,6 +14,7 @@ import { FieldsOfTheSameTypeRule } from './rules/fields-of-the-same-type-rule.js
 import { InputFieldDefaultMismatchRule } from './rules/input-field-default-mismatch-rule.js';
 import { InputObjectValuesRule } from './rules/input-object-values-rule.js';
 import { InterfaceKeyMissingImplementationTypeRule } from './rules/interface-key-missing-implementation-type.js';
+import { InterfaceObjectCompositionRule } from "./rules/interface-object-composition-rules.js";
 import { InvalidFieldSharingRule } from './rules/invalid-field-sharing-rule.js';
 import { OnlyInaccessibleChildrenRule } from './rules/only-inaccessible-children-rule.js';
 import { OverrideSourceHasOverrideRule } from './rules/override-source-has-override.js';
@@ -38,7 +39,7 @@ export function validateSupergraph(
   for (const subgraphState of subgraphStates.values()) {
     state.addGraph(subgraphState.graph);
   }
-
+  // I need to define pre interfaceObject rule there (trkohler)
   const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule];
   const rulesToSkip = __internal?.disableValidationRules ?? [];
 
@@ -52,7 +53,7 @@ export function validateSupergraph(
   for (const subgraphState of subgraphStates.values()) {
     state.visitSubgraphState(subgraphState);
   }
-
+  // I need those (trkohler)
   const postSupergraphRules = [
     ExtensionWithBaseRule,
     FieldsOfTheSameTypeRule,
@@ -75,6 +76,7 @@ export function validateSupergraph(
     InvalidFieldSharingRule,
     SatisfiabilityRule,
     SubgraphNameRule,
+    InterfaceObjectCompositionRule,
   ];
 
   const supergraph = state.getSupergraphState();
