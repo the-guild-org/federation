@@ -25,6 +25,7 @@ type GraphTypeValidationContext = {
 // new type for interfaceObject (trkohler)
 type InterfaceObjectResult = {
   error?: GraphQLError;
+  passed?: boolean;
 };
 
 export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
@@ -102,7 +103,7 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
     const interfaceObjectResult = interfaceObjectConditions(kindToGraphs, typeName);
     if (interfaceObjectResult.error) {
       context.reportError(interfaceObjectResult.error);
-    } else {
+    } else if (interfaceObjectResult.passed) {
       continue;
     }
 
@@ -140,6 +141,7 @@ function interfaceObjectConditions(
   kindToGraphs: Map<TypeKind, Set<GraphTypeValidationContext>>,
   typeName: string,
 ): InterfaceObjectResult {
+  const passed = false;
   const interfaceTypeValidationContexts = kindToGraphs.get(TypeKind.INTERFACE);
   /*
     if interface with the same name is defined in several graphs, we must throw an error.
@@ -148,6 +150,7 @@ function interfaceObjectConditions(
     */
   const interfaceObjectAllowed = interfaceTypeValidationContexts?.values().next().value
     .interfaceObjectAllowed;
+
   if (interfaceObjectAllowed) {
     const objectTypeValidationContexts = kindToGraphs.get(TypeKind.OBJECT);
     if (objectTypeValidationContexts) {
@@ -166,8 +169,10 @@ function interfaceObjectConditions(
       }
       // everything must be ok, return
       // TODO: check if there are other kinds of conflicts
-      return {};
+      return {
+        passed: true,
+      };
     }
   }
-  return {};
+  return { passed };
 }

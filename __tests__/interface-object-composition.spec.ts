@@ -146,45 +146,52 @@ testImplementations(_ => {
       expect(result2.supergraphSdl).toBeDefined();
     });
 
-    test.skip(`link directive should have @interfaceObject in 'import' array on all subgraphs`, () => {
+    test(`link directive should have @interfaceObject in 'import' array on all subgraphs`, () => {
       const result = composeServices([
         {
           name: 'subgraphA',
           typeDefs: parse(/* GraphQL */ `
-              extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
-    
-                type Query {
-                  hello: String
-                }
-    
-                interface MyInterface @key(fields: "id") {
-                    id: ID!
-                    field: String
-                }
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
 
-                type MyType implements MyInterface @key(fields: "id") {
-                    id: ID!
-                    field: String
-                }
-              `),
+            type Query {
+              hello: String
+            }
+
+            interface MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+
+            type MyType implements MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+          `),
         },
         {
           name: 'subgraphB',
           typeDefs: parse(/* GraphQL */ `
-              extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
-                type Query {
-                  otherField: String
-                }
-    
-                type MyInterface @key(fields: "id") @interfaceObject {
-                  id: ID!
-                  newField: String
-                }
-              `),
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+            type Query {
+              otherField: String
+            }
+
+            type MyInterface @key(fields: "id") @interfaceObject {
+              id: ID!
+              newField: String
+            }
+          `),
         },
       ]) as CompositionFailure;
-      expect(result.errors).toMatchInlineSnapshot(``); // This must fail, but currently it doesn't
-      // should fail
+      expect(result.errors).toMatchInlineSnapshot(`
+        [
+          [GraphQLError: Type "MyInterface" has mismatched kind: it is defined as Interface Type in subgraph "subgraphA" but Object Type in subgraph "subgraphB"],
+        ]
+      `);
     });
 
     test.skip(`target interface must have @key directive on subgraph where it's defined`, () => {
