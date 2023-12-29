@@ -14,7 +14,7 @@ import {
 } from 'graphql';
 import { print } from '../graphql/printer.js';
 import { TypeNodeInfo } from '../graphql/type-node-info.js';
-import { FederationVersion, isFederationLink } from '../specifications/federation.js';
+import { FederationImports, FederationVersion, isFederationLink } from '../specifications/federation.js';
 import { Link } from '../specifications/link.js';
 import { printOutputType } from './helpers.js';
 
@@ -221,6 +221,8 @@ export interface SubgraphState {
     id: string;
     name: string;
     version: FederationVersion;
+    // added imports to check for @interfaceObject (trkohler)
+    imports: FederationImports;
     url?: string;
   };
   /**
@@ -257,6 +259,7 @@ export function createSubgraphStateBuilder(
   graph: { id: string; name: string; url?: string },
   typeDefs: DocumentNode,
   version: FederationVersion,
+  imports: FederationImports,
   links: readonly Link[],
 ) {
   const linksWithDirective = links.filter(
@@ -275,6 +278,7 @@ export function createSubgraphStateBuilder(
     graph: {
       ...graph,
       version,
+      imports,
     },
     types: new Map<string, SubgraphType>(),
     schema: {},
