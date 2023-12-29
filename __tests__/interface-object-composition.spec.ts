@@ -194,39 +194,56 @@ testImplementations(_ => {
       `);
     });
 
-    test.skip(`target interface must have @key directive on subgraph where it's defined`, () => {
+    test(`target interface must have @key directive on subgraph where it's defined`, () => {
       const result = composeServices([
         {
           name: 'subgraphA',
           typeDefs: parse(/* GraphQL */ `
-              @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
-    
-                type Query {
-                  hello: String
-                }
-    
-                interface MyInterface {
-                    id: ID!
-                    field: String
-                }
-              `),
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Query {
+              hello: String
+            }
+
+            interface MyInterface {
+              id: ID!
+              field: String
+            }
+
+            type MyType implements MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+          `),
         },
         {
           name: 'subgraphB',
           typeDefs: parse(/* GraphQL */ `
-              @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@interfaceObject"])
-                type Query {
-                  otherField: String
-                }
-    
-                type MyInterface @key(fields: "id") @interfaceObject {
-                  id: ID!
-                  newField: String
-                }
-              `),
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+            type Query {
+              otherField: String
+            }
+
+            type MyInterface @key(fields: "id") @interfaceObject {
+              id: ID!
+              newField: String
+            }
+          `),
         },
-      ]);
-      // should fail
+      ]) as CompositionFailure;
+      expect(result.errors).toMatchInlineSnapshot(`
+        [
+          [GraphQLError: @key directive must be present on interface type MyInterface in subgraph SUBGRAPH_A for @objectInterface to work],
+        ]
+      `); 
     });
 
     test.skip(`all types implementing interface must have @key directive`, () => {

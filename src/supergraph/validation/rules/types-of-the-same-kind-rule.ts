@@ -17,7 +17,7 @@ const mapIRKindToString = {
 };
 
 // new type for interfaceObject (trkohler)
-type GraphTypeValidationContext = {
+export type GraphTypeValidationContext = {
   graphName: string;
   interfaceObjectAllowed: boolean;
 };

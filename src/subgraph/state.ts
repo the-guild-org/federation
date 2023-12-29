@@ -103,6 +103,7 @@ export interface InterfaceType {
   isDefinition: boolean;
   description?: Description;
   implementedBy: Set<string>;
+  root__interfaceObject: boolean;
   ast: {
     directives: DirectiveNode[];
   };
@@ -1619,6 +1620,7 @@ function getOrCreateInterfaceType(state: SubgraphState, typeName: string): Inter
     interfaces: new Set(),
     implementedBy: new Set(),
     isDefinition: false,
+    root__interfaceObject: false,
     ast: {
       directives: [],
     },
