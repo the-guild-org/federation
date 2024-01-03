@@ -196,6 +196,7 @@ Your feedback and bug reports are welcome and appreciated.
 - [ ] `SHAREABLE_HAS_MISMATCHED_RUNTIME_TYPES`
 - [ ] `UNSUPPORTED_FEATURE`
 - [ ] `UNSUPPORTED_LINKED_FEATURE`
+- [ ] `TYPE_WITH_ONLY_UNUSED_EXTERNAL`
 - [ ] `SATISFIABILITY_ERROR` - deeply nested key fields
 - [ ] `SATISFIABILITY_ERROR` - fragments in keys
 - [ ] `SATISFIABILITY_ERROR` - support interfaces... (kill me)
