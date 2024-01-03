@@ -1,5 +1,72 @@
 # @theguild/federation-composition
 
+## 0.7.0
+
+### Minor Changes
+
+- [`88a3fd0`](https://github.com/the-guild-org/federation/commit/88a3fd0bcda6f8f8fbd90c8829be6809c60d368e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Validate directive definitions
+
+### Patch Changes
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix missing @join\_\_field on
+  non-external, but shareable fields, with @override in some graphs
+
+- [`56b6c95`](https://github.com/the-guild-org/federation/commit/56b6c9526a071dd0676024c88a273f04e58968a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix FIELD_TYPE_MISMATCH - support
+  [User!] vs [User] in output types
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support @join\_\_field(usedOverridden:)
+
+- [`ee34815`](https://github.com/the-guild-org/federation/commit/ee348151caf0d7fe0a3099c8765d2f89f714f584)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix ProvidedArgumentsOnDirectivesRule
+  and allow to use "[]" when "[String]" is expected
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - delete subgraph spec according to
+  schema definition/extension object
+
+- [`88a3fd0`](https://github.com/the-guild-org/federation/commit/88a3fd0bcda6f8f8fbd90c8829be6809c60d368e)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - fix: allow to overwrite specified
+  directives
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Ignore inaccessible enum values in
+  ENUM_VALUE_MISMATCH rule
+
+- [`56b6c95`](https://github.com/the-guild-org/federation/commit/56b6c9526a071dd0676024c88a273f04e58968a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Improve SATISFIABILITY_ERROR - resolve
+  query path step by step
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix description of fields with
+  @override
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Allow @key(fields: ["a", "b"]) in
+  Federation v1
+
+- [`56b6c95`](https://github.com/the-guild-org/federation/commit/56b6c9526a071dd0676024c88a273f04e58968a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix unnecessary join\_\_field(external)
+  for extension type where field is not needed by the query planner
+
+- [`56b6c95`](https://github.com/the-guild-org/federation/commit/56b6c9526a071dd0676024c88a273f04e58968a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix unnecessary join\_\_field(external:
+  true) on key fields
+
+- [`a8a253d`](https://github.com/the-guild-org/federation/commit/a8a253d9a7181f12583699652b3ecd4cfb2ed302)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - SATISFIABILITY_ERROR improvements
+
+- [`a578a92`](https://github.com/the-guild-org/federation/commit/a578a9298a71c532a3f81234d182656e2a327091)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix @join\_\_field(external: true)
+  missing when field is overridden
+
+- [`56b6c95`](https://github.com/the-guild-org/federation/commit/56b6c9526a071dd0676024c88a273f04e58968a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Improve SATISFIABILITY_ERROR - check
+  satisfiability of non-entity types
+
 ## 0.6.2
 
 ### Patch Changes
