@@ -344,33 +344,32 @@ testVersions((api, version) => {
 
   test('works with @override', () => {
     assertCompositionSuccess(
-      api.composeServices(
-        [
-          {
-            name: 'foo',
-            typeDefs: graphql`
-              directive @override(from: String!) on FIELD_DEFINITION
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+            directive @override(from: String!) on FIELD_DEFINITION
 
-              type Query {
-                view: Queries!
-              }
+            type Query {
+              view: Queries!
+            }
 
-              type Queries {
-                aaa: [String!]! @override(from: "bar")
-                bbb: String! @override(from: "bar")
-                ccc: String! @override(from: "bar")
-                user: User! @override(from: "bar")
-              }
+            type Queries {
+              aaa: [String!]! @override(from: "bar")
+              bbb: String! @override(from: "bar")
+              ccc: String! @override(from: "bar")
+              user: User! @override(from: "bar")
+            }
 
-              type User {
-                id: ID! @override(from: "bar")
-                name: String! @override(from: "bar")
-              }
-            `,
-          },
-          {
-            name: 'bar',
-            typeDefs: graphql`
+            type User {
+              id: ID! @override(from: "bar")
+              name: String! @override(from: "bar")
+            }
+          `,
+        },
+        {
+          name: 'bar',
+          typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@shareable", "@inaccessible"])
 
             type Query @shareable {
@@ -393,10 +392,10 @@ testVersions((api, version) => {
               name: String!
             }
           `,
-          },
-          {
-            name: 'baz',
-            typeDefs: graphql`
+        },
+        {
+          name: 'baz',
+          typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@inaccessible", "@shareable"])
 
             type Query {
@@ -407,18 +406,18 @@ testVersions((api, version) => {
               _bazQueriesInternal: Boolean @inaccessible
             }
           `,
-          },
-          {
-            name: 'qux',
-            typeDefs: graphql`
-              type Query {
-                qux: String
-              }
-            `,
-          },
-          {
-            name: 'quux',
-            typeDefs: graphql`
+        },
+        {
+          name: 'qux',
+          typeDefs: graphql`
+            type Query {
+              qux: String
+            }
+          `,
+        },
+        {
+          name: 'quux',
+          typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@inaccessible", "@shareable"])
 
             type Query {
@@ -431,10 +430,8 @@ testVersions((api, version) => {
               quux: String @shareable
             }
           `,
-          },
-        ],
-        api.library === 'guild',
-      ),
+        },
+      ]),
     );
 
     // {
@@ -2200,4 +2197,164 @@ testVersions((api, version) => {
       }),
     );
   });
+
+  test('resolve missing field by parent entity', () => {
+    const result = api.composeServices([
+      {
+        name: 'product',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@external"])
+
+          type Query {
+            products: [Product!]!
+          }
+
+          type Product @key(fields: "id") @key(fields: "id pid") {
+            id: ID!
+            pid: ID
+          }
+
+          type Category @key(fields: "id name") {
+            id: ID!
+            name: String! @external
+          }
+        `,
+      },
+      {
+        name: 'product-category',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
+
+          type Product @key(fields: "id pid") {
+            id: ID!
+            pid: ID
+            category: Category
+          }
+
+          type Category @key(fields: "id name") @key(fields: "cid") {
+            id: ID!
+            cid: ID!
+            name: String!
+          }
+        `,
+      },
+      {
+        name: 'category',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
+
+          type Category @key(fields: "id cid") {
+            id: ID!
+            cid: ID
+            details: CategoryDetails
+          }
+
+          type CategoryDetails {
+            products: Int
+          }
+        `,
+      },
+    ]);
+
+    // It's possible to resolve Category.details only because it can be resolved by the parent entity (Car.category).
+    assertCompositionSuccess(result);
+  });
+
+  test.todo(
+    'resolve missing field by resolving first deeply nested key fields from multiple subgraphs...',
+    () => {
+      const result = api.composeServices([
+        {
+          name: 'products',
+          typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: ["@key", "@external", "@extends", "@shareable"]
+            )
+
+          type Query {
+            topProducts: ProductList!
+          }
+
+          type ProductList @key(fields: "products{id}") {
+            products: [Product!]!
+          }
+
+          type Product @extends @key(fields: "id") {
+            id: String! @external
+            category: Category @shareable
+          }
+
+          type Category @key(fields: "id") {
+            mainProduct: Product! @shareable
+            id: String!
+            tag: String @shareable
+          }
+        `,
+        },
+        {
+          name: 'core',
+          typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
+
+          type Product @key(fields: "id") @key(fields: "id pid") {
+            id: String!
+            pid: String!
+          }
+        `,
+        },
+        {
+          name: 'product-list',
+          typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+          type ProductList @key(fields: "products{id pid}") {
+            products: [Product!]!
+            first: Product @shareable
+            selected: Product @shareable
+          }
+
+          type Product @key(fields: "id pid") {
+            id: String!
+            pid: String
+          }
+        `,
+        },
+        {
+          name: 'product-price',
+          typeDefs: graphql`
+            extend schema
+              @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type ProductList @key(fields: "products{id pid category{id tag}} selected{id}") {
+              products: [Product!]!
+              first: Product @shareable
+              selected: Product @shareable
+            }
+
+            type Product @key(fields: "id pid category{id tag}") {
+              id: String!
+              price: Price
+              pid: String
+              category: Category
+            }
+
+            type Category @key(fields: "id tag") {
+              id: String!
+              tag: String
+            }
+
+            type Price {
+              price: Float!
+            }
+          `,
+        },
+      ]);
+
+      assertCompositionSuccess(result);
+    },
+  );
 });

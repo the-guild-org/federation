@@ -29,16 +29,147 @@ import type { SupergraphValidationContext } from '../validation-context.js';
 // 3. Check if the missing key fields can be added to the internal query (created by the query planner) and fill the gaps by resolving the missing key fields from other graphs that have the field.
 // And probably more and more things that will create a mess anyway :D
 
+function isSatisfiableQueryPath(
+  supergraphState: SupergraphState,
+  queryPath: Array<
+    | {
+        typeName: string;
+        fieldName: string;
+      }
+    | {
+        typeName: string;
+      }
+  >,
+): boolean {
+  const root = queryPath[0];
+  const leaf = queryPath[queryPath.length - 1];
+
+  // split query path into parts
+  // 1. from root to leaf
+  // 2. from root to shareable/entity field -> from shareable/entity field to leaf
+
+  if ('fieldName' in root) {
+    const rootType = supergraphState.objectTypes.get(root.typeName);
+    if (!rootType) {
+      throw new Error(`Type "${root.typeName}" not found in Supergraph state`);
+    }
+    const rootField = rootType.fields.get(root.fieldName);
+
+    if (!rootField) {
+      throw new Error(`Field "${root.typeName}.${root.fieldName}" not found in Supergraph state`);
+    }
+
+    const graphsWithRootField = Array.from(rootField.byGraph)
+      .filter(([_, f]) => f.external === false)
+      .map(([g, _]) => g);
+
+    if (!('fieldName' in leaf)) {
+      throw new Error('Leaf field is missing in the query path');
+    }
+
+    const leafType = supergraphState.objectTypes.get(leaf.typeName);
+
+    if (!leafType) {
+      throw new Error(`Type "${leaf.typeName}" not found in Supergraph state`);
+    }
+
+    const leafField = leafType.fields.get(leaf.fieldName);
+
+    if (!leafField) {
+      throw new Error(`Field "${leaf.typeName}.${leaf.fieldName}" not found in Supergraph state`);
+    }
+
+    if (
+      graphsWithRootField.some(graphWithRootField =>
+        canTraverseToField(leafField.name, supergraphState, leafType, graphWithRootField),
+      )
+    ) {
+      // can resolve
+      return true;
+    }
+
+    // root-to-leaf path is not satisfiable
+    // let's try to go from root and advance to the leaf
+    // by resolving every step of the path, one by one.
+
+    function canAdvance(stepIndex: number, fromGraphId: string): boolean {
+      const step = queryPath[stepIndex];
+
+      if (!('fieldName' in step)) {
+        return canAdvance(stepIndex + 1, fromGraphId);
+      }
+
+      const typeState = supergraphState.objectTypes.get(step.typeName);
+
+      if (!typeState) {
+        throw new Error(`Type "${step.typeName}" not found in Supergraph state`);
+      }
+
+      const fieldState = typeState.fields.get(step.fieldName);
+
+      if (!fieldState) {
+        throw new Error(`Field "${step.typeName}.${step.fieldName}" not found in Supergraph state`);
+      }
+
+      const accessibleTargetGraphs = new Set<string>();
+      if (
+        !canTraverseToField(
+          fieldState.name,
+          supergraphState,
+          typeState,
+          fromGraphId,
+          accessibleTargetGraphs,
+        )
+      ) {
+        return false;
+      }
+
+      if (step === leaf) {
+        return true;
+      }
+
+      return Array.from(accessibleTargetGraphs).some(graphId => canAdvance(stepIndex + 1, graphId));
+    }
+
+    const canResolveStepByStep = graphsWithRootField.some(graphId => {
+      return canAdvance(0, graphId);
+    });
+
+    if (canResolveStepByStep) {
+      return true;
+    }
+  } else {
+    throw new Error('Root field is missing in the query path');
+  }
+
+  // cannot resolve
+  return false;
+}
+
 function canTraverseToField(
   fieldName: string,
   supergraphState: SupergraphState,
   entityState: ObjectTypeState,
   sourceGraphId: string,
+  accessibleTargetGraphs: Set<string> = new Set(),
   visitedGraphs: Set<string> = new Set(),
-  collectedCoordinates: Set<string> = new Set(),
+  collectedFieldPaths: Set<string> = new Set(),
 ) {
   const objectTypeStateInSourceGraph = entityState.byGraph.get(sourceGraphId);
   const sourceGraphKeys = objectTypeStateInSourceGraph?.keys || [];
+
+  const fieldState = entityState.fields.get(fieldName);
+
+  if (!fieldState) {
+    throw new Error(`Field "${entityState.name}.${fieldName}" not found in Supergraph state`);
+  }
+
+  const fieldStateInSourceGraph = fieldState.byGraph.get(sourceGraphId);
+
+  if (fieldStateInSourceGraph && fieldStateInSourceGraph.external === false) {
+    accessibleTargetGraphs.add(sourceGraphId);
+    return true;
+  }
 
   for (const targetGraphId of entityState.byGraph.keys()) {
     if (targetGraphId === sourceGraphId) {
@@ -75,15 +206,13 @@ function canTraverseToField(
         supergraphState,
       );
 
-      let resolvableCoordinates = new Set<string>();
+      let resolvableFieldPaths = new Set<string>();
 
-      for (const requiredCoordinate of targetKeyFields.coordinates) {
-        if (collectedCoordinates.has(requiredCoordinate)) {
-          resolvableCoordinates.add(requiredCoordinate);
+      for (const [requiredFieldPath, { typeName, fieldName }] of targetKeyFields.pairs) {
+        if (collectedFieldPaths.has(requiredFieldPath)) {
+          resolvableFieldPaths.add(requiredFieldPath);
           continue;
         }
-
-        const [typeName, fieldName] = requiredCoordinate.split('.');
 
         const objectType = supergraphState.objectTypes.get(typeName);
         if (!objectType) {
@@ -101,20 +230,27 @@ function canTraverseToField(
           break;
         }
 
-        if (fieldInGraph.external === true) {
+        const fieldInGraphIsExternal = fieldInGraph.external === true;
+        // it looks like the field is resolved by a parent field
+        // When a field is resolved by a parent field, even if it's marked as external, it's actually resolved by the parent.
+        const fieldIsDirectlyAccessed =
+          requiredFieldPath.indexOf('.') === requiredFieldPath.lastIndexOf('.');
+
+        if (fieldInGraphIsExternal && fieldIsDirectlyAccessed) {
           break;
         }
 
-        resolvableCoordinates.add(requiredCoordinate);
+        resolvableFieldPaths.add(requiredFieldPath);
       }
 
-      if (resolvableCoordinates.size !== targetKeyFields.coordinates.size) {
+      if (resolvableFieldPaths.size !== targetKeyFields.paths.size) {
         continue;
       }
 
       // looks like we can traverse to the graph
 
       if (fieldState.byGraph.has(targetGraphId)) {
+        accessibleTargetGraphs.add(targetGraphId);
         return true;
       }
 
@@ -123,11 +259,13 @@ function canTraverseToField(
         supergraphState,
         entityState,
         targetGraphId,
+        accessibleTargetGraphs,
         new Set([...visitedGraphs, targetGraphId]),
-        new Set([...collectedCoordinates, ...resolvableCoordinates]),
+        new Set([...collectedFieldPaths, ...resolvableFieldPaths]),
       );
 
       if (canResolve) {
+        accessibleTargetGraphs.add(targetGraphId);
         return true;
       }
     }
@@ -655,6 +793,7 @@ export function SatisfiabilityRule(
         return;
       }
 
+      // TODO: this is incorrect as @shareable does't mean it can be resolved here and there, it only means that the field has the same semantics in all subgraphs
       const isFieldShareableInAllSubgraphs = Array.from(fieldState.byGraph).every(
         ([graphId, fieldStateInGraph]) => {
           const fieldShareable =
@@ -666,6 +805,7 @@ export function SatisfiabilityRule(
           return fieldShareable || typeShareable;
         },
       );
+
       if (isFieldShareableInAllSubgraphs) {
         return;
       }
@@ -838,46 +978,9 @@ export function SatisfiabilityRule(
             // leading to the possible extension of selection set.
             // For now, it's good enough, we're still experimenting here anyway... We will add it soon.
 
-            const nonResolvablePaths = paths.filter(queryPath => {
-              const root = queryPath[0];
-
-              if ('fieldName' in root) {
-                const rootType = supergraphState.objectTypes.get(normalizedName);
-                if (!rootType) {
-                  throw new Error(`Type "${normalizedName}" not found in Supergraph state`);
-                }
-                const rootField = rootType.fields.get(root.fieldName);
-
-                if (!rootField) {
-                  throw new Error(
-                    `Field "${normalizedName}.${root.fieldName}" not found in Supergraph state`,
-                  );
-                }
-
-                const graphsWithRootField = Array.from(rootField.byGraph)
-                  .filter(([_, f]) => f.external === false)
-                  .map(([g, _]) => g);
-
-                if (
-                  graphsWithRootField.some(graphWithRootField =>
-                    canTraverseToField(
-                      fieldState.name,
-                      supergraphState,
-                      objectState,
-                      graphWithRootField,
-                    ),
-                  )
-                ) {
-                  // can resolve
-                  return false;
-                }
-              } else {
-                throw new Error('Root field is missing in the query path');
-              }
-
-              // cannot resolve
-              return true;
-            });
+            const nonResolvablePaths = paths.filter(
+              queryPath => !isSatisfiableQueryPath(supergraphState, queryPath),
+            );
 
             if (nonResolvablePaths.length === 0) {
               continue;
@@ -1034,6 +1137,7 @@ export function SatisfiabilityRule(
         for (const [graphId] of graphsWithoutField) {
           const subgraphState = context.subgraphStates.get(graphId)!;
 
+          // TODO: this is incorrect as @shareable does't mean it can be resolved here and there, it only means that the field has the same semantics in all subgraphs
           // check if everything that refers to the object type is shareable
           const isShareableWithOtherGraphs = Array.from(subgraphState.types.values())
             .filter(t => dependenciesOfObjectType.includes(t.name))
@@ -1234,6 +1338,23 @@ export function SatisfiabilityRule(
             });
 
             if (areRootFieldsShared) {
+              continue;
+            }
+
+            const paths = findQueryPaths(
+              supergraphState,
+              normalizedName,
+              Array.from(rootType.fields.keys()),
+              objectState.name,
+              fieldState.name,
+              dependenciesOfObjectType,
+            );
+
+            const nonResolvablePaths = paths.filter(
+              queryPath => !isSatisfiableQueryPath(supergraphState, queryPath),
+            );
+
+            if (nonResolvablePaths.length === 0) {
               continue;
             }
 
@@ -1863,6 +1984,15 @@ function resolveFieldsFromFieldSet(
 ): {
   paths: Set<string>;
   coordinates: Set<string>;
+  pairs: Array<
+    [
+      string,
+      {
+        typeName: string;
+        fieldName: string;
+      },
+    ]
+  >;
 } {
   const paths = new Set<string>();
   const coordinates = new Set<string>();
@@ -1872,12 +2002,24 @@ function resolveFieldsFromFieldSet(
     return {
       coordinates,
       paths,
+      pairs: [],
     };
   }
+
+  const pairs: Array<
+    [
+      string,
+      {
+        typeName: string;
+        fieldName: string;
+      },
+    ]
+  > = [];
 
   findFieldPathsFromSelectionSet(
     paths,
     coordinates,
+    pairs,
     typeName,
     selectionSet,
     typeName,
@@ -1888,12 +2030,22 @@ function resolveFieldsFromFieldSet(
   return {
     coordinates,
     paths,
+    pairs,
   };
 }
 
 function findFieldPathsFromSelectionSet(
   fieldPaths: Set<string>,
   coordinates: Set<string>,
+  pairs: Array<
+    [
+      string,
+      {
+        typeName: string;
+        fieldName: string;
+      },
+    ]
+  >,
   typeName: string | string[],
   selectionSet: SelectionSetNode,
   currentPath: string,
@@ -1907,15 +2059,15 @@ function findFieldPathsFromSelectionSet(
 
       if (Array.isArray(typeName)) {
         for (const t of typeName) {
+          pairs.push([innerPath, { typeName: t, fieldName: selection.name.value }]);
           coordinates.add(`${t}.${selection.name.value}`);
         }
       } else {
+        pairs.push([innerPath, { typeName, fieldName: selection.name.value }]);
         coordinates.add(`${typeName}.${selection.name.value}`);
       }
 
       if (selection.selectionSet) {
-        // TODO: resolve field type
-        // const outputType = supergraphState.objectTypes.get(typeName as string) ?
         const types = (Array.isArray(typeName) ? typeName : [typeName]).map(tName => {
           const outputType =
             supergraphState.objectTypes.get(tName) ?? supergraphState.interfaceTypes.get(tName);
@@ -1942,6 +2094,7 @@ function findFieldPathsFromSelectionSet(
         findFieldPathsFromSelectionSet(
           fieldPaths,
           coordinates,
+          pairs,
           outputTypes,
           selection.selectionSet,
           innerPath,
@@ -1960,6 +2113,7 @@ function findFieldPathsFromSelectionSet(
       findFieldPathsFromSelectionSet(
         fieldPaths,
         coordinates,
+        pairs,
         selection.typeCondition.name.value,
         selection.selectionSet,
         `${currentPath}.(${selection.typeCondition.name.value})`,

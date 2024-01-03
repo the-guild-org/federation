@@ -6074,4 +6074,591 @@ testImplementations(api => {
       });
     });
   });
+
+  test('external on an unused field in an extension type', () => {
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type User @extends @key(fields: "id") {
+            a: String
+            id: ID! @external
+            uuid: ID! @external
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type User @extends @key(fields: "id") {
+            b: String @requires(fields: "uuid")
+            id: ID! @external
+            uuid: ID! @external
+          }
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") {
+            c: String
+            id: ID!
+            uuid: ID!
+          }
+
+          type Query {
+            c: User
+          }
+        `),
+      },
+      {
+        name: 'extra',
+        typeDefs: parse(/* GraphQL */ `
+          type Query {
+            extra: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(extension: true, graph: A, key: "id")
+        @join__type(extension: true, graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        a: String @join__field(graph: A)
+        b: String @join__field(graph: B, requires: "uuid")
+        c: String @join__field(graph: C)
+        uuid: ID! @join__field(external: true, graph: B) @join__field(graph: C)
+        id: ID!
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type User @extends @key(fields: "id") {
+            a: String
+            id: ID! @external
+            uuid: ID! @external
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type User @extends @key(fields: "id") {
+            b: String @requires(fields: "uuid")
+            id: ID! @external
+            uuid: ID! @external
+          }
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") {
+            c: String
+            id: ID!
+            uuid: ID!
+          }
+
+          type Query {
+            c: User
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(extension: true, graph: A, key: "id")
+        @join__type(extension: true, graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        a: String @join__field(graph: A)
+        b: String @join__field(graph: B, requires: "uuid")
+        c: String @join__field(graph: C)
+        uuid: ID! @join__field(external: true, graph: B) @join__field(graph: C)
+        id: ID!
+      }
+    `);
+  });
+
+  test('Fed v1: external on a provided field in an extension type', () => {
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") @key(fields: "uuid") {
+            id: ID!
+            uuid: String!
+            name: String!
+          }
+
+          type Query {
+            a: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend type User @key(fields: "uuid") {
+            uuid: String! @external
+          }
+
+          type B {
+            id: ID!
+            user: User!
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") @key(fields: "uuid") {
+            id: ID!
+            uuid: String!
+            commentCount: Int!
+          }
+        `),
+      },
+      {
+        name: 'd',
+        typeDefs: parse(/* GraphQL */ `
+          extend type User @key(fields: "uuid") {
+            uuid: String! @external
+            id: ID! @external
+          }
+
+          type D {
+            id: ID!
+            user: User! @provides(fields: "id")
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: A, key: "uuid")
+        @join__type(graph: B, key: "uuid")
+        @join__type(graph: C, key: "id")
+        @join__type(graph: C, key: "uuid")
+        @join__type(graph: D, key: "uuid") {
+        id: ID! @join__field(external: true, graph: D) @join__field(graph: A) @join__field(graph: C)
+        uuid: String!
+        name: String! @join__field(graph: A)
+        commentCount: Int! @join__field(graph: C)
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") @key(fields: "uuid") {
+            id: ID!
+            uuid: String!
+            name: String!
+          }
+
+          type Query {
+            a: User
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend type User @key(fields: "uuid") {
+            uuid: String! @external
+          }
+
+          type B {
+            id: ID!
+            user: User!
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") @key(fields: "uuid") {
+            id: ID!
+            uuid: String!
+            commentCount: Int!
+          }
+        `),
+      },
+      {
+        name: 'd',
+        typeDefs: parse(/* GraphQL */ `
+          extend type User @key(fields: "uuid") {
+            uuid: String! @external
+            id: ID! @external
+          }
+
+          type D {
+            id: ID!
+            user: User! @provides(fields: "id")
+          }
+        `),
+      },
+      {
+        name: 'extra',
+        typeDefs: parse(/* GraphQL */ `
+          type Query {
+            extra: String!
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User
+        @join__type(graph: A, key: "id")
+        @join__type(graph: A, key: "uuid")
+        @join__type(graph: B, key: "uuid")
+        @join__type(graph: C, key: "id")
+        @join__type(graph: C, key: "uuid")
+        @join__type(graph: D, key: "uuid") {
+        id: ID! @join__field(external: true, graph: D) @join__field(graph: A) @join__field(graph: C)
+        uuid: String!
+        name: String! @join__field(graph: A)
+        commentCount: Int! @join__field(graph: C)
+      }
+    `);
+  });
+
+  test('unused external on key-field of an entity type', () => {
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "header") @key(fields: "footer") {
+            header: String @external
+            footer: String @external
+            headerTitle: String
+            footerTitle: String
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "id") {
+            id: ID!
+            header: String
+            footer: String
+            title: String
+          }
+
+          type Query {
+            site: Site
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "id") {
+            id: ID!
+            tag: String
+          }
+
+          type Query {
+            c: Site
+          }
+        `),
+      },
+      {
+        name: 'extra',
+        typeDefs: parse(/* GraphQL */ `
+          type Query {
+            extra: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Site
+        @join__type(graph: A, key: "header")
+        @join__type(graph: A, key: "footer")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        header: String @join__field(external: true, graph: A) @join__field(graph: B)
+        headerTitle: String @join__field(graph: A)
+        id: ID! @join__field(graph: B) @join__field(graph: C)
+        footer: String @join__field(external: true, graph: A) @join__field(graph: B)
+        footerTitle: String @join__field(graph: A)
+        title: String @join__field(graph: B)
+        tag: String @join__field(graph: C)
+      }
+    `);
+
+    result = result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "header") @key(fields: "footer") {
+            header: String @external
+            footer: String @external
+            headerTitle: String
+            footerTitle: String
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "id") {
+            id: ID!
+            header: String
+            footer: String
+            title: String
+          }
+
+          type Query {
+            site: Site
+          }
+        `),
+      },
+      {
+        name: 'c',
+        typeDefs: parse(/* GraphQL */ `
+          type Site @key(fields: "id") {
+            id: ID!
+            tag: String
+          }
+
+          type Query {
+            c: Site
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Site
+        @join__type(graph: A, key: "header")
+        @join__type(graph: A, key: "footer")
+        @join__type(graph: B, key: "id")
+        @join__type(graph: C, key: "id") {
+        header: String @join__field(external: true, graph: A) @join__field(graph: B)
+        headerTitle: String @join__field(graph: A)
+        id: ID! @join__field(graph: B) @join__field(graph: C)
+        footer: String @join__field(external: true, graph: A) @join__field(graph: B)
+        footerTitle: String @join__field(graph: A)
+        title: String @join__field(graph: B)
+        tag: String @join__field(graph: C)
+      }
+    `);
+  });
+
+  test('external on non-key field of an entity type', () => {
+    let result = api.composeServices([
+      {
+        name: 'foo',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@external", "@provides", "@shareable"]
+            )
+
+          type Note @key(fields: "id") @shareable {
+            id: ID!
+            name: String @external
+            author: User @external
+          }
+
+          type User @key(fields: "id", resolvable: false) {
+            id: ID!
+          }
+
+          type PrivateNote @key(fields: "id") @shareable {
+            id: ID!
+            note: Note @provides(fields: "name author { id }")
+          }
+
+          type Query {
+            note: Note @shareable
+            privateNote: PrivateNote @shareable
+          }
+        `),
+      },
+      {
+        name: 'bar',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@shareable"])
+
+          type Note @key(fields: "id") @shareable {
+            id: ID!
+            name: String
+            author: User
+          }
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String
+          }
+
+          type PrivateNote @key(fields: "id") @shareable {
+            id: ID!
+            note: Note
+          }
+
+          type Query {
+            note: Note @shareable
+            privateNote: PrivateNote @shareable
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Note @join__type(graph: FOO, key: "id") @join__type(graph: BAR, key: "id") {
+        id: ID!
+        name: String @join__field(external: true, graph: FOO) @join__field(graph: BAR)
+        author: User @join__field(external: true, graph: FOO) @join__field(graph: BAR)
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'foo',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@external", "@provides", "@shareable"]
+            )
+
+          type Note @key(fields: "id") @shareable {
+            id: ID!
+            name: String @external
+            author: User @external
+          }
+
+          type User @key(fields: "id", resolvable: false) {
+            id: ID!
+          }
+
+          type PrivateNote @key(fields: "id") @shareable {
+            id: ID!
+            note: Note @provides(fields: "name author { id }")
+          }
+
+          type Query {
+            note: Note @shareable
+            privateNote: PrivateNote @shareable
+          }
+        `),
+      },
+      {
+        name: 'bar',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@shareable"])
+
+          type Note @key(fields: "id") @shareable {
+            id: ID!
+            name: String
+            author: User
+          }
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String
+          }
+
+          type PrivateNote @key(fields: "id") @shareable {
+            id: ID!
+            note: Note
+          }
+
+          type Query {
+            note: Note @shareable
+            privateNote: PrivateNote @shareable
+          }
+        `),
+      },
+      {
+        name: 'baz',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@external", "@provides", "@shareable"]
+            )
+
+          type Query {
+            hello: String
+          }
+
+          type Note @key(fields: "id") @shareable {
+            id: ID!
+            tag: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Note
+        @join__type(graph: FOO, key: "id")
+        @join__type(graph: BAR, key: "id")
+        @join__type(graph: BAZ, key: "id") {
+        id: ID!
+        name: String @join__field(external: true, graph: FOO) @join__field(graph: BAR)
+        author: User @join__field(external: true, graph: FOO) @join__field(graph: BAR)
+        tag: String @join__field(graph: BAZ)
+      }
+    `);
+  });
 });

@@ -51,7 +51,9 @@ function composeServicesFactory(
     // This will help us detect new validation errors
     if (compositionHasErrors(result)) {
       if (debug) {
-        console.log(result.errors.map(e => e.message).join('\n'));
+        console.log(
+          result.errors.map(e => `[${e.extensions?.code ?? 'UNKNOWN'}] ${e.message}`).join('\n'),
+        );
       }
       const codes = result.errors.map(e => e.extensions?.code).filter(Boolean);
       const uniqueCodes = new Set(codes);

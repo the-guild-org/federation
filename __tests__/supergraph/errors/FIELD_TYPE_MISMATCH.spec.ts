@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('FIELD_TYPE_MISMATCH', () => {
@@ -136,6 +136,92 @@ testVersions((api, version) => {
           }),
         ]),
       }),
+    );
+
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'me',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              me: User
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              tags: [Tag!] @shareable
+            }
+
+            type Tag @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              users: [User]
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              tags: [Tag] @shareable
+            }
+
+            type Tag @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+      ]),
+    );
+
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'me',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              me: User
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              tags: [Tag!]! @shareable
+            }
+
+            type Tag @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              users: [User]
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              tags: [Tag]! @shareable
+            }
+
+            type Tag @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+      ]),
     );
   });
 });

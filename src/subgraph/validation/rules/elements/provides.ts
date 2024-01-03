@@ -191,12 +191,6 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
           );
         },
         interceptExternalField(info) {
-          if (context.satisfiesVersionRange('< v2.0')) {
-            // In Federation v1 this was allowed.
-            // In Federation v2, we error out.
-            return;
-          }
-
           // Oh, it hurts performance. We will fix it later. First, we need to make sure it works.
           const keyDirectives = info.typeDefinition.directives?.filter(directive =>
             context.isAvailableFederationDirective('key', directive),
@@ -279,7 +273,10 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
             }
           }
 
-          if (interceptedFieldIsPrimaryKeyFromExtension) {
+          if (
+            context.satisfiesVersionRange('>= v2.0') &&
+            interceptedFieldIsPrimaryKeyFromExtension
+          ) {
             isValid = false;
             context.reportError(
               new GraphQLError(

@@ -1,6 +1,7 @@
 import { DirectiveNode } from 'graphql';
 import type { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, ObjectType } from '../../subgraph/state.js';
+import { isDefined } from '../../utils/helpers.js';
 import { createObjectTypeNode, JoinFieldAST } from './ast.js';
 import type { Key, MapByGraph, TypeBuilder } from './common.js';
 import { convertToConst } from './common.js';
@@ -111,9 +112,15 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
           // If it's an external field, let's ignore it
           (!isExternal &&
             // if the field type is nullable and
-            !field.type.endsWith('!') &&
             // the existing type is non-null
-            fieldState.type.endsWith('!'));
+            // Existing -> Incoming -> Result
+            // [A!]!    -> [A!]     -> [A!]
+            // [A!]!    -> [A]      -> [A]
+            // [A!]     -> [A!]!    -> [A!]
+            // [A!]     -> [A]      -> [A]
+            // [A]!     -> [A!]     -> [A!]
+            // Least nullable wins
+            fieldState.type.lastIndexOf('!') > field.type.lastIndexOf('!'));
 
         if (shouldChangeType) {
           // Replace the non-null type with a nullable type
@@ -289,6 +296,80 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         }
       }
 
+      function shouldSetExternalOnJoinField(
+        fieldStateInGraph: FieldStateInGraph,
+        graphId: string,
+        fieldState: ObjectTypeFieldState,
+      ) {
+        if (!fieldStateInGraph.external) {
+          return false;
+        }
+
+        if (fieldStateInGraph.provided) {
+          return true;
+        }
+
+        // mark field as external if it's annotated with @external, but it's not used as a key on the extension type
+        if (fieldState.usedAsKey && objectType.byGraph.get(graphId)!.extension === true) {
+          return false;
+        }
+
+        return true;
+      }
+
+      function createJoinFields(
+        fieldInGraphs: [string, FieldStateInGraph][],
+        field: ObjectTypeFieldState,
+        {
+          hasDifferentOutputType,
+          overridesMap,
+        }: {
+          hasDifferentOutputType: boolean;
+          overridesMap: {
+            [originalGraphId: string]: string;
+          };
+        },
+      ) {
+        return fieldInGraphs
+          .map(([graphId, meta]) => {
+            const type = hasDifferentOutputType ? meta.type : undefined;
+            const override = meta.override ?? undefined;
+            const usedOverridden = provideUsedOverriddenValue(
+              field.name,
+              overridesMap,
+              fieldNamesOfImplementedInterfaces,
+              graphId,
+            );
+            const external = shouldSetExternalOnJoinField(meta, graphId, field);
+            const provides = meta.provides ?? undefined;
+            const requires = meta.requires ?? undefined;
+
+            const definesSomething =
+              !!type || !!override || !!provides || !!requires || !!usedOverridden;
+            const isRequiredOrProvided = meta.provided || meta.required;
+
+            if (
+              external &&
+              objectType.byGraph.get(graphId)!.extension === true &&
+              !definesSomething &&
+              !isRequiredOrProvided
+            ) {
+              return null;
+            }
+
+            return {
+              graph: graphId,
+              type,
+              override,
+              usedOverridden,
+              external,
+              provides,
+              requires,
+            };
+          })
+          .filter(isDefined);
+      }
+
       return createObjectTypeNode({
         name: objectType.name,
         ast: {
@@ -429,25 +510,10 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                 }));
               }
             } else if (hasDifferencesBetweenGraphs) {
-              joinFields = fieldInGraphs.map(([graphId, meta]) => ({
-                graph: graphId,
-                type: differencesBetweenGraphs.type ? meta.type : undefined,
-                override: meta.override ?? undefined,
-                usedOverridden: provideUsedOverriddenValue(
-                  field.name,
-                  overridesMap,
-                  fieldNamesOfImplementedInterfaces,
-                  graphId,
-                ),
-                external: meta.external
-                  ? // mark field as external if it's annotated with @external, but it's not used as a key on the extension type
-                    field.usedAsKey && objectType.byGraph.get(graphId)!.extension === true
-                    ? false
-                    : true
-                  : undefined,
-                provides: meta.provides ?? undefined,
-                requires: meta.requires ?? undefined,
-              }));
+              joinFields = createJoinFields(fieldInGraphs, field, {
+                hasDifferentOutputType,
+                overridesMap,
+              });
             }
           } else {
             // An override is a special case, we need to emit `@join__field` only for graphs where @override was applied
@@ -485,20 +551,10 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                 requires: meta.requires ?? undefined,
               }));
             } else {
-              joinFields = fieldInGraphs.map(([graphId, meta]) => ({
-                graph: graphId,
-                type: hasDifferentOutputType ? meta.type : undefined,
-                override: meta.override ?? undefined,
-                usedOverridden: provideUsedOverriddenValue(
-                  field.name,
-                  overridesMap,
-                  fieldNamesOfImplementedInterfaces,
-                  graphId,
-                ),
-                external: meta.external ?? undefined,
-                provides: meta.provides ?? undefined,
-                requires: meta.requires ?? undefined,
-              }));
+              joinFields = createJoinFields(fieldInGraphs, field, {
+                hasDifferentOutputType,
+                overridesMap,
+              });
             }
           }
 
