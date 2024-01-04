@@ -336,6 +336,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             const override = meta.override ?? undefined;
             const usedOverridden = provideUsedOverriddenValue(
               field.name,
+              meta,
               overridesMap,
               fieldNamesOfImplementedInterfaces,
               graphId,
@@ -441,6 +442,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                 // it's not part of any @override(from:) and it's not used by any interface
                 !provideUsedOverriddenValue(
                   field.name,
+                  fieldInGraph,
                   overridesMap,
                   fieldNamesOfImplementedInterfaces,
                   graphId,
@@ -475,6 +477,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                   override: meta.override ?? undefined,
                   usedOverridden: provideUsedOverriddenValue(
                     field.name,
+                    meta,
                     overridesMap,
                     fieldNamesOfImplementedInterfaces,
                     graphId,
@@ -513,6 +516,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                   const isOverridden = overriddenGraphs.includes(graphId);
                   const needsToPrintUsedOverridden = provideUsedOverriddenValue(
                     field.name,
+                    f,
                     overridesMap,
                     fieldNamesOfImplementedInterfaces,
                     graphId,
@@ -536,6 +540,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                     override: meta.override ?? undefined,
                     usedOverridden: provideUsedOverriddenValue(
                       field.name,
+                      meta,
                       overridesMap,
                       fieldNamesOfImplementedInterfaces,
                       graphId,
@@ -567,6 +572,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                     (meta.shareable && !overriddenGraphs.includes(graphId)) ||
                     provideUsedOverriddenValue(
                       field.name,
+                      meta,
                       overridesMap,
                       fieldNamesOfImplementedInterfaces,
                       graphId,
@@ -578,6 +584,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                   override: meta.override ?? undefined,
                   usedOverridden: provideUsedOverriddenValue(
                     field.name,
+                    meta,
                     overridesMap,
                     fieldNamesOfImplementedInterfaces,
                     graphId,
@@ -680,6 +687,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
 
 function provideUsedOverriddenValue(
   fieldName: string,
+  fieldStateInGraph: FieldStateInGraph,
   overridesMap: {
     // @override(from: KEY): <where directive was used>
     [originalGraphId: string]: string;
@@ -691,18 +699,14 @@ function provideUsedOverriddenValue(
 ): boolean {
   const inGraphs = fieldNamesOfImplementedInterfaces[fieldName];
   const hasMatchingInterfaceFieldInGraph: boolean = inGraphs && inGraphs.has(graphId);
-
-  if (!hasMatchingInterfaceFieldInGraph) {
-    return false;
-  }
-
+  const isUsedAsNonExternalKey = fieldStateInGraph.usedAsKey && !fieldStateInGraph.external;
   const hasOverride = typeof overridesMap[graphId] === 'string';
 
-  if (!hasOverride) {
-    return false;
+  if (hasOverride && (isUsedAsNonExternalKey || hasMatchingInterfaceFieldInGraph)) {
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 export type ObjectTypeState = {

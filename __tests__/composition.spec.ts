@@ -6810,6 +6810,54 @@ testImplementations(api => {
     `);
   });
 
+  test('join__field(usedOverridden: true) on a field that is a key field but not external', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "userId") {
+            userId: ID! @override(from: "b")
+            age: Int! @override(from: "b")
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@override"])
+
+          type User @key(fields: "userId") {
+            userId: ID!
+            age: Int!
+          }
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User @join__type(graph: A, key: "userId") @join__type(graph: B, key: "userId") {
+        age: Int! @join__field(graph: A, override: "b")
+        userId: ID!
+          @join__field(graph: A, override: "b")
+          @join__field(graph: B, usedOverridden: true)
+      }
+    `);
+  });
+
   test('deduplicates directives', () => {
     const result = api.composeServices([
       {
