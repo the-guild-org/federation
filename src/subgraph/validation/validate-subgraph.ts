@@ -96,6 +96,34 @@ export function validateSubgraph(
 ) {
   subgraph.typeDefs = cleanSubgraphTypeDefsFromSubgraphSpec(subgraph.typeDefs);
 
+  const linkSpecDefinitions = parse(/* GraphQL */ `
+    enum Purpose {
+      EXECUTION
+      SECURITY
+    }
+
+    directive @link(
+      url: String
+      as: String
+      for: link__Purpose
+      import: [link__Import]
+    ) repeatable on SCHEMA
+
+    scalar link__Import
+
+    enum link__Purpose {
+      """
+      \`SECURITY\` features provide metadata necessary to securely resolve fields.
+      """
+      SECURITY
+
+      """
+      \`EXECUTION\` features provide metadata necessary for operation execution.
+      """
+      EXECUTION
+    }
+  `).definitions;
+
   const rulesToSkip = __internal?.disableValidationRules ?? [];
   const typeNodeInfo = new TypeNodeInfo();
   const validationContext = createSubgraphValidationContext(
@@ -164,6 +192,14 @@ export function validateSubgraph(
   const federationDefinitionReplacements =
     validationContext.collectFederationDefinitionReplacements();
 
+  // Include only link spec definitions that are not already defined in the subgraph
+  const linkSpecDefinitionsToInclude = linkSpecDefinitions.filter(def => {
+    if ('name' in def && typeof def.name?.value === 'string') {
+      return !stateBuilder.state.types.has(def.name.value);
+    }
+
+    return true;
+  });
   const fullTypeDefs = concatAST(
     [
       {
@@ -176,33 +212,12 @@ export function validateSubgraph(
         ? // TODO: If Link v1.0 spec is detected in the subgraph (`schema @link(url: ".../link/v1.0")`)
           // We should validate its directives and types
           // just like we do with Federation directives and types.
-          parse(/* GraphQL */ `
-            enum Purpose {
-              EXECUTION
-              SECURITY
-            }
-
-            directive @link(
-              url: String
-              as: String
-              for: link__Purpose
-              import: [link__Import]
-            ) repeatable on SCHEMA
-
-            scalar link__Import
-
-            enum link__Purpose {
-              """
-              \`SECURITY\` features provide metadata necessary to securely resolve fields.
-              """
-              SECURITY
-
-              """
-              \`EXECUTION\` features provide metadata necessary for operation execution.
-              """
-              EXECUTION
-            }
-          `)
+          linkSpecDefinitionsToInclude.length > 0
+          ? ({
+              kind: Kind.DOCUMENT,
+              definitions: linkSpecDefinitionsToInclude,
+            } as DocumentNode)
+          : null
         : null,
       subgraph.typeDefs,
     ].filter(onlyDocumentNode),

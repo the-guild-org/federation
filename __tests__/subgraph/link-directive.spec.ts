@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../shared/testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INVALID_LINK_IDENTIFIER', () => {
@@ -284,6 +284,44 @@ testVersions((api, version) => {
           }),
         ]),
       }),
+    );
+  });
+
+  test('remove duplicated link spec definitions', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+            schema
+              @link(url: "https://specs.apollo.dev/link/v1.0")
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@shareable"]
+              ) {
+              query: Query
+            }
+
+            directive @link(
+              url: String!
+              as: String
+              for: link__Purpose
+              import: [link__Import]
+            ) repeatable on SCHEMA
+
+            scalar link__Import
+
+            enum link__Purpose {
+              SECURITY
+              EXECUTION
+            }
+
+            type Query {
+              foo: String
+            }
+          `,
+        },
+      ]),
     );
   });
 });

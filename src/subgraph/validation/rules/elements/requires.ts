@@ -125,10 +125,12 @@ export function RequiresRules(context: SubgraphValidationContext): ASTVisitor {
             info.typeDefinition.kind === Kind.OBJECT_TYPE_DEFINITION ||
             info.typeDefinition.kind === Kind.OBJECT_TYPE_EXTENSION
           ) {
-            context.stateBuilder.objectType.field.markedAsRequired(
-              info.typeDefinition.name.value,
-              info.fieldName,
-            );
+            if (info.fieldName !== '__typename') {
+              context.stateBuilder.objectType.field.markedAsRequired(
+                info.typeDefinition.name.value,
+                info.fieldName,
+              );
+            }
           }
         },
         interceptUnknownField(info) {

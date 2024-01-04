@@ -6661,4 +6661,215 @@ testImplementations(api => {
       }
     `);
   });
+
+  test('print join__field external the field is required in a deeply nested selection set', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type Query {
+            a: String
+          }
+
+          type User {
+            id: ID!
+            age: Int!
+            name: String!
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type Query {
+            b: String
+          }
+
+          type Book {
+            author: User @requires(fields: "author { name }")
+          }
+
+          extend type User {
+            name: String! @external
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User @join__type(graph: A) @join__type(graph: B) {
+        name: String! @join__field(external: true, graph: B) @join__field(graph: A)
+        id: ID! @join__field(graph: A)
+        age: Int! @join__field(graph: A)
+      }
+    `);
+  });
+
+  test('Query field with @override that points to non-existing subgraph', () => {
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/link/v1.0")
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@override"])
+
+          type Query {
+            a: String @override(from: "non-existing")
+          }
+        `),
+      },
+    ]);
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) {
+        a: String
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/link/v1.0")
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@override"])
+
+          type Query {
+            a: String @override(from: "non-existing")
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(url: "https://specs.apollo.dev/link/v1.0")
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@override"])
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+    ]);
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) @join__type(graph: B) {
+        a: String @join__field(graph: A, override: "non-existing")
+        b: String @join__field(graph: B)
+      }
+    `);
+  });
+
+  test('drop unused external fields from Federation v1 subgraphs', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") {
+            id: ID!
+            name: String @external
+            age: Int!
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          type User @key(fields: "id") {
+            id: ID!
+            age: Int! @external
+            birthday: String @requires(fields: "age")
+          }
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    // No User.name, it's dropped
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User @join__type(graph: A, key: "id") @join__type(graph: B, key: "id") {
+        id: ID!
+        age: Int! @join__field(external: true, graph: B) @join__field(graph: A)
+        birthday: String @join__field(graph: B, requires: "age")
+      }
+    `);
+  });
+
+  test('deduplicates directives', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@composeDirective"]
+            )
+            @link(url: "https://myspecs.dev/lowercase/v1.0", import: ["@lowercase"])
+            @composeDirective(name: "@lowercase")
+
+          directive @lowercase on FIELD_DEFINITION
+
+          type User @key(fields: "id") {
+            id: ID! @lowercase
+            age: Int!
+          }
+
+          type Query {
+            a: String
+          }
+        `),
+      },
+      {
+        name: 'b',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@external", "@requires", "@composeDirective"]
+            )
+            @link(url: "https://myspecs.dev/lowercase/v1.0", import: ["@lowercase"])
+            @composeDirective(name: "@lowercase")
+
+          directive @lowercase on FIELD_DEFINITION
+
+          type User @key(fields: "id") {
+            id: ID! @lowercase
+            age: Int! @external
+            birthday: String @requires(fields: "age")
+          }
+
+          type Query {
+            b: String
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    // No User.name, it's dropped
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type User @join__type(graph: A, key: "id") @join__type(graph: B, key: "id") {
+        id: ID! @lowercase
+        age: Int! @join__field(external: true, graph: B) @join__field(graph: A)
+        birthday: String @join__field(graph: B, requires: "age")
+      }
+    `);
+  });
 });
