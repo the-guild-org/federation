@@ -33,6 +33,7 @@ import {
   visit,
   visitInParallel,
 } from 'graphql';
+import { print } from '../../graphql/printer.js';
 
 type inferArgument<T> = T extends (arg: infer A) => any ? A : never;
 
@@ -1039,8 +1040,18 @@ function applyDirectives(common: {
   policies?: string[][];
   scopes?: string[][];
 }) {
+  const deduplicatedDirectives = (common.ast?.directives ?? [])
+    .map(directive => {
+      return {
+        ast: directive,
+        string: print(directive),
+      };
+    })
+    .filter((directive, index, all) => all.findIndex(d => d.string === directive.string) === index)
+    .map(d => d.ast);
+
   return ([] as ConstDirectiveNode[]).concat(
-    common.ast?.directives ?? [],
+    deduplicatedDirectives,
     common.join?.type?.map(createJoinTypeDirectiveNode) ?? [],
     common.join?.implements?.map(createJoinImplementsDirectiveNode) ?? [],
     common.join?.field?.map(createJoinFieldDirectiveNode) ?? [],

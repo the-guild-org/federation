@@ -248,7 +248,9 @@ export function visitFields({
       break;
     }
 
-    if (interceptDirective && selection.directives?.length) {
+    const isTypename = selection.name.value === '__typename';
+
+    if (!isTypename && interceptDirective && selection.directives?.length) {
       for (const directive of selection.directives) {
         interceptDirective({
           directiveName: directive.name.value,
@@ -257,21 +259,23 @@ export function visitFields({
       }
     }
 
-    context.markAsUsed(
-      'fields',
-      typeDefinition.kind,
-      typeDefinition.name.value,
-      selectionFieldDef.name.value,
-    );
+    if (!isTypename) {
+      context.markAsUsed(
+        'fields',
+        typeDefinition.kind,
+        typeDefinition.name.value,
+        selectionFieldDef.name.value,
+      );
+    }
 
-    if (interceptField) {
+    if (!isTypename && interceptField) {
       interceptField({
         typeDefinition,
         fieldName: selection.name.value,
       });
     }
 
-    if (selectionFieldDef.arguments?.length && interceptArguments) {
+    if (!isTypename && selectionFieldDef.arguments?.length && interceptArguments) {
       interceptArguments({
         typeDefinition,
         fieldName: selection.name.value,
@@ -279,7 +283,7 @@ export function visitFields({
       continue;
     }
 
-    if (interceptNonExternalField || interceptExternalField) {
+    if (!isTypename && (interceptNonExternalField || interceptExternalField)) {
       const isExternal = selectionFieldDef.directives?.some(d =>
         context.isAvailableFederationDirective('external', d),
       );
@@ -318,6 +322,7 @@ export function visitFields({
     }
 
     if (
+      !isTypename &&
       interceptInterfaceType &&
       (innerTypeDef.kind === Kind.INTERFACE_TYPE_DEFINITION ||
         innerTypeDef.kind === Kind.INTERFACE_TYPE_EXTENSION)
@@ -345,9 +350,13 @@ export function visitFields({
       context,
       selectionSet: innerSelection,
       typeDefinition: innerTypeDef,
+      interceptField,
       interceptArguments,
       interceptUnknownField,
       interceptInterfaceType,
+      interceptDirective,
+      interceptExternalField,
+      interceptFieldWithMissingSelectionSet,
     });
   }
 }

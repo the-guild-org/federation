@@ -377,124 +377,100 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
           directives: convertToConst(objectType.ast.directives),
         },
         description: objectType.description,
-        fields: Array.from(objectType.fields.values()).map(field => {
-          const fieldInGraphs = Array.from(field.byGraph.entries());
+        fields: Array.from(objectType.fields.values())
+          .map(field => {
+            const fieldInGraphs = Array.from(field.byGraph.entries());
 
-          const hasDifferentOutputType = fieldInGraphs.some(
-            ([_, meta]) => meta.type !== field.type,
-          );
-          const isDefinedEverywhere =
-            field.byGraph.size === (isQuery ? graphs.size : objectType.byGraph.size);
-          let joinFields: JoinFieldAST[] = [];
+            const hasDifferentOutputType = fieldInGraphs.some(
+              ([_, meta]) => meta.type !== field.type,
+            );
+            const isDefinedEverywhere =
+              field.byGraph.size === (isQuery ? graphs.size : objectType.byGraph.size);
+            let joinFields: JoinFieldAST[] = [];
 
-          const overridesMap: {
-            [originalGraphId: string]: string;
-          } = {};
+            const overridesMap: {
+              [originalGraphId: string]: string;
+            } = {};
 
-          const differencesBetweenGraphs = {
-            override: false,
-            type: false,
-            external: false,
-            provides: false,
-            requires: false,
-          };
+            const differencesBetweenGraphs = {
+              override: false,
+              type: false,
+              external: false,
+              provides: false,
+              requires: false,
+            };
 
-          for (const [graphId, meta] of fieldInGraphs) {
-            if (meta.external) {
-              differencesBetweenGraphs.external = field.usedAsKey
-                ? objectType.byGraph.get(graphId)!.extension !== true
-                : true;
-            }
-            if (meta.override !== null) {
-              differencesBetweenGraphs.override = true;
+            for (const [graphId, meta] of fieldInGraphs) {
+              if (meta.external) {
+                differencesBetweenGraphs.external = field.usedAsKey
+                  ? objectType.byGraph.get(graphId)!.extension !== true
+                  : true;
+              }
+              if (meta.override !== null) {
+                differencesBetweenGraphs.override = true;
 
-              const originalGraphId = graphNameToId(meta.override);
-              if (originalGraphId) {
-                overridesMap[originalGraphId] = graphId;
+                const originalGraphId = graphNameToId(meta.override);
+                if (originalGraphId) {
+                  overridesMap[originalGraphId] = graphId;
+                }
+              }
+              if (meta.provides !== null) {
+                differencesBetweenGraphs.provides = true;
+              }
+              if (meta.requires !== null) {
+                differencesBetweenGraphs.requires = true;
+              }
+              if (meta.type !== field.type) {
+                differencesBetweenGraphs.type = true;
               }
             }
-            if (meta.provides !== null) {
-              differencesBetweenGraphs.provides = true;
-            }
-            if (meta.requires !== null) {
-              differencesBetweenGraphs.requires = true;
-            }
-            if (meta.type !== field.type) {
-              differencesBetweenGraphs.type = true;
-            }
-          }
 
-          if (isQuery) {
-            // If it's a Query type, we don't need to emit `@join__field` directives when there's only one graph
-            // We do not have to emit `@join__field` if the field is shareable in every graph as well.
+            if (!isQuery && field.byGraph.size === 1) {
+              const graphId = field.byGraph.keys().next().value;
+              const fieldInGraph = field.byGraph.get(graphId)!;
 
-            if (differencesBetweenGraphs.override) {
-              const graphsWithOverride = fieldInGraphs.filter(
-                ([_, meta]) => meta.override !== null,
-              );
-
-              joinFields = graphsWithOverride.map(([graphId, meta]) => ({
-                graph: graphId,
-                override: meta.override ?? undefined,
-                usedOverridden: provideUsedOverriddenValue(
-                  field.name,
-                  overridesMap,
-                  fieldNamesOfImplementedInterfaces,
-                  graphId,
-                ),
-                type: differencesBetweenGraphs.type ? meta.type : undefined,
-                external: meta.external ?? undefined,
-                provides: meta.provides ?? undefined,
-                requires: meta.requires ?? undefined,
-              }));
-            } else {
-              joinFields =
-                graphs.size > 1 && !isDefinedEverywhere
-                  ? fieldInGraphs.map(([graphId, meta]) => ({
-                      graph: graphId,
-                      provides: differencesBetweenGraphs.provides
-                        ? meta.provides ?? undefined
-                        : undefined,
-                    }))
-                  : [];
-            }
-          } else if (isDefinedEverywhere) {
-            const hasDifferencesBetweenGraphs = Object.values(differencesBetweenGraphs).some(
-              value => value === true,
-            );
-
-            // We probably need to emit `@join__field` for every graph, except the one where the override was applied
-            if (differencesBetweenGraphs.override) {
-              const overriddenGraphs = fieldInGraphs
-                .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
-                .filter((graphId): graphId is string => typeof graphId === 'string');
-
-              // the exception is when a field is external, we need to emit `@join__field` for that graph,
-              // so gateway knows that it's an external field
-              const graphsToEmit = fieldInGraphs.filter(([graphId, f]) => {
-                const isExternal = f.external === true;
-                const isOverridden = overriddenGraphs.includes(graphId);
-                const needsToPrintUsedOverridden = provideUsedOverriddenValue(
-                  field.name,
-                  overridesMap,
-                  fieldNamesOfImplementedInterfaces,
-                  graphId,
-                );
-                const isRequired = f.required === true;
-
-                return (isExternal && isRequired) || needsToPrintUsedOverridden || !isOverridden;
-              });
-
-              // Do not emit `@join__field` if there's only one graph left
-              // and the type has a single `@join__type` matching the graph.
               if (
-                !(
-                  graphsToEmit.length === 1 &&
-                  joinTypes.length === 1 &&
-                  joinTypes[0].graph === graphsToEmit[0][0]
-                )
+                // a field is external
+                fieldInGraph.external &&
+                // it's not used as a key
+                !fieldInGraph.usedAsKey &&
+                // it's not part of any @requires(fields:)
+                !fieldInGraph.required &&
+                // it's not part of any @provides(fields:)
+                !fieldInGraph.provided &&
+                // it's not part of any @override(from:) and it's not used by any interface
+                !provideUsedOverriddenValue(
+                  field.name,
+                  overridesMap,
+                  fieldNamesOfImplementedInterfaces,
+                  graphId,
+                ) &&
+                // and it's Federation v1
+                graphs.get(graphId)!.version === 'v1.0'
               ) {
-                joinFields = graphsToEmit.map(([graphId, meta]) => ({
+                // drop the field
+                return null;
+              }
+            }
+
+            if (isQuery) {
+              // If it's a Query type, we don't need to emit `@join__field` directives when there's only one graph
+              // We do not have to emit `@join__field` if the field is shareable in every graph as well.
+
+              if (differencesBetweenGraphs.override) {
+                const graphsWithOverride = fieldInGraphs.filter(
+                  ([_, meta]) =>
+                    meta.override !== null &&
+                    (objectType.byGraph.size > 1
+                      ? // if there's more than one graph
+                        // we want to emit `@join__field` with override even when it's pointing to a non-existing subgraph
+                        true
+                      : // but if there's only one graph,
+                        // we don't want to emit `@join__field` if the override is pointing to a non-existing subgraph
+                        typeof graphNameToId(meta.override) === 'string'),
+                );
+
+                joinFields = graphsWithOverride.map(([graphId, meta]) => ({
                   graph: graphId,
                   override: meta.override ?? undefined,
                   usedOverridden: provideUsedOverriddenValue(
@@ -508,109 +484,171 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                   provides: meta.provides ?? undefined,
                   requires: meta.requires ?? undefined,
                 }));
+              } else {
+                joinFields =
+                  graphs.size > 1 && !isDefinedEverywhere
+                    ? fieldInGraphs.map(([graphId, meta]) => ({
+                        graph: graphId,
+                        provides: differencesBetweenGraphs.provides
+                          ? meta.provides ?? undefined
+                          : undefined,
+                      }))
+                    : [];
               }
-            } else if (hasDifferencesBetweenGraphs) {
-              joinFields = createJoinFields(fieldInGraphs, field, {
-                hasDifferentOutputType,
-                overridesMap,
-              });
-            }
-          } else {
-            // An override is a special case, we need to emit `@join__field` only for graphs where @override was applied
-            if (differencesBetweenGraphs.override) {
-              const overriddenGraphs = fieldInGraphs
-                .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
-                .filter((graphId): graphId is string => typeof graphId === 'string');
+            } else if (isDefinedEverywhere) {
+              const hasDifferencesBetweenGraphs = Object.values(differencesBetweenGraphs).some(
+                value => value === true,
+              );
 
-              const graphsToPrintJoinField = fieldInGraphs.filter(
-                ([graphId, meta]) =>
-                  meta.override !== null ||
-                  // we want to print `external: true` as it's still needed by the query planner
-                  meta.external === true ||
-                  (meta.shareable && !overriddenGraphs.includes(graphId)) ||
-                  provideUsedOverriddenValue(
+              // We probably need to emit `@join__field` for every graph, except the one where the override was applied
+              if (differencesBetweenGraphs.override) {
+                const overriddenGraphs = fieldInGraphs
+                  .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
+                  .filter((graphId): graphId is string => typeof graphId === 'string');
+
+                // the exception is when a field is external, we need to emit `@join__field` for that graph,
+                // so gateway knows that it's an external field
+                const graphsToEmit = fieldInGraphs.filter(([graphId, f]) => {
+                  const isExternal = f.external === true;
+                  const isOverridden = overriddenGraphs.includes(graphId);
+                  const needsToPrintUsedOverridden = provideUsedOverriddenValue(
+                    field.name,
+                    overridesMap,
+                    fieldNamesOfImplementedInterfaces,
+                    graphId,
+                  );
+                  const isRequired = f.required === true;
+
+                  return (isExternal && isRequired) || needsToPrintUsedOverridden || !isOverridden;
+                });
+
+                // Do not emit `@join__field` if there's only one graph left
+                // and the type has a single `@join__type` matching the graph.
+                if (
+                  !(
+                    graphsToEmit.length === 1 &&
+                    joinTypes.length === 1 &&
+                    joinTypes[0].graph === graphsToEmit[0][0]
+                  )
+                ) {
+                  joinFields = graphsToEmit.map(([graphId, meta]) => ({
+                    graph: graphId,
+                    override: meta.override ?? undefined,
+                    usedOverridden: provideUsedOverriddenValue(
+                      field.name,
+                      overridesMap,
+                      fieldNamesOfImplementedInterfaces,
+                      graphId,
+                    ),
+                    type: differencesBetweenGraphs.type ? meta.type : undefined,
+                    external: meta.external ?? undefined,
+                    provides: meta.provides ?? undefined,
+                    requires: meta.requires ?? undefined,
+                  }));
+                }
+              } else if (hasDifferencesBetweenGraphs) {
+                joinFields = createJoinFields(fieldInGraphs, field, {
+                  hasDifferentOutputType,
+                  overridesMap,
+                });
+              }
+            } else {
+              // An override is a special case, we need to emit `@join__field` only for graphs where @override was applied
+              if (differencesBetweenGraphs.override) {
+                const overriddenGraphs = fieldInGraphs
+                  .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
+                  .filter((graphId): graphId is string => typeof graphId === 'string');
+
+                const graphsToPrintJoinField = fieldInGraphs.filter(
+                  ([graphId, meta]) =>
+                    meta.override !== null ||
+                    // we want to print `external: true` as it's still needed by the query planner
+                    meta.external === true ||
+                    (meta.shareable && !overriddenGraphs.includes(graphId)) ||
+                    provideUsedOverriddenValue(
+                      field.name,
+                      overridesMap,
+                      fieldNamesOfImplementedInterfaces,
+                      graphId,
+                    ),
+                );
+
+                joinFields = graphsToPrintJoinField.map(([graphId, meta]) => ({
+                  graph: graphId,
+                  override: meta.override ?? undefined,
+                  usedOverridden: provideUsedOverriddenValue(
                     field.name,
                     overridesMap,
                     fieldNamesOfImplementedInterfaces,
                     graphId,
                   ),
-              );
-
-              joinFields = graphsToPrintJoinField.map(([graphId, meta]) => ({
-                graph: graphId,
-                override: meta.override ?? undefined,
-                usedOverridden: provideUsedOverriddenValue(
-                  field.name,
+                  type: differencesBetweenGraphs.type ? meta.type : undefined,
+                  external: meta.external ?? undefined,
+                  provides: meta.provides ?? undefined,
+                  requires: meta.requires ?? undefined,
+                }));
+              } else {
+                joinFields = createJoinFields(fieldInGraphs, field, {
+                  hasDifferentOutputType,
                   overridesMap,
-                  fieldNamesOfImplementedInterfaces,
-                  graphId,
-                ),
-                type: differencesBetweenGraphs.type ? meta.type : undefined,
-                external: meta.external ?? undefined,
-                provides: meta.provides ?? undefined,
-                requires: meta.requires ?? undefined,
-              }));
-            } else {
-              joinFields = createJoinFields(fieldInGraphs, field, {
-                hasDifferentOutputType,
-                overridesMap,
-              });
+                });
+              }
             }
-          }
 
-          return {
-            name: field.name,
-            type: field.type,
-            inaccessible: field.inaccessible,
-            authenticated: field.authenticated,
-            policies: field.policies,
-            scopes: field.scopes,
-            tags: Array.from(field.tags),
-            description: field.description,
-            deprecated: field.deprecated,
-            ast: {
-              directives: convertToConst(field.ast.directives),
-            },
-            join: {
-              field:
-                // If there's only one graph on both field and type
-                // and it has no properties, we don't need to emit `@join__field`
-                joinFields.length === 1 &&
-                joinTypes.length === 1 &&
-                !joinFields[0].external &&
-                !joinFields[0].override &&
-                !joinFields[0].provides &&
-                !joinFields[0].requires &&
-                !joinFields[0].usedOverridden &&
-                !joinFields[0].type
-                  ? []
-                  : joinFields,
-            },
-            arguments: Array.from(field.args.values())
-              .filter(arg => {
-                // ignore the argument if it's not available in all subgraphs implementing the field
-                if (arg.byGraph.size !== field.byGraph.size) {
-                  return false;
-                }
+            return {
+              name: field.name,
+              type: field.type,
+              inaccessible: field.inaccessible,
+              authenticated: field.authenticated,
+              policies: field.policies,
+              scopes: field.scopes,
+              tags: Array.from(field.tags),
+              description: field.description,
+              deprecated: field.deprecated,
+              ast: {
+                directives: convertToConst(field.ast.directives),
+              },
+              join: {
+                field:
+                  // If there's only one graph on both field and type
+                  // and it has no properties, we don't need to emit `@join__field`
+                  joinFields.length === 1 &&
+                  joinTypes.length === 1 &&
+                  !joinFields[0].external &&
+                  !joinFields[0].override &&
+                  !joinFields[0].provides &&
+                  !joinFields[0].requires &&
+                  !joinFields[0].usedOverridden &&
+                  !joinFields[0].type
+                    ? []
+                    : joinFields,
+              },
+              arguments: Array.from(field.args.values())
+                .filter(arg => {
+                  // ignore the argument if it's not available in all subgraphs implementing the field
+                  if (arg.byGraph.size !== field.byGraph.size) {
+                    return false;
+                  }
 
-                return true;
-              })
-              .map(arg => {
-                return {
-                  name: arg.name,
-                  type: arg.type,
-                  inaccessible: arg.inaccessible,
-                  tags: Array.from(arg.tags),
-                  defaultValue: arg.defaultValue,
-                  description: arg.description,
-                  deprecated: arg.deprecated,
-                  ast: {
-                    directives: convertToConst(arg.ast.directives),
-                  },
-                };
-              }),
-          };
-        }),
+                  return true;
+                })
+                .map(arg => {
+                  return {
+                    name: arg.name,
+                    type: arg.type,
+                    inaccessible: arg.inaccessible,
+                    tags: Array.from(arg.tags),
+                    defaultValue: arg.defaultValue,
+                    description: arg.description,
+                    deprecated: arg.deprecated,
+                    ast: {
+                      directives: convertToConst(arg.ast.directives),
+                    },
+                  };
+                }),
+            };
+          })
+          .filter(isDefined),
         interfaces: Array.from(objectType.interfaces),
         tags: Array.from(objectType.tags),
         inaccessible: objectType.inaccessible,
