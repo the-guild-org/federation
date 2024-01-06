@@ -536,7 +536,7 @@ function createJoinImplementsDirectiveNode(join: {
   };
 }
 
-function createJoinFieldDirectiveNode(join: {
+export function createJoinFieldDirectiveNode(join: {
   graph?: string;
   type?: string;
   override?: string;
