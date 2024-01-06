@@ -57,7 +57,7 @@ export function InterfaceKeyMissingImplementationTypeRule(
               },
             },
           ),
-        ); // TODO: check this one for @interfaceObject (trkohler)
+        );
       }
     },
   };
