@@ -13,11 +13,9 @@ export const importsAllowInterfaceObject = (imports: FederationImports) => {
 export function InterfaceObjectRules(context: SubgraphValidationContext): ASTVisitor {
   return {
     DirectiveDefinition(node) {
-      // it matches every directive definition
       validateDirectiveAgainstOriginal(node, 'interfaceObject', context);
     },
     Directive(node) {
-      // it matches every directive
       if (!context.isAvailableFederationDirective('interfaceObject', node)) {
         return;
       }
