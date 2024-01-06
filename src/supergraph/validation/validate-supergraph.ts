@@ -39,8 +39,8 @@ export function validateSupergraph(
   for (const subgraphState of subgraphStates.values()) {
     state.addGraph(subgraphState.graph);
   }
-  // I need to define pre interfaceObject rule there (trkohler)
-  const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule];
+  // I need to define interfaceObject rule there because it does modifications to fields (trkohler)
+  const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule, InterfaceObjectCompositionRule];
   const rulesToSkip = __internal?.disableValidationRules ?? [];
 
   for (const rule of preSupergraphRules) {
@@ -53,7 +53,7 @@ export function validateSupergraph(
   for (const subgraphState of subgraphStates.values()) {
     state.visitSubgraphState(subgraphState);
   }
-  // I need those (trkohler)
+
   const postSupergraphRules = [
     ExtensionWithBaseRule,
     FieldsOfTheSameTypeRule,
@@ -76,7 +76,6 @@ export function validateSupergraph(
     InvalidFieldSharingRule,
     SatisfiabilityRule,
     SubgraphNameRule,
-    InterfaceObjectCompositionRule,
   ];
 
   const supergraph = state.getSupergraphState();

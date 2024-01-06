@@ -14,7 +14,11 @@ import {
 } from 'graphql';
 import { print } from '../graphql/printer.js';
 import { TypeNodeInfo } from '../graphql/type-node-info.js';
-import { FederationImports, FederationVersion, isFederationLink } from '../specifications/federation.js';
+import {
+  FederationImports,
+  FederationVersion,
+  isFederationLink,
+} from '../specifications/federation.js';
 import { Link } from '../specifications/link.js';
 import { printOutputType } from './helpers.js';
 
@@ -36,6 +40,8 @@ export enum TypeKind {
   INPUT_OBJECT = 'INPUT_OBJECT',
   DIRECTIVE = 'DIRECTIVE',
 }
+
+type SubgraphID = string;
 
 export interface Directive {
   kind: TypeKind.DIRECTIVE;
@@ -86,6 +92,7 @@ export interface ObjectType {
   ast: {
     directives: DirectiveNode[];
   };
+  interfaceObjectTypeName?: string; // added for @interfaceObject (trkohler)
 }
 
 export interface InterfaceType {
@@ -103,7 +110,7 @@ export interface InterfaceType {
   isDefinition: boolean;
   description?: Description;
   implementedBy: Set<string>;
-  root__interfaceObject: boolean;
+  interfaceObjects: Map<SubgraphID, ObjectType>; // added for @interfaceObject (trkohler)
   ast: {
     directives: DirectiveNode[];
   };
@@ -625,6 +632,9 @@ export function createSubgraphStateBuilder(
                   );
                 } else {
                   objectTypeBuilder.setDirective(typeDef.name.value, node);
+                  if (node.name.value == 'interfaceObject') {
+                    objectTypeBuilder.setInterfaceObject(typeDef.name.value);
+                  }
                 }
                 break;
               case Kind.INTERFACE_TYPE_DEFINITION:
@@ -762,6 +772,11 @@ export function createSubgraphStateBuilder(
 
                 break;
               }
+            }
+          } else if (node.name.value == 'interfaceObject') {
+            const typeDef = typeNodeInfo.getTypeDef();
+            if (typeDef && typeDef.kind === Kind.OBJECT_TYPE_DEFINITION) {
+              objectTypeBuilder.setInterfaceObject(typeDef.name.value);
             }
           }
         },
@@ -1200,6 +1215,10 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
         },
       },
     },
+    setInterfaceObject(typeName: string) {
+      const type = getOrCreateObjectType(state, renameObject, typeName);
+      type.interfaceObjectTypeName = typeName;
+    },
   };
 }
 
@@ -1620,7 +1639,7 @@ function getOrCreateInterfaceType(state: SubgraphState, typeName: string): Inter
     interfaces: new Set(),
     implementedBy: new Set(),
     isDefinition: false,
-    root__interfaceObject: false,
+    interfaceObjects: new Map(),
     ast: {
       directives: [],
     },
