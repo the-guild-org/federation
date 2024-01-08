@@ -16,6 +16,8 @@ import { Link, LinkImport, parseLink } from './link.js';
 import { directive as tagDirective } from './tag.js';
 
 export type FederationVersion = keyof typeof federationSpecFactory;
+// new type for imports (trkohler)
+export type FederationImports = readonly LinkImport[];
 
 export function isFederationVersion(version: string): version is FederationVersion {
   return version in federationSpecFactory;

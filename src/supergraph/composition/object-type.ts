@@ -31,6 +31,9 @@ export function isRealExtension(meta: ObjectTypeStateInGraph, version: Federatio
 export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
   return {
     visitSubgraphState(graph, state, typeName, type) {
+      if (type.interfaceObjectTypeName) { // don't add this object type to supergraph schema because it's not real object (trkohler)
+        return;
+      }
       const objectTypeState = getOrCreateObjectType(state, typeName);
 
       type.tags.forEach(tag => objectTypeState.tags.add(tag));
