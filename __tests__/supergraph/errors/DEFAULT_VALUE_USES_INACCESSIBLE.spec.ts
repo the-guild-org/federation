@@ -44,5 +44,34 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: ["@key", "@inaccessible"]
+            )
+
+          type Query {
+            users: [User!]!
+          }
+
+          type User @key(fields: "id") {
+            id: ID
+            friends(type: FriendType = FAMILY @inaccessible): [User!]!
+          }
+
+          enum FriendType {
+            FAMILY @inaccessible
+            FRIEND
+          }
+         `,
+        },
+      ]),
+    ).toEqual(expect.objectContaining({ supergraphSdl: expect.any(String) }));
   });
 });

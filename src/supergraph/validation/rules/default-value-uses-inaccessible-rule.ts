@@ -26,6 +26,10 @@ export function DefaultValueUsesInaccessibleRule(
         return;
       }
 
+      if (argState.inaccessible) {
+        return;
+      }
+
       detectInaccessibleDefaultValue(
         context,
         () => `${objectState.name}.${fieldState.name}(${argState.name}:)`,
