@@ -28,7 +28,7 @@ type InterfaceContext = {
   interfaceType: InterfaceType;
   graphName: GraphName;
   graphVersion: string;
-  graphImports: FederationImports[];
+  graphImports: FederationImports;
   typeName: TypeName;
 };
 
