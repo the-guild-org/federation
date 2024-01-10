@@ -610,7 +610,7 @@ testImplementations(_ => {
               `),
             },
           ]) as CompositionSuccess;
-          console.log(result);
+
           expect(result.supergraphSdl).toMatchInlineSnapshot(`
             "
             schema

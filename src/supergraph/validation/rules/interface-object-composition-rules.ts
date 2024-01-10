@@ -80,7 +80,6 @@ export function InterfaceObjectCompositionRule(context: SupergraphValidationCont
     const types = state.types.values();
     for (const type of types) {
       if (type.kind == TypeKind.INTERFACE) {
-        console.log(type.name);
         const typeName = type.name;
         if (interfaceObjectContextMap.get(typeName)) {
           for (const interfaceObjectContext of interfaceInterfaceObjectsMap.get(typeName)!) {
