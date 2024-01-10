@@ -418,7 +418,7 @@ function createFieldArgumentNode(argument: {
   };
 }
 
-function createJoinTypeDirectiveNode(join: {
+export function createJoinTypeDirectiveNode(join: {
   graph: string;
   key?: string;
   isInterfaceObject?: boolean;

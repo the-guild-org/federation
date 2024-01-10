@@ -3,7 +3,6 @@ import { describe, expect, test } from 'vitest';
 import { composeServices, CompositionFailure, CompositionSuccess } from '../src';
 import { testImplementations } from './shared/testkit';
 
-
 testImplementations(_ => {
   describe('interface object composition', () => {
     test('if link directive is not present on all subgraphs, composition should fail', () => {
@@ -443,105 +442,23 @@ testImplementations(_ => {
             },
           ]) as CompositionSuccess;
 
-          expect(result.supergraphSdl).toMatchInlineSnapshot(`
-            "
-            schema
-              @link(url: \\"https://specs.apollo.dev/link/v1.0\\")
-              @link(url: \\"https://specs.apollo.dev/join/v0.3\\", for: EXECUTION)
-              
-              
-              
-              
-              
-              
-            {
-              query: Query
-              
-              
-            }
-
-
-              directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
-
-              directive @join__field(
-                graph: join__Graph
-                requires: join__FieldSet
-                provides: join__FieldSet
-                type: String
-                external: Boolean
-                override: String
-                usedOverridden: Boolean
-              ) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-
-              directive @join__graph(name: String!, url: String!) on ENUM_VALUE
-
-              directive @join__implements(
-                graph: join__Graph!
-                interface: String!
-              ) repeatable on OBJECT | INTERFACE
-
-              directive @join__type(
-                graph: join__Graph!
-                key: join__FieldSet
-                extension: Boolean! = false
-                resolvable: Boolean! = true
-                isInterfaceObject: Boolean! = false
-              ) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
-
-              directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
-
-              scalar join__FieldSet
-
-
-              directive @link(
-                url: String
-                as: String
-                for: link__Purpose
-                import: [link__Import]
-              ) repeatable on SCHEMA
-
-              scalar link__Import
-
-              enum link__Purpose {
-                \\"\\"\\"
-                \`SECURITY\` features provide metadata necessary to securely resolve fields.
-                \\"\\"\\"
-                SECURITY
-
-                \\"\\"\\"
-                \`EXECUTION\` features provide metadata necessary for operation execution.
-                \\"\\"\\"
-                EXECUTION
-              }
-
-
-
-
-
-
-
-            enum join__Graph {
-              SUBGRAPH_A @join__graph(name: \\"subgraphA\\", url: \\"\\") 
-              SUBGRAPH_B @join__graph(name: \\"subgraphB\\", url: \\"\\") 
-            }
-
-            type Query @join__type(graph: SUBGRAPH_A)  @join__type(graph: SUBGRAPH_B)  {
-              hello: String @join__field(graph: SUBGRAPH_A) 
-              otherField: String @join__field(graph: SUBGRAPH_B) 
-            }
-
-            type IimplementMyInterface implements MyInterface @join__type(graph: SUBGRAPH_A, key: \\"id\\")  @join__implements(graph: SUBGRAPH_A, interface: \\"MyInterface\\")  {
+          expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+            type IimplementMyInterface implements MyInterface
+              @join__type(graph: SUBGRAPH_A, key: "id")
+              @join__implements(graph: SUBGRAPH_A, interface: "MyInterface") {
               id: ID!
               field: String
-              hello: Int @join__field(graph: SUBGRAPH_B) 
+              hello: Int @join__field
             }
-
-            interface MyInterface @join__type(graph: SUBGRAPH_A, key: \\"id\\")  {
+          `);
+          expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+            interface MyInterface
+              @join__type(graph: SUBGRAPH_A, key: "id")
+              @join__type(graph: SUBGRAPH_B, isInterfaceObject: true, key: "id") {
               id: ID!
-              field: String
-              hello: Int @join__field(graph: SUBGRAPH_B) 
+              field: String @join__field(graph: SUBGRAPH_A)
+              hello: Int @join__field(graph: SUBGRAPH_B)
             }
-                "
           `);
         });
       });
@@ -611,109 +528,26 @@ testImplementations(_ => {
             },
           ]) as CompositionSuccess;
 
-          expect(result.supergraphSdl).toMatchInlineSnapshot(`
-            "
-            schema
-              @link(url: \\"https://specs.apollo.dev/link/v1.0\\")
-              @link(url: \\"https://specs.apollo.dev/join/v0.3\\", for: EXECUTION)
-              
-              
-              
-              
-              
-              
-            {
-              query: Query
-              
-              
-            }
-
-
-              directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
-
-              directive @join__field(
-                graph: join__Graph
-                requires: join__FieldSet
-                provides: join__FieldSet
-                type: String
-                external: Boolean
-                override: String
-                usedOverridden: Boolean
-              ) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-
-              directive @join__graph(name: String!, url: String!) on ENUM_VALUE
-
-              directive @join__implements(
-                graph: join__Graph!
-                interface: String!
-              ) repeatable on OBJECT | INTERFACE
-
-              directive @join__type(
-                graph: join__Graph!
-                key: join__FieldSet
-                extension: Boolean! = false
-                resolvable: Boolean! = true
-                isInterfaceObject: Boolean! = false
-              ) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
-
-              directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
-
-              scalar join__FieldSet
-
-
-              directive @link(
-                url: String
-                as: String
-                for: link__Purpose
-                import: [link__Import]
-              ) repeatable on SCHEMA
-
-              scalar link__Import
-
-              enum link__Purpose {
-                \\"\\"\\"
-                \`SECURITY\` features provide metadata necessary to securely resolve fields.
-                \\"\\"\\"
-                SECURITY
-
-                \\"\\"\\"
-                \`EXECUTION\` features provide metadata necessary for operation execution.
-                \\"\\"\\"
-                EXECUTION
-              }
-
-
-
-
-
-
-
-            enum join__Graph {
-              SUBGRAPH_A @join__graph(name: \\"subgraphA\\", url: \\"\\") 
-              SUBGRAPH_B @join__graph(name: \\"subgraphB\\", url: \\"\\") 
-              SUBGRAPH_C @join__graph(name: \\"subgraphC\\", url: \\"\\") 
-            }
-
-            type Query @join__type(graph: SUBGRAPH_A)  @join__type(graph: SUBGRAPH_B)  @join__type(graph: SUBGRAPH_C)  {
-              hello: String @join__field(graph: SUBGRAPH_A) 
-              otherField: String @join__field(graph: SUBGRAPH_B) 
-              someNewField: String @join__field(graph: SUBGRAPH_C) 
-            }
-
-            type IimplementMyInterface implements MyInterface @join__type(graph: SUBGRAPH_A, key: \\"id\\")  @join__implements(graph: SUBGRAPH_A, interface: \\"MyInterface\\")  {
+          expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+            type IimplementMyInterface implements MyInterface
+              @join__type(graph: SUBGRAPH_A, key: "id")
+              @join__implements(graph: SUBGRAPH_A, interface: "MyInterface") {
               id: ID!
               field: String
-              hello: Int @join__field(graph: SUBGRAPH_B) 
-              hello2: Int @join__field(graph: SUBGRAPH_C) 
+              hello: Int @join__field
+              hello2: Int @join__field
             }
-
-            interface MyInterface @join__type(graph: SUBGRAPH_A, key: \\"id\\")  {
+          `);
+          expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+            interface MyInterface
+              @join__type(graph: SUBGRAPH_A, key: "id")
+              @join__type(graph: SUBGRAPH_B, isInterfaceObject: true, key: "id")
+              @join__type(graph: SUBGRAPH_C, isInterfaceObject: true, key: "id") {
               id: ID!
-              field: String
-              hello: Int @join__field(graph: SUBGRAPH_B) 
-              hello2: Int @join__field(graph: SUBGRAPH_C) 
+              field: String @join__field(graph: SUBGRAPH_A)
+              hello: Int @join__field(graph: SUBGRAPH_B)
+              hello2: Int @join__field(graph: SUBGRAPH_C)
             }
-                "
           `);
         });
 

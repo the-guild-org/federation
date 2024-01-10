@@ -1,16 +1,14 @@
 import { GraphQLError } from 'graphql';
 import { FederationImports } from '../../../specifications/federation.js';
-import {
-  Field,
-  InterfaceType,
-  ObjectType,
-  TypeKind,
-} from '../../../subgraph/state.js';
+import { Field, InterfaceType, ObjectType, TypeKind } from '../../../subgraph/state.js';
 import {
   allowedInterfaceObjectVersion,
   importsAllowInterfaceObject,
 } from '../../../subgraph/validation/rules/elements/interface-object';
-import { createJoinFieldDirectiveNode } from '../../composition/ast.js';
+import {
+  createJoinFieldDirectiveNode,
+  createJoinTypeDirectiveNode,
+} from '../../composition/ast.js';
 import { SupergraphValidationContext } from '../validation-context';
 
 type TypeName = string;
@@ -160,38 +158,56 @@ export function InterfaceObjectCompositionRule(context: SupergraphValidationCont
     GraphName,
     {
       implementationsToFind: Set<string>;
-      fieldsToMerge: Map<string, Field>;
+      fieldsToMerge: {
+        field: Field;
+        graph: GraphName;
+      }[];
     }
   >();
-  
+  const interfacesToModify = new Map<
+    ValidInterfaceTypeName,
+    {
+      fieldsToMerge: {
+        field: Field;
+        graph: GraphName;
+      }[];
+    }
+  >();
+
   for (const [_, interfaceContext] of interfaces) {
     const { interfaceType, graphName } = interfaceContext;
     const implementedBy = interfaceType.implementedBy;
     const interfaceObjects = interfaceType.interfaceObjects;
-    let fieldsToMerge = new Map<string, Field>();
+    let fieldsToMerge = new Map<
+      string,
+      {
+        field: Field;
+        graph: GraphName;
+      }
+    >();
     for (const [graphName, interfaceObject] of interfaceObjects) {
-      const joinDirective = createJoinFieldDirectiveNode({
-        graph: graphName,
-      });
-      // TODO: this seems like slow and inefficient way to do it (trkohler)
-      fieldsToMerge = new Map([...fieldsToMerge, ...interfaceObject.fields]);
       for (const field of interfaceObject.fields.values()) {
-        field.ast.directives.push(joinDirective);
+        fieldsToMerge.set(field.name, {
+          field,
+          graph: graphName,
+        });
       }
     }
     const keyFields = interfaceType.keys;
     for (const keyField of keyFields) {
       const fields = keyField.fields.split(' ');
-      for (const field of fields) { // triple loop!!!
+      for (const field of fields) {
+        // triple loop!!!
         fieldsToMerge.delete(field);
       }
     }
-
-    interfaceType.fields = new Map([...interfaceType.fields, ...fieldsToMerge]);
+    interfacesToModify.set(interfaceType.name, {
+      fieldsToMerge: Array.from(fieldsToMerge.values()),
+    });
 
     graphImplementations.set(graphName, {
       implementationsToFind: implementedBy,
-      fieldsToMerge,
+      fieldsToMerge: Array.from(fieldsToMerge.values()),
     });
   }
 
@@ -213,7 +229,42 @@ export function InterfaceObjectCompositionRule(context: SupergraphValidationCont
         // some kind of bug ?
         continue;
       }
-      objectType.fields = new Map([...objectType.fields, ...fieldsToMerge]);
+      for (const fieldToMerge of fieldsToMerge) {
+        const { field } = fieldToMerge;
+        const joinDirective = createJoinFieldDirectiveNode({});
+        const newField = structuredClone(field);
+        newField.ast.directives.push(joinDirective);
+        objectType.fields.set(newField.name, newField);
+      }
+    }
+  }
+
+  for (const [_, interfaceContext] of interfaces) {
+    const { interfaceType, graphName, typeName } = interfaceContext;
+    const { fieldsToMerge } = interfacesToModify.get(typeName)!;
+    const keyFields = interfaceType.keys.map(key => key.fields.split(' ')).flat();
+    const foreignGraphs = [];
+    for (const field of interfaceType.fields.values()) {
+      if (keyFields.includes(field.name)) {
+        continue;
+      }
+
+      field.ast.directives.push(createJoinFieldDirectiveNode({ graph: graphName }));
+    }
+    for (const { field, graph } of fieldsToMerge) {
+      // add join__field directive to each field contributed by @interfaceObject
+      interfaceType.fields.set(field.name, field);
+      field.ast.directives.push(createJoinFieldDirectiveNode({ graph }));
+      foreignGraphs.push(graph);
+    }
+    for (const foreignGraph of foreignGraphs) {
+      // add join__type directive to the interface type itself
+      const directive = createJoinTypeDirectiveNode({
+        graph: foreignGraph,
+        isInterfaceObject: true,
+        key: keyFields.join(' '),
+      });
+      interfaceType.ast.directives.push(directive);
     }
   }
 
