@@ -1,5 +1,56 @@
 # @theguild/federation-composition
 
+## 0.7.1
+
+### Patch Changes
+
+- [#36](https://github.com/the-guild-org/federation/pull/36)
+  [`fdba937`](https://github.com/the-guild-org/federation/commit/fdba937f5a3fd6317d08a496129d4242f2c38df4)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Visit every field in provides and
+  requires directives
+
+- [#36](https://github.com/the-guild-org/federation/pull/36)
+  [`fdba937`](https://github.com/the-guild-org/federation/commit/fdba937f5a3fd6317d08a496129d4242f2c38df4)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix unnecessary
+  join\_\_field(override:) on Query fields when it points to non-existing subgraph
+
+- [#36](https://github.com/the-guild-org/federation/pull/36)
+  [`fdba937`](https://github.com/the-guild-org/federation/commit/fdba937f5a3fd6317d08a496129d4242f2c38df4)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Deduplicate composed directives
+
+- [#39](https://github.com/the-guild-org/federation/pull/39)
+  [`e77eb2c`](https://github.com/the-guild-org/federation/commit/e77eb2c4e7d4ab09aeb08946d9c241e4d5b7757b)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Ignore inaccessible field arguments within the
+  `DEFAULT_VALUE_USES_INACCESSIBLE` rule.
+
+  Fixes an issue where an inaccessible field argument uses a default value that is inaccessible
+  would cause a false error.
+
+  ```graphql
+  type User @key(fields: "id") {
+    id: ID
+    friends(type: FriendType = FAMILY @inaccessible): [User!]!
+  }
+
+  enum FriendType {
+    FAMILY @inaccessible
+    FRIEND
+  }
+  ```
+
+- [#36](https://github.com/the-guild-org/federation/pull/36)
+  [`fdba937`](https://github.com/the-guild-org/federation/commit/fdba937f5a3fd6317d08a496129d4242f2c38df4)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Remove duplicated link spec definitions
+
+- [#36](https://github.com/the-guild-org/federation/pull/36)
+  [`fdba937`](https://github.com/the-guild-org/federation/commit/fdba937f5a3fd6317d08a496129d4242f2c38df4)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Drop unused fields marked with
+  @external only in a single type in Fed v1
+
+- [`220dfc0`](https://github.com/the-guild-org/federation/commit/220dfc0a760da4cb94c811a113641c16212868a7)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix missing usedOverridden on
+  non-external key field
+
 ## 0.7.0
 
 ### Minor Changes
