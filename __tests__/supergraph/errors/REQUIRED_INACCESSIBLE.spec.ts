@@ -13,7 +13,6 @@ testVersions((api, version) => {
                 url: "https://specs.apollo.dev/federation/${version}"
                 import: ["@key", "@inaccessible"]
               )
-
             type Query {
               a(id: ID! @inaccessible): Int!
             }
@@ -33,7 +32,6 @@ testVersions((api, version) => {
         ]),
       }),
     );
-
     expect(
       api.composeServices([
         {
@@ -44,12 +42,11 @@ testVersions((api, version) => {
                 url: "https://specs.apollo.dev/federation/${version}"
                 import: ["@key", "@inaccessible"]
               )
-
+              
             input A {
               id: ID! @inaccessible
               b: Int
             }
-
             type Query {
               a(a: A): Int!
             }
@@ -69,5 +66,49 @@ testVersions((api, version) => {
         ]),
       }),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: ["@inaccessible"]
+            )
+
+          type Query {
+            a(id: ID! @inaccessible): Int!@inaccessible
+            b: Int!
+          }
+        `,
+        },
+      ])?.errors,
+    ).toBeUndefined();
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: ["@inaccessible"]
+            )
+
+          input A @inaccessible {
+            a: Int! @inaccessible
+          }
+
+          type Query {
+            a(id: A! @inaccessible): Int! @inaccessible
+            b: Int!
+          }
+        `,
+        },
+      ])?.errors,
+    ).toBeUndefined();
   });
 });
