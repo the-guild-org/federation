@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.8.0
+
+### Minor Changes
+
+- [#40](https://github.com/the-guild-org/federation/pull/40)
+  [`4cba351`](https://github.com/the-guild-org/federation/commit/4cba35100e751fee5a9e531931b85d586f35a01c)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Implement validation rules for
+  `REQUIRED_INACCESSIBLE` for input types and field arguments.
+
 ## 0.7.1
 
 ### Patch Changes
