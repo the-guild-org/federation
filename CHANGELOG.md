@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.8.1
+
+### Patch Changes
+
+- [#42](https://github.com/the-guild-org/federation/pull/42)
+  [`f858c3f`](https://github.com/the-guild-org/federation/commit/f858c3fd1fac62915cf2d354f5bf001a369104b9)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - Fix REQUIRED_INACCESSIBLE occurring on inaccessible
+  fields/input types
+
 ## 0.8.0
 
 ### Minor Changes
