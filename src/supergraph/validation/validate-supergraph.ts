@@ -19,6 +19,7 @@ import { OnlyInaccessibleChildrenRule } from './rules/only-inaccessible-children
 import { OverrideSourceHasOverrideRule } from './rules/override-source-has-override.js';
 import { ReferencedInaccessibleRule } from './rules/referenced-inaccessible-rule.js';
 import { RequiredArgumentMissingInSomeSubgraph } from './rules/required-argument-missing-in-some-subgraph-rule.js';
+import { RequiredArgumentOrFieldIsNotInaccessibleRule } from './rules/required-argument-or-field-is-not-inaccessible-rule.js';
 import { RequiredInputFieldMissingInSomeSubgraphRule } from './rules/required-input-field-missing-in-some-subgraph-rule.js';
 import { RequiredQueryRule } from './rules/required-query-rule.js';
 import { SatisfiabilityRule } from './rules/satisfiablity-rule.js';
@@ -75,6 +76,7 @@ export function validateSupergraph(
     InvalidFieldSharingRule,
     SatisfiabilityRule,
     SubgraphNameRule,
+    RequiredArgumentOrFieldIsNotInaccessibleRule,
   ];
 
   const supergraph = state.getSupergraphState();
