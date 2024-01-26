@@ -107,11 +107,13 @@ ${print({
 export type CompositionResult = CompositionFailure | CompositionSuccess;
 
 export interface CompositionFailure {
+  supergraphSdl?: undefined;
   errors: GraphQLError[];
 }
 
 export interface CompositionSuccess {
   supergraphSdl: string;
+  errors?: undefined;
 }
 
 export function assertCompositionSuccess(

@@ -7,7 +7,11 @@ export function RequiredArgumentOrFieldIsNotInaccessibleRule(
 ): SupergraphVisitorMap {
   return {
     InputObjectTypeField(inputObjectState, fieldState) {
-      if (fieldState.type.endsWith('!') && fieldState.inaccessible) {
+      if (
+        !inputObjectState.inaccessible &&
+        fieldState.inaccessible &&
+        fieldState.type.endsWith('!')
+      ) {
         context.reportError(
           new GraphQLError(
             `Input field "${inputObjectState.name}.${fieldState.name}" is @inaccessible but is a required input field of its type.`,
@@ -21,7 +25,7 @@ export function RequiredArgumentOrFieldIsNotInaccessibleRule(
       }
     },
     ObjectTypeFieldArg(objectState, fieldState, argState) {
-      if (argState.type.endsWith('!') && argState.inaccessible) {
+      if (!fieldState.inaccessible && argState.inaccessible && argState.type.endsWith('!')) {
         context.reportError(
           new GraphQLError(
             `Argument "${objectState.name}.${fieldState.name}(${argState.name}:)" is @inaccessible but is a required argument of its field.`,
