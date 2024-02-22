@@ -14,6 +14,8 @@ export const federationScalars = new Set([
   'link__Import',
   'join__FieldSet',
   'join__DirectiveArguments',
+  'policy__Policy',
+  'requiresScopes__Scope',
 ]);
 export const federationEnums = new Set(['core__Purpose', 'join__Graph', 'link__Purpose']);
 export const federationDirectives = new Set([
