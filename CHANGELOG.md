@@ -1,5 +1,19 @@
 # @theguild/federation-composition
 
+## 0.8.2
+
+### Patch Changes
+
+- [#46](https://github.com/the-guild-org/federation/pull/46)
+  [`cfa9950`](https://github.com/the-guild-org/federation/commit/cfa9950c513747b26e4fd67412a9e0d5b931c6c0)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Add `requiresScopes__Scope` and
+  `policy__Policy` to `transformSupergraphToPublicSchema`
+
+- [#44](https://github.com/the-guild-org/federation/pull/44)
+  [`de983b0`](https://github.com/the-guild-org/federation/commit/de983b02479bdb4aee80bd42f6faece62586a45f)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Add containsSupergraphSpec to detect if
+  Supergraph related scalars, enums or directives are used
+
 ## 0.8.1
 
 ### Patch Changes
