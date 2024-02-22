@@ -20,9 +20,11 @@ export const federationScalars = new Set([
 export const federationEnums = new Set(['core__Purpose', 'join__Graph', 'link__Purpose']);
 export const federationDirectives = new Set([
   'link',
+  'core',
   'tag',
   'join__graph',
   'join__type',
+  'join__owner',
   'join__implements',
   'join__unionMember',
   'join__directive',
