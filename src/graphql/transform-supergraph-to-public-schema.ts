@@ -9,15 +9,21 @@ import {
   type SchemaDefinitionNode,
 } from 'graphql';
 
-const federationScalars = new Set(['_FieldSet', 'link__Import', 'join__FieldSet']);
-const federationEnums = new Set(['core__Purpose', 'join__Graph', 'link__Purpose']);
-const federationDirectives = new Set([
+export const federationScalars = new Set([
+  '_FieldSet',
+  'link__Import',
+  'join__FieldSet',
+  'join__DirectiveArguments',
+]);
+export const federationEnums = new Set(['core__Purpose', 'join__Graph', 'link__Purpose']);
+export const federationDirectives = new Set([
   'link',
   'tag',
   'join__graph',
   'join__type',
   'join__implements',
   'join__unionMember',
+  'join__directive',
   'join__enumValue',
   'join__field',
   'inaccessible',
