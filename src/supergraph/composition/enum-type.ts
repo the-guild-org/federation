@@ -1,3 +1,4 @@
+import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, EnumType } from '../../subgraph/state.js';
 import { createEnumTypeNode } from './ast.js';
 import type { MapByGraph, TypeBuilder } from './common.js';
@@ -52,6 +53,7 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
 
       enumTypeState.byGraph.set(graph.id, {
         inaccessible: type.inaccessible,
+        version: graph.version,
       });
 
       for (const value of type.values.values()) {
@@ -75,6 +77,7 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
 
         valueState.byGraph.set(graph.id, {
           inaccessible: value.inaccessible,
+          version: graph.version,
         });
       }
     },
@@ -148,6 +151,7 @@ function intersectionOfEnumValues(enumType: EnumTypeState) {
 }
 
 export type EnumTypeState = {
+  kind: 'enum';
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
@@ -175,10 +179,12 @@ type EnumValueState = {
 
 type EnumTypeStateInGraph = {
   inaccessible: boolean;
+  version: FederationVersion;
 };
 
 type EnumValueStateInGraph = {
   inaccessible: boolean;
+  version: FederationVersion;
 };
 
 function getOrCreateEnumType(state: Map<string, EnumTypeState>, typeName: string) {
@@ -189,6 +195,7 @@ function getOrCreateEnumType(state: Map<string, EnumTypeState>, typeName: string
   }
 
   const def: EnumTypeState = {
+    kind: 'enum',
     name: typeName,
     values: new Map(),
     tags: new Set(),

@@ -72,10 +72,10 @@ export function validateDirectiveAgainstOriginal(
       if (expectedType !== providedType) {
         const isNonNullableString = providedType === 'String!';
         const allowedFieldSetTypes = isFederationV2
-          ? ['FieldSet!', 'federation__FieldSet!', '_FieldSet!']
+          ? ['FieldSet!', 'federation__FieldSet!', '_FieldSet!', '[String!]!']
           : ['_FieldSet!', 'String', 'String!'];
         const fieldSetTypesInSpec = isFederationV2
-          ? ['FieldSet!', 'federation__FieldSet!', '_FieldSet!']
+          ? ['FieldSet!', 'federation__FieldSet!', '_FieldSet!', '[String!]!']
           : ['_FieldSet!', 'FieldSet!', 'String'];
         const expectsFieldSet = fieldSetTypesInSpec.includes(expectedType);
 

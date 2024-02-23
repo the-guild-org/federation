@@ -54,7 +54,7 @@ export function RequiresRules(context: SubgraphValidationContext): ASTVisitor {
 
       const printedFieldsValue = print(fieldsArg.value);
 
-      if (fieldsArg.value.kind !== Kind.STRING) {
+      if (fieldsArg.value.kind !== Kind.STRING && fieldsArg.value.kind !== Kind.ENUM) {
         context.reportError(
           new GraphQLError(
             `On field "${fieldCoordinate}", for @requires(fields: ${printedFieldsValue}): Invalid value for argument "fields": must be a string.`,
@@ -167,17 +167,19 @@ export function RequiresRules(context: SubgraphValidationContext): ASTVisitor {
           }
         },
         interceptNonExternalField(info) {
-          isValid = false;
-          context.reportError(
-            new GraphQLError(
-              `On field "${fieldCoordinate}", for @requires(fields: ${printedFieldsValue}): field "${info.typeDefinition.name.value}.${info.fieldName}" should not be part of a @requires since it is already provided by this subgraph (it is not marked @external)`,
-              {
-                extensions: {
-                  code: 'REQUIRES_FIELDS_MISSING_EXTERNAL',
+          if (context.satisfiesVersionRange('> v1.0')) {
+            isValid = false;
+            context.reportError(
+              new GraphQLError(
+                `On field "${fieldCoordinate}", for @requires(fields: ${printedFieldsValue}): field "${info.typeDefinition.name.value}.${info.fieldName}" should not be part of a @requires since it is already provided by this subgraph (it is not marked @external)`,
+                {
+                  extensions: {
+                    code: 'REQUIRES_FIELDS_MISSING_EXTERNAL',
+                  },
                 },
-              },
-            ),
-          );
+              ),
+            );
+          }
         },
       });
 

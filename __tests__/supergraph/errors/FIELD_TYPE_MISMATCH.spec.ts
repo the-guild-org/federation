@@ -224,4 +224,118 @@ testVersions((api, version) => {
       ]),
     );
   });
+
+  test('FIELD_TYPE_MISMATCH (unions)', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
+
+          type Query {
+            foo: Item @shareable
+          }
+
+          union Item = A | B
+
+          type A {
+            id: ID! @shareable
+            name: String @shareable
+          }
+
+          type B {
+            id: ID!
+            name: String!
+          }
+
+          type C {
+            id: ID! @shareable
+            name: String! @shareable
+          }
+        `,
+        },
+        {
+          name: 'bar',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              foo: A @shareable
+            }
+
+            type A {
+              id: ID! @shareable
+              name: String @shareable
+            }
+          `,
+        },
+      ]),
+    );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@shareable"])
+          
+          type Query {
+            foo: Item @shareable
+          }
+
+          union Item = A | B
+
+          type A {
+            id: ID! @shareable
+            name: String @shareable
+          }
+
+          type B {
+            id: ID!
+            name: String!
+          }
+
+          type C {
+            id: ID! @shareable
+            name: String! @shareable
+          }
+        `,
+        },
+        {
+          name: 'bar',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
+
+            type Query {
+              foo: AnotherItem @shareable
+            }
+
+            union AnotherItem = A | C
+
+            type A {
+              id: ID! @shareable
+              name: String @shareable
+            }
+
+            type C {
+              id: ID! @shareable
+              name: String! @shareable
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              `Type of field "Query.foo" is incompatible across subgraphs: it has type "AnotherItem" in subgraph "bar" but type "Item" in subgraph "foo"`,
+            ),
+            extensions: expect.objectContaining({ code: 'FIELD_TYPE_MISMATCH' }),
+          }),
+        ]),
+      }),
+    );
+  });
 });

@@ -3,101 +3,106 @@ import {
   assertCompositionFailure,
   assertCompositionSuccess,
   graphql,
+  normalizeErrorMessage,
   testVersions,
 } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
-  test.skipIf(api.library === 'guild')('cannot satisfy @require conditions', () => {
-    // TODO: @requires
-    expect(
-      api.composeServices([
-        {
-          name: 'users',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
+  test('cannot satisfy @require conditions', () => {
+    const result = api.composeServices([
+      {
+        name: 'users',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
-            type Query {
-              users: [User]
-            }
+          type Query {
+            users: [User]
+          }
 
-            type User @key(fields: "id name") {
-              id: ID!
-              name: String!
-            }
-          `,
-        },
-        {
-          name: 'feed',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external", "@requires"])
+          type User @key(fields: "id name") {
+            id: ID!
+            name: String!
+          }
+        `,
+      },
+      {
+        name: 'feed',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external", "@requires"])
 
-            type Query {
-              usersByIds(ids: [ID!]!): [User!]!
-            }
+          type Query {
+            usersByIds(ids: [ID!]!): [User!]!
+          }
 
-            extend type User @key(fields: "id") {
-              id: ID @external
-              name: String! @external
-              comments: [String] @requires(fields: "name")
-            }
-          `,
-        },
-      ]),
-    ).toEqual(
+          extend type User @key(fields: "id") {
+            id: ID @external
+            name: String! @external
+            comments: [String] @requires(fields: "name")
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
       expect.objectContaining({
-        errors: [
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  users {\n' +
-                '    comments\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "users": cannot find field "User.comments".\n' +
-                '- from subgraph "feed": cannot satisfy @require conditions on field "User.comments".',
-              // TODO: ^ check if `@require` fields on `User.comments` can be resolved by current subgraph or by moving between subgraphs.
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  usersByIds(ids: []) {\n' +
-                '    name\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "feed":\n' +
-                '  - field "User.name" is not resolvable because marked @external.\n' +
-                '  - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  usersByIds(ids: []) {\n' +
-                '    comments\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "feed":\n' +
-                '  - cannot satisfy @require conditions on field "User.comments".\n' +
-                '  - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-        ],
+        message: expect.stringContaining(normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              usersByIds(ids: []) {
+                comments
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "feed":
+              - cannot satisfy @require conditions on field "User.comments".
+              - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".
+        `),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
+      }),
+    );
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining(
+          normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              usersByIds(ids: []) {
+                name
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "feed":
+              - field "User.name" is not resolvable because marked @external.
+              - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".
+          `,
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
+      }),
+    );
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining(normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            users {
+              comments
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "users": cannot find field "User.comments".
+          - from subgraph "feed": cannot satisfy @require conditions on field "User.comments".
+        `),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
       }),
     );
   });
@@ -273,75 +278,93 @@ testVersions((api, version) => {
     // Same as above, but with an entity deep down the path.
     // Cannot resolve User.name from Query.randomUser because key field "id" from subgraph "feed"
     // is not enough to fullfil the @key(fields: "id name") of User from subgraph "users".
-    expect(
-      api.composeServices([
-        {
-          name: 'users',
-          typeDefs: graphql`
-          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
+    const result = api.composeServices([
+      {
+        name: 'users',
+        typeDefs: graphql`
+        extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
-          type Query {
-            userById(id: ID): User
-          }
+        type Query {
+          userById(id: ID): User
+        }
 
-          type User @key(fields: "id name") {
-            id: ID!
-            name: String!
-          }
-        `,
-        },
-        {
-          name: 'feed',
-          typeDefs: graphql`
-          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
+        type User @key(fields: "id name") {
+          id: ID!
+          name: String!
+        }
+      `,
+      },
+      {
+        name: 'feed',
+        typeDefs: graphql`
+        extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
 
-          type Query {
-            users: UserConnection!
-            randomUser: UserEdge
-          }
+        type Query {
+          users: UserConnection!
+          randomUser: UserEdge
+        }
 
-          type UserConnection {
-            edges: [UserEdge]
-          }
+        type UserConnection {
+          edges: [UserEdge]
+        }
 
-          type UserEdge {
-            node: User
-          }
+        type UserEdge {
+          node: User
+        }
 
-          extend type User @key(fields: "id") {
-            id: ID @external
-            comments: [String]
-          }
-        `,
-        },
-      ]),
-    ).toEqual(
+        extend type User @key(fields: "id") {
+          id: ID @external
+          comments: [String]
+        }
+      `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
       expect.objectContaining({
-        errors: [
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  randomUser {\n' +
-                '    node {\n' +
-                '      name\n' +
-                '    }\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "feed":\n' +
-                '  - cannot find field "User.name".\n' +
-                '  - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-        ],
+        message: expect.stringContaining(
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                randomUser {
+                  node {
+                    name
+                  }
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "feed":
+                - cannot find field "User.name".
+                - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".
+            `
+            : normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                users {
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "feed":
+                - cannot find field "User.name".
+                - cannot move to subgraph "users" using @key(fields: "id name") of "User", the key field(s) cannot be resolved from subgraph "feed".
+          `,
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
       }),
     );
   });
 
+  // ADD IT TO THE COLLECTION
   test('works with @override', () => {
     assertCompositionSuccess(
       api.composeServices([
@@ -852,100 +875,119 @@ testVersions((api, version) => {
   test('cannot move as not shareable and no keys (mutation and subscription)', () => {
     // Cannot resolve User.name from Query.usersByAge as User has no @key to move to subgraph "a"
     // Cannot resolve User.age from Query.users as User has no @key to move to subgraph "b"
-    expect(
-      api.composeServices([
-        {
-          name: 'a',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
-            type User {
-              name: String
-            }
+          type User {
+            name: String
+          }
 
-            type Query {
-              users: [User]
-            }
-          `,
-        },
-        {
-          name: 'b',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
+          type Query {
+            users: [User]
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
-            extend type User {
-              age: Int
-            }
+          extend type User {
+            age: Int
+          }
 
-            type Mutation {
-              createRandomUser: User
-            }
+          type Mutation {
+            createRandomUser: User
+          }
 
-            type Subscription {
-              onUserCreated: User
-            }
-          `,
-        },
-      ]),
-    ).toEqual(
+          type Subscription {
+            onUserCreated: User
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    if (api.library === 'guild') {
+      // Why??????
+      // Because Apollo does not throw an error for mutation if subscription is detected, LOL.
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            'The following supergraph API query:\n' +
+              'mutation {\n' +
+              '  createRandomUser {\n' +
+              '    name\n' +
+              '  }\n' +
+              '}\n' +
+              'cannot be satisfied by the subgraphs because:\n' +
+              '- from subgraph "b":\n' +
+              '  - cannot find field "User.name".\n' +
+              '  - cannot move to subgraph "a", which has field "User.name", because type "User" has no @key defined in subgraph "a".',
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
+
+    expect(result.errors).toContainEqual(
       expect.objectContaining({
-        errors: [
-          // Why??????
-          // Because Apollo does not throw an error for mutation if subscription is detected, LOL.
-          api.library === 'guild'
-            ? expect.objectContaining({
-                message: expect.stringContaining(
-                  'The following supergraph API query:\n' +
-                    'mutation {\n' +
-                    '  createRandomUser {\n' +
-                    '    name\n' +
-                    '  }\n' +
-                    '}\n' +
-                    'cannot be satisfied by the subgraphs because:\n' +
-                    '- from subgraph "b":\n' +
-                    '  - cannot find field "User.name".\n' +
-                    '  - cannot move to subgraph "a", which has field "User.name", because type "User" has no @key defined in subgraph "a".',
-                ),
-                extensions: expect.objectContaining({
-                  code: 'SATISFIABILITY_ERROR',
-                }),
-              })
-            : null,
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                'subscription {\n' +
-                '  onUserCreated {\n' +
-                '    name\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "b":\n' +
-                '  - cannot find field "User.name".\n' +
-                '  - cannot move to subgraph "a", which has field "User.name", because type "User" has no @key defined in subgraph "a".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  users {\n' +
-                '    age\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "a":\n' +
-                '  - cannot find field "User.age".\n' +
-                '  - cannot move to subgraph "b", which has field "User.age", because type "User" has no @key defined in subgraph "b".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-        ].filter(Boolean),
+        message: expect.stringContaining(
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+            The following supergraph API query:
+            subscription {
+              onUserCreated {
+                name
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "b":
+              - cannot find field "User.name".
+              - cannot move to subgraph "a", which has field "User.name", because type "User" has no @key defined in subgraph "a".
+          `
+            : normalizeErrorMessage`
+            The following supergraph API query:
+            mutation {
+              createRandomUser {
+                name
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "b":
+              - cannot find field "User.name".
+              - cannot move to subgraph "a", which has field "User.name", because type "User" has no @key defined in subgraph "a".
+          `,
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
+      }),
+    );
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining(
+          'The following supergraph API query:\n' +
+            '{\n' +
+            '  users {\n' +
+            '    age\n' +
+            '  }\n' +
+            '}\n' +
+            'cannot be satisfied by the subgraphs because:\n' +
+            '- from subgraph "a":\n' +
+            '  - cannot find field "User.age".\n' +
+            '  - cannot move to subgraph "b", which has field "User.age", because type "User" has no @key defined in subgraph "b".',
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
       }),
     );
   });
@@ -1026,11 +1068,10 @@ testVersions((api, version) => {
   });
 
   test('unresolvable because of external (no idea...)', () => {
-    expect(
-      api.composeServices([
-        {
-          name: 'foo',
-          typeDefs: graphql`
+    let result = api.composeServices([
+      {
+        name: 'foo',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@inaccessible"])
 
             type Product @key(fields: "publicId fooCriteria") @key(fields: "key { code type } fooCriteria") {
@@ -1054,10 +1095,10 @@ testVersions((api, version) => {
               productInFoo: Product
             }
         `,
-        },
-        {
-          name: 'bar',
-          typeDefs: graphql`
+      },
+      {
+        name: 'bar',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
 
             type Product @key(fields: "publicId fooCriteria") {
@@ -1069,10 +1110,10 @@ testVersions((api, version) => {
               productInBar: Product
             }
         `,
-        },
-        {
-          name: 'baz',
-          typeDefs: graphql`
+      },
+      {
+        name: 'baz',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
             type Product @key(fields: "publicId fooCriteria") {
@@ -1085,10 +1126,10 @@ testVersions((api, version) => {
               productInBaz: Product
             }
           `,
-        },
-        {
-          name: 'qux',
-          typeDefs: graphql`
+      },
+      {
+        name: 'qux',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@inaccessible"])
 
             type Product @key(fields: "publicId fooCriteria") {
@@ -1100,92 +1141,186 @@ testVersions((api, version) => {
               productInQux: Product
             }
           `,
-        },
-      ]),
-    ).toEqual(
-      expect.objectContaining({
-        errors: [
-          expect.objectContaining({
-            // Query.productInBar (bar) can't resolve Product.publicId (foo, baz, qux)
-            // because it's marked as @external
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  productInBar {\n' +
-                '    publicId\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "bar":\n' +
-                '  - field "Product.publicId" is not resolvable because marked @external.\n' +
-                '  - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          // Query.productInBar (bar) can't resolve Product.available (baz)
-          // Because:
-          // - Product.available does not exist in subgraph "bar"
-          // - can't move to other subgraphs that can resolve that field (foo, baz, qux)
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  productInBar {\n' +
-                '    available\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "bar":\n' +
-                '  - cannot find field "Product.available".\n' +
-                '  - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          // Query.productInBar (bar) can't resolve Product.key (foo)
-          // Because:
-          // - Product.available key not exist in subgraph "bar"
-          // - can't move to other subgraphs that can possibly resolve Product (foo, baz, qux) - not only the ones that can resolve Product.key, Product in general
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  productInBar {\n' +
-                '    key {\n' +
-                '      ...\n' +
-                '    }\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "bar":\n' +
-                '  - cannot find field "Product.key".\n' +
-                '  - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-        ],
-      }),
-    );
+      },
+    ]);
 
-    expect(
-      api.composeServices([
-        {
-          name: 'products',
-          typeDefs: graphql`
+    assertCompositionFailure(result);
+
+    // Query.productInBar (bar) can't resolve Product.publicId (foo, baz, qux)
+    // because it's marked as @external
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            productInBar {
+              publicId
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "bar":
+            - field "Product.publicId" is not resolvable because marked @external.
+            - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+          `,
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    } else {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            productInBar {
+              publicId
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "bar":
+            - field "Product.publicId" is not resolvable because marked @external.
+            - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+          `,
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
+
+    // Query.productInBar (bar) can't resolve Product.available (baz)
+    // Because:
+    // - Product.available does not exist in subgraph "bar"
+    // - can't move to other subgraphs that can resolve that field (foo, baz, qux)
+
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  available
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.available".
+                - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    } else {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  available
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.available".
+                - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
+
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        // Query.productInBar (bar) can't resolve Product.key (foo)
+        // Because:
+        // - Product.available key not exist in subgraph "bar"
+        // - can't move to other subgraphs that can possibly resolve Product (foo, baz, qux) - not only the ones that can resolve Product.key, Product in general
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  key {
+                    ...
+                  }
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.key".
+                - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    } else {
+      expect(result.errors).toContainEqual(
+        // Query.productInBar (bar) can't resolve Product.key (foo)
+        // Because:
+        // - Product.available key not exist in subgraph "bar"
+        // - can't move to other subgraphs that can possibly resolve Product (foo, baz, qux) - not only the ones that can resolve Product.key, Product in general
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  key {
+                    ...
+                  }
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.key".
+                - cannot move to subgraph "qux" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "key { code type } fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "foo" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "baz" using @key(fields: "publicId fooCriteria") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
+
+    result = api.composeServices([
+      {
+        name: 'products',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@inaccessible"])
 
             type Product @key(fields: "id") @key(fields: "id policy") {
@@ -1198,10 +1333,10 @@ testVersions((api, version) => {
               productInFoo: Product
             }
         `,
-        },
-        {
-          name: 'bar',
-          typeDefs: graphql`
+      },
+      {
+        name: 'bar',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
 
             type Product @key(fields: "id policy") {
@@ -1213,10 +1348,10 @@ testVersions((api, version) => {
               productInBar: Product
             }
         `,
-        },
-        {
-          name: 'env',
-          typeDefs: graphql`
+      },
+      {
+        name: 'env',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
 
             type Product @key(fields: "id") {
@@ -1228,10 +1363,10 @@ testVersions((api, version) => {
               productInBaz: Product
             }
           `,
-        },
-        {
-          name: 'prices',
-          typeDefs: graphql`
+      },
+      {
+        name: 'prices',
+        typeDefs: graphql`
             extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@inaccessible"])
 
             type Product @key(fields: "id policy") {
@@ -1243,56 +1378,118 @@ testVersions((api, version) => {
               productInQux: Product
             }
           `,
-        },
-      ]),
-    ).toEqual(
-      expect.objectContaining({
-        errors: [
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  productInBar {\n' +
-                '    id\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "bar":\n' +
-                '  - field "Product.id" is not resolvable because marked @external.\n' +
-                '  - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  id
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - field "Product.id" is not resolvable because marked @external.
+                - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
           }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  productInBar {\n' +
-                '    environmentallyFriendly\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "bar":\n' +
-                '  - cannot find field "Product.environmentallyFriendly".\n' +
-                '  - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-                '  - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
+        }),
+      );
+    } else {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  id
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - field "Product.id" is not resolvable because marked @external.
+                - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+                - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
           }),
-        ],
-      }),
-    );
+        }),
+      );
+    }
+
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBar {
+                environmentallyFriendly
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "bar":
+              - cannot find field "Product.environmentallyFriendly".
+              - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+          `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    } else {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBar {
+                environmentallyFriendly
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "bar":
+              - cannot find field "Product.environmentallyFriendly".
+              - cannot move to subgraph "products" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "products" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "prices" using @key(fields: "id policy") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - cannot move to subgraph "env" using @key(fields: "id") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+          `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
   });
 
+  // ADD IT TO THE COLLECTION
+  // TODO: maximum call stack size exceeded
   test('external but somehow resolvable', () => {
     assertCompositionSuccess(
       api.composeServices([
@@ -1596,114 +1793,118 @@ testVersions((api, version) => {
   });
 
   test('moving between entity with @key and without it', () => {
-    expect(
-      api.composeServices([
-        {
-          name: 'a',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
-            
-            extend type User @key(fields: "id") {
-              id: ID @external
-              email: String
-            }
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
+          
+          extend type User @key(fields: "id") {
+            id: ID @external
+            email: String
+          }
 
-            type Query {
-              usersById(ids: [ID!]!): [User!]!
-            }
-          `,
-        },
-        {
-          name: 'b',
-          typeDefs: graphql`
-            extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
-            
-            type User {
-              profile: String
-            }
+          type Query {
+            usersById(ids: [ID!]!): [User!]!
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key"])
+          
+          type User {
+            profile: String
+          }
 
-            union Account = User | Admin
+          union Account = User | Admin
 
-            type Admin {
-              id: ID
-              photo: String
-            }
+          type Admin {
+            id: ID
+            photo: String
+          }
 
-            type Query {
-              accounts(ids: [ID!]!): [Account!]!
-            }
-          `,
-        },
-      ]),
-    ).toEqual(
+          type Query {
+            accounts(ids: [ID!]!): [Account!]!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
       expect.objectContaining({
-        errors: [
-          // User.id is indeed marked as @external all subgraphs (only our implementation shows that)
-          api.library === 'guild'
-            ? expect.objectContaining({
-                message: expect.stringContaining(
-                  'Field "User.id" is marked @external on all the subgraphs in which it is listed (subgraph "a")',
-                ),
-              })
-            : null,
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  accounts(ids: []) {\n' +
-                '    ... on User {\n' +
-                '      id\n' +
-                '    }\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "b":\n' +
-                '  - cannot find field "User.id".\n' +
-                '  - cannot move to subgraph "a" using @key(fields: "id") of "User", the key field(s) cannot be resolved from subgraph "b".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  accounts(ids: []) {\n' +
-                '    ... on User {\n' +
-                '      email\n' +
-                '    }\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "b":\n' +
-                '  - cannot find field "User.email".\n' +
-                '  - cannot move to subgraph "a" using @key(fields: "id") of "User", the key field(s) cannot be resolved from subgraph "b".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  usersById(ids: []) {\n' +
-                '    profile\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "a":\n' +
-                '  - cannot find field "User.profile".\n' +
-                '  - cannot move to subgraph "b", which has field "User.profile", because type "User" has no @key defined in subgraph "b".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
-        ].filter(Boolean),
+        message: expect.stringContaining(
+          normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            usersById(ids: []) {
+              profile
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "a":
+            - cannot find field "User.profile".
+            - cannot move to subgraph "b", which has field "User.profile", because type "User" has no @key defined in subgraph "b".
+        `,
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
       }),
     );
+
+    if (api.library === 'apollo') {
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              accounts(ids: []) {
+                ... on User {
+                  email
+                }
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "b":
+              - cannot find field "User.email".
+              - cannot move to subgraph "a" using @key(fields: "id") of "User", the key field(s) cannot be resolved from subgraph "b".
+          `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining(
+            normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              accounts(ids: []) {
+                ... on User {
+                  id
+                }
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "b":
+              - cannot find field "User.id".
+              - cannot move to subgraph "a" using @key(fields: "id") of "User", the key field(s) cannot be resolved from subgraph "b".
+          `,
+          ),
+          extensions: expect.objectContaining({
+            code: 'SATISFIABILITY_ERROR',
+          }),
+        }),
+      );
+    }
   });
 
   test('gateway can move from one graph to another through other subgraphs', () => {
@@ -1772,7 +1973,7 @@ testVersions((api, version) => {
           `,
       },
       {
-        name: 'quux',
+        name: 'qux2',
         typeDefs: graphql`
           extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
 
@@ -1783,12 +1984,12 @@ testVersions((api, version) => {
           }
 
           type Query {
-            carInQuux: Car
+            carInQux2: Car
           }
           `,
       },
       {
-        name: 'quuux',
+        name: 'qux3',
         typeDefs: graphql`
           extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@external"])
 
@@ -1799,7 +2000,7 @@ testVersions((api, version) => {
           }
 
           type Query {
-            carInQuuux: Car
+            carInQux3: Car
           }
           `,
       },
@@ -1810,19 +2011,34 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInFoo {\n' +
-            '    freeBar\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "foo":\n' +
-            '  - cannot find field "Product.freeBar".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.freeBar".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInFoo {
+                  freeBar
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "foo":
+                - cannot find field "Product.freeBar".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".
+              - from subgraph "baz":
+                - cannot find field "Product.freeBar".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `
+            : normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInFoo {
+                  freeBar
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "foo":
+                - cannot find field "Product.freeBar".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".
+            `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1833,19 +2049,34 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInFoo {\n' +
-            '    stockId\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "foo":\n' +
-            '  - cannot find field "Product.stockId".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.stockId".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInFoo {
+                  stockId
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "foo":
+                - cannot find field "Product.stockId".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".
+              - from subgraph "baz":
+                - cannot find field "Product.stockId".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `
+            : normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInFoo {
+                  stockId
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "foo":
+                - cannot find field "Product.stockId".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "foo".
+          `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1856,17 +2087,33 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBaz {\n' +
-            '    freeBar\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.freeBar".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBaz {
+                freeBar
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "baz":
+              - cannot find field "Product.freeBar".
+              - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+          `
+            : normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            productInBaz {
+              freeBar
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "baz":
+            - cannot find field "Product.freeBar".
+            - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+        `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1877,17 +2124,33 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBaz {\n' +
-            '    stockId\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.stockId".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBaz {
+                stockId
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "baz":
+              - cannot find field "Product.stockId".
+              - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `
+            : normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBaz {
+                stockId
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "baz":
+              - cannot find field "Product.stockId".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+              - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1898,17 +2161,33 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBaz {\n' +
-            '    categoryDescription\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.categoryDescription".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBaz {
+                categoryDescription
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "baz":
+              - cannot find field "Product.categoryDescription".
+              - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+          `
+            : normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            productInBaz {
+              categoryDescription
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "baz":
+            - cannot find field "Product.categoryDescription".
+            - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+        `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1919,17 +2198,33 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBaz {\n' +
-            '    category\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.category".\n' +
-            '  - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBaz {
+                  category
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "baz":
+                - cannot find field "Product.category".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+                - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `
+            : normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBaz {
+                  category
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "baz":
+                - cannot find field "Product.category".
+                - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+                - cannot move to subgraph "bar" using @key(fields: "id stockId") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+          `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1940,19 +2235,34 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBar {\n' +
-            '    categoryDescription\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "bar":\n' +
-            '  - cannot find field "Product.categoryDescription".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.categoryDescription".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  categoryDescription
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.categoryDescription".
+                - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+              - from subgraph "baz":
+                - cannot find field "Product.categoryDescription".
+                - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+            `
+            : normalizeErrorMessage`
+              The following supergraph API query:
+              {
+                productInBar {
+                  categoryDescription
+                }
+              }
+              cannot be satisfied by the subgraphs because:
+              - from subgraph "bar":
+                - cannot find field "Product.categoryDescription".
+                - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -1963,19 +2273,34 @@ testVersions((api, version) => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         message: expect.stringContaining(
-          'The following supergraph API query:\n' +
-            '{\n' +
-            '  productInBar {\n' +
-            '    category\n' +
-            '  }\n' +
-            '}\n' +
-            'cannot be satisfied by the subgraphs because:\n' +
-            '- from subgraph "bar":\n' +
-            '  - cannot find field "Product.category".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".\n' +
-            '- from subgraph "baz":\n' +
-            '  - cannot find field "Product.category".\n' +
-            '  - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".',
+          api.library === 'apollo'
+            ? normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBar {
+                category
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "bar":
+              - cannot find field "Product.category".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+            - from subgraph "baz":
+              - cannot find field "Product.category".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "baz".
+          `
+            : normalizeErrorMessage`
+            The following supergraph API query:
+            {
+              productInBar {
+                categoryDescription
+              }
+            }
+            cannot be satisfied by the subgraphs because:
+            - from subgraph "bar":
+              - cannot find field "Product.categoryDescription".
+              - cannot move to subgraph "foo" using @key(fields: "id category") of "Product", the key field(s) cannot be resolved from subgraph "bar".
+          `,
         ),
         extensions: expect.objectContaining({
           code: 'SATISFIABILITY_ERROR',
@@ -2175,24 +2500,43 @@ testVersions((api, version) => {
     ).toEqual(
       expect.objectContaining({
         errors: expect.arrayContaining([
-          expect.objectContaining({
-            message: expect.stringContaining(
-              'The following supergraph API query:\n' +
-                '{\n' +
-                '  user {\n' +
-                '    email\n' +
-                '  }\n' +
-                '}\n' +
-                'cannot be satisfied by the subgraphs because:\n' +
-                '- from subgraph "a":\n' +
-                '  - cannot find field "User.email".\n' +
-                '  - cannot move to subgraph "b" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".\n' +
-                '  - cannot move to subgraph "c" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".',
-            ),
-            extensions: expect.objectContaining({
-              code: 'SATISFIABILITY_ERROR',
-            }),
-          }),
+          api.library === 'apollo'
+            ? expect.objectContaining({
+                message: expect.stringContaining(
+                  'The following supergraph API query:\n' +
+                    '{\n' +
+                    '  user {\n' +
+                    '    email\n' +
+                    '  }\n' +
+                    '}\n' +
+                    'cannot be satisfied by the subgraphs because:\n' +
+                    '- from subgraph "a":\n' +
+                    '  - cannot find field "User.email".\n' +
+                    '  - cannot move to subgraph "b" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".\n' +
+                    '  - cannot move to subgraph "c" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".',
+                ),
+                extensions: expect.objectContaining({
+                  code: 'SATISFIABILITY_ERROR',
+                }),
+              })
+            : expect.objectContaining({
+                message: expect.stringContaining(
+                  'The following supergraph API query:\n' +
+                    '{\n' +
+                    '  user {\n' +
+                    '    email\n' +
+                    '  }\n' +
+                    '}\n' +
+                    'cannot be satisfied by the subgraphs because:\n' +
+                    '- from subgraph "a":\n' +
+                    '  - cannot find field "User.email".\n' +
+                    '  - cannot move to subgraph "c" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".\n' +
+                    '  - cannot move to subgraph "b" using @key(fields: "email") of "User", the key field(s) cannot be resolved from subgraph "a".',
+                ),
+                extensions: expect.objectContaining({
+                  code: 'SATISFIABILITY_ERROR',
+                }),
+              }),
         ]),
       }),
     );
@@ -2261,10 +2605,9 @@ testVersions((api, version) => {
     assertCompositionSuccess(result);
   });
 
-  test.todo(
-    'resolve missing field by resolving first deeply nested key fields from multiple subgraphs...',
-    () => {
-      const result = api.composeServices([
+  test('resolve missing field by resolving first deeply nested key fields from multiple subgraphs...', () => {
+    const result = api.composeServices(
+      [
         {
           name: 'products',
           typeDefs: graphql`
@@ -2352,9 +2695,176 @@ testVersions((api, version) => {
             }
           `,
         },
-      ]);
+      ],
+      {},
+      true,
+    );
 
-      assertCompositionSuccess(result);
-    },
-  );
+    assertCompositionSuccess(result);
+  });
+
+  test('ignore overridden root fields', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql` 
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: [
+                "@shareable"
+              ]
+            )
+
+          type Query {
+            data: Data
+          }
+
+          type Data {
+            id: String
+            name: String
+            notInA: String
+            shared: String @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/${version}"
+              import: [
+                "@override",
+                "@shareable"
+              ]
+            )
+
+          type Query {
+            data: Data @override(from: "a")
+          }
+
+          type Data {
+            id: String @override(from: "a")
+            name: String @override(from: "a")
+            shared: String @shareable
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining(
+          [
+            'The following supergraph API query:',
+            '{',
+            '  data {',
+            '    notInA',
+            '  }',
+            '}',
+            'cannot be satisfied by the subgraphs because:',
+            '- from subgraph "b":',
+            '  - cannot find field "Data.notInA".',
+            '  - cannot move to subgraph "a", which has field "Data.notInA", because type "Data" has no @key defined in subgraph "a".',
+          ].join('\n'),
+        ),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
+      }),
+    );
+  });
+
+  test('make sure we avoid infinite loops', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+              extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@shareable", "@external"])
+
+              type Query {
+                node(id: ID!): Node @shareable
+                account(id: String!): Account
+              }
+
+              interface Node {
+                id: ID!
+              }
+
+              type Account implements Node @key(fields: "id") {
+                id: ID!
+                username: String!
+              }
+
+              type Chat implements Node @key(fields: "id") {
+                id: ID! @external
+                account: Account!
+              }
+            `,
+        },
+        {
+          name: 'bar',
+          typeDefs: graphql`
+              extend schema @link(url: "https://specs.apollo.dev/federation/${version}" import: ["@key", "@shareable", "@external"])
+              type Query {
+                node(id: ID!): Node @shareable
+                chat(id: String!): Chat
+              }
+
+              interface Node {
+                id: ID!
+              }
+
+              type Account implements Node @key(fields: "id") {
+                id: ID! @external
+                chats: [Chat!]!
+              }
+
+              type Chat implements Node @key(fields: "id") {
+                id: ID!
+                text: String!
+              }
+          `,
+        },
+      ]),
+    );
+  });
+
+  test('Fed1: @external and @extends', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            type Query {
+              randomUser: User
+            }
+
+            type User @extends {
+              id: ID! @external
+              name: String! @external
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            type Query {
+              userById(id: ID): User
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+              nickname: String
+            }
+          `,
+        },
+      ]),
+    );
+  });
 });

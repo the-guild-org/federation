@@ -1,4 +1,5 @@
 import { DirectiveNode } from 'graphql';
+import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, InterfaceType } from '../../subgraph/state.js';
 import { createInterfaceTypeNode } from './ast.js';
 import { convertToConst } from './common.js';
@@ -50,6 +51,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         keys: type.keys,
         interfaces: type.interfaces,
         implementedBy: type.implementedBy,
+        version: graph.version,
       });
 
       for (const field of type.fields.values()) {
@@ -97,6 +99,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
           override: field.override,
           provides: field.provides,
           requires: field.requires,
+          version: graph.version,
         });
 
         for (const arg of field.args.values()) {
@@ -128,6 +131,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
           argState.byGraph.set(graph.id, {
             type: arg.type,
             defaultValue: arg.defaultValue,
+            version: graph.version,
           });
         }
       }
@@ -238,6 +242,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
 }
 
 export type InterfaceTypeState = {
+  kind: 'interface';
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
@@ -290,6 +295,7 @@ type InterfaceTypeInGraph = {
   keys: Key[];
   interfaces: Set<string>;
   implementedBy: Set<string>;
+  version: FederationVersion;
 };
 
 type FieldStateInGraph = {
@@ -297,11 +303,13 @@ type FieldStateInGraph = {
   override: string | null;
   provides: string | null;
   requires: string | null;
+  version: FederationVersion;
 };
 
 type ArgStateInGraph = {
   type: string;
   defaultValue?: string;
+  version: FederationVersion;
 };
 
 function getOrCreateInterfaceType(state: Map<string, InterfaceTypeState>, typeName: string) {
@@ -312,6 +320,7 @@ function getOrCreateInterfaceType(state: Map<string, InterfaceTypeState>, typeNa
   }
 
   const def: InterfaceTypeState = {
+    kind: 'interface',
     name: typeName,
     tags: new Set(),
     inaccessible: false,

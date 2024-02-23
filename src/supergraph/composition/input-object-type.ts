@@ -1,3 +1,4 @@
+import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, InputObjectType } from '../../subgraph/state.js';
 import { createInputObjectTypeNode } from './ast.js';
 import type { MapByGraph, TypeBuilder } from './common.js';
@@ -25,6 +26,7 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
 
       inputObjectTypeState.byGraph.set(graph.id, {
         inaccessible: type.inaccessible,
+        version: graph.version,
       });
 
       for (const field of type.fields.values()) {
@@ -58,6 +60,7 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
           type: field.type,
           inaccessible: field.inaccessible,
           defaultValue: field.defaultValue,
+          version: graph.version,
         });
       }
     },
@@ -108,6 +111,7 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
 }
 
 export interface InputObjectTypeState {
+  kind: 'input';
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
@@ -130,12 +134,14 @@ export type InputObjectTypeFieldState = {
 
 type InputObjectTypeStateInGraph = {
   inaccessible: boolean;
+  version: FederationVersion;
 };
 
 type InputObjectFieldStateInGraph = {
   type: string;
   inaccessible: boolean;
   defaultValue?: string;
+  version: FederationVersion;
 };
 
 function getOrCreateInputObjectType(state: Map<string, InputObjectTypeState>, typeName: string) {
@@ -146,6 +152,7 @@ function getOrCreateInputObjectType(state: Map<string, InputObjectTypeState>, ty
   }
 
   const def: InputObjectTypeState = {
+    kind: 'input',
     name: typeName,
     tags: new Set(),
     hasDefinition: false,

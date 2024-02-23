@@ -20,7 +20,7 @@ import { scalarTypeBuilder, ScalarTypeState } from './composition/scalar-type.js
 import { unionTypeBuilder, UnionTypeState } from './composition/union-type.js';
 
 export type SupergraphState = {
-  graphs: Map<string, Graph>;
+  subgraphs: Map<string, SubgraphState>;
   scalarTypes: Map<string, ScalarTypeState>;
   objectTypes: Map<string, ObjectTypeState>;
   interfaceTypes: Map<string, InterfaceTypeState>;
@@ -46,7 +46,7 @@ export type SupergraphStateBuilder = ReturnType<typeof createSupergraphStateBuil
 
 export function createSupergraphStateBuilder() {
   const state: SupergraphState = {
-    graphs: new Map(),
+    subgraphs: new Map(),
     scalarTypes: new Map(),
     objectTypes: new Map(),
     interfaceTypes: new Map(),
@@ -71,24 +71,24 @@ export function createSupergraphStateBuilder() {
   const interfaceType = interfaceTypeBuilder();
   const objectType = objectTypeBuilder();
   const unionType = unionTypeBuilder();
+  const subgraphStates = new Map<string, SubgraphState>();
+
+  const graphNameToIdMap: Record<string, string | undefined> = {};
 
   return {
-    addGraph(graph: Graph) {
-      if (state.graphs.has(graph.id)) {
-        throw new Error(`Graph with ID "${graph.id}" already exists`);
+    addSubgraph(subgraph: SubgraphState) {
+      if (state.subgraphs.has(subgraph.graph.id)) {
+        throw new Error(`Graph with ID "${subgraph.graph.id}" already exists`);
       }
 
-      state.graphs.set(graph.id, {
-        id: graph.id,
-        name: graph.name,
-        url: graph.url,
-        version: graph.version,
-      });
+      state.subgraphs.set(subgraph.graph.id, subgraph);
+      graphNameToIdMap[subgraph.graph.name] = subgraph.graph.id;
     },
     getGraph(id: string) {
-      return state.graphs.get(id);
+      return state.subgraphs.get(id);
     },
     visitSubgraphState(subgraphState: SubgraphState) {
+      subgraphStates.set(subgraphState.graph.id, subgraphState);
       for (const link of subgraphState.links) {
         state.links.push(linkWithGraph(link, subgraphState.graph.id));
       }
@@ -159,17 +159,14 @@ export function createSupergraphStateBuilder() {
     getSupergraphState() {
       return state;
     },
+    getSubgraphState(graphId: string) {
+      return subgraphStates.get(graphId);
+    },
     links() {
       return mergeLinks(state.links);
     },
     build() {
       const transformFields = createFieldsTransformer(state);
-      const graphNameToIdMap: Record<string, string | undefined> = {};
-
-      for (const [id, graph] of state.graphs) {
-        graphNameToIdMap[graph.name] = id;
-      }
-
       const helpers = {
         graphNameToId(graphName: string) {
           return graphNameToIdMap[graphName] ?? null;
@@ -194,45 +191,49 @@ export function createSupergraphStateBuilder() {
       let i = 0;
 
       nodes[i++] = createJoinGraphEnumTypeNode(
-        Array.from(state.graphs.values()).map(graph => ({
-          name: graph.name,
-          enumValue: graph.id,
-          url: graph.url ?? '',
+        Array.from(state.subgraphs.values()).map(subgraph => ({
+          name: subgraph.graph.name,
+          enumValue: subgraph.graph.id,
+          url: subgraph.graph.url ?? '',
         })),
       );
 
       for (const directiveState of state.directives.values()) {
-        nodes[i++] = directive.composeSupergraphNode(directiveState, state.graphs, helpers);
+        nodes[i++] = directive.composeSupergraphNode(directiveState, state.subgraphs, helpers);
       }
 
       for (const scalarTypeState of state.scalarTypes.values()) {
-        nodes[i++] = scalarType.composeSupergraphNode(scalarTypeState, state.graphs, helpers);
+        nodes[i++] = scalarType.composeSupergraphNode(scalarTypeState, state.subgraphs, helpers);
       }
 
       for (const objectTypeState of state.objectTypes.values()) {
         nodes[i++] = objectType.composeSupergraphNode(
           transformFields(objectTypeState),
-          state.graphs,
+          state.subgraphs,
           helpers,
         );
       }
 
       for (const interfaceTypeState of state.interfaceTypes.values()) {
-        nodes[i++] = interfaceType.composeSupergraphNode(interfaceTypeState, state.graphs, helpers);
+        nodes[i++] = interfaceType.composeSupergraphNode(
+          interfaceTypeState,
+          state.subgraphs,
+          helpers,
+        );
       }
 
       for (const unionTypeState of state.unionTypes.values()) {
-        nodes[i++] = unionType.composeSupergraphNode(unionTypeState, state.graphs, helpers);
+        nodes[i++] = unionType.composeSupergraphNode(unionTypeState, state.subgraphs, helpers);
       }
 
       for (const enumTypeState of state.enumTypes.values()) {
-        nodes[i++] = enumType.composeSupergraphNode(enumTypeState, state.graphs, helpers);
+        nodes[i++] = enumType.composeSupergraphNode(enumTypeState, state.subgraphs, helpers);
       }
 
       for (const inputObjectTypeState of state.inputObjectTypes.values()) {
         nodes[i++] = inputObjectType.composeSupergraphNode(
           inputObjectTypeState,
-          state.graphs,
+          state.subgraphs,
           helpers,
         );
       }

@@ -4106,7 +4106,7 @@ testImplementations(api => {
     });
 
     test('@key(resolvable: false) should be passed to @join__type(resolvable: false)', () => {
-      const result = composeServices([
+      let result = composeServices([
         {
           name: 'products',
           typeDefs: parse(/* GraphQL */ `
@@ -4283,7 +4283,44 @@ testImplementations(api => {
       });
 
       test('on object types', () => {
-        const result = composeServices([
+        let result = composeServices([
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+              """
+              a
+              """
+              type Query {
+                a: String
+              }
+            `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+              """
+              b
+              """
+              type Query {
+                b: String
+              }
+            `),
+          },
+        ]);
+
+        assertCompositionSuccess(result);
+
+        expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+          """
+          a
+          """
+          type Query @join__type(graph: A) @join__type(graph: B) {
+            a: String @join__field(graph: A)
+            b: String @join__field(graph: B)
+          }
+        `);
+
+        result = composeServices([
           {
             name: 'reviews',
             typeDefs: parse(/* GraphQL */ `

@@ -673,6 +673,37 @@ testVersions((api, version) => {
     });
 
     test('fields of different type', () => {
+      assertCompositionSuccess(
+        api.composeServices([
+          {
+            name: 'users',
+            typeDefs: graphql`
+                schema
+                  @link(
+                    url: "https://specs.apollo.dev/federation/${version}"
+                    import: ["@external", "@key"]
+                  ) {
+                  query: Query
+                }
+
+                directive @key(
+                  fields: [String!]!
+                  resolvable: Boolean = true
+                ) repeatable on OBJECT | INTERFACE
+
+                type User @key(fields: "id") {
+                  id: ID!
+                  name: String
+                }
+
+                type Query {
+                  users: [User]
+                }
+              `,
+          },
+        ]),
+      );
+
       expect(
         api.composeServices([
           {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   describe('INVALID_FIELD_SHARING', () => {
@@ -302,6 +302,45 @@ testVersions((api, version) => {
             }),
           ]),
         }),
+      );
+
+      assertCompositionSuccess(
+        api.composeServices([
+          {
+            name: 'foo',
+            typeDefs: graphql`
+              extend type Note @key(fields: "id") {
+                id: ID!
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                foo: String!
+              }
+            `,
+          },
+          {
+            name: 'bar',
+            typeDefs: graphql`
+              extend type Note @key(fields: "id") {
+                id: ID!
+                url: String!
+              }
+
+              type Note {
+                name: String!
+              }
+
+              type Query {
+                bar: String!
+              }
+            `,
+          },
+        ]),
       );
     });
 
