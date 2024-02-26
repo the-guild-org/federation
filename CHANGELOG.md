@@ -1,5 +1,14 @@
 # @theguild/federation-composition
 
+## 0.9.0
+
+### Minor Changes
+
+- [#49](https://github.com/the-guild-org/federation/pull/49)
+  [`d6da339`](https://github.com/the-guild-org/federation/commit/d6da339adf8e1e8b71a06a60e0defb3b12ff0df8)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Adds CompositionSuccess.publicSdl - SDL
+  with only the queryable fields
+
 ## 0.8.2
 
 ### Patch Changes
