@@ -1,5 +1,6 @@
 import { GraphQLError, Kind } from 'graphql';
 import { print } from './graphql/printer.js';
+import { transformSupergraphToPublicSchema } from './graphql/transform-supergraph-to-public-schema.js';
 import { sdl as authenticatedSDL } from './specifications/authenticated.js';
 import { sdl as inaccessibleSDL } from './specifications/inaccessible.js';
 import { sdl as joinSDL } from './specifications/join.js';
@@ -59,6 +60,8 @@ export function composeServices(
   const usedRequiresScopesSpec = validationResult.specs.requiresScopes;
   const usedAuthenticatedSpec = validationResult.specs.authenticated;
 
+  let _publicSdl: string;
+
   return {
     supergraphSdl: `
 schema
@@ -101,6 +104,23 @@ ${print({
   definitions: validationResult.supergraph,
 })}
     `,
+    /**
+     *
+     */
+    get publicSdl() {
+      if (_publicSdl) {
+        return _publicSdl;
+      }
+
+      _publicSdl = print(
+        transformSupergraphToPublicSchema({
+          kind: Kind.DOCUMENT,
+          definitions: validationResult.supergraph,
+        }),
+      );
+
+      return _publicSdl;
+    },
   };
 }
 
@@ -113,6 +133,7 @@ export interface CompositionFailure {
 
 export interface CompositionSuccess {
   supergraphSdl: string;
+  publicSdl: string;
   errors?: undefined;
 }
 
