@@ -53,12 +53,31 @@ testImplementations(api => {
       }
     `);
 
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Product {
+          id: ID!
+          name: String!
+          reviews: [Review!]!
+        }
+      `);
+    }
+
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type Review @join__type(graph: REVIEWS, key: "id") {
         id: ID!
         body: String!
       }
     `);
+
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Review {
+          id: ID!
+          body: String!
+        }
+      `);
+    }
 
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type Query @join__type(graph: PRODUCTS) @join__type(graph: REVIEWS) {
@@ -67,12 +86,25 @@ testImplementations(api => {
       }
     `);
 
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Query {
+          products: [Product!]!
+          reviews: [Review!]!
+        }
+      `);
+    }
+
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       enum join__Graph {
         PRODUCTS @join__graph(name: "products", url: "")
         REVIEWS @join__graph(name: "reviews", url: "")
       }
     `);
+
+    if (api.library === 'guild') {
+      expect(result.publicSdl).not.toEqual(expect.stringContaining('join__Graph'));
+    }
   });
 
   test('composition of basic object types with @requires, @provides, @key', () => {
@@ -159,6 +191,20 @@ testImplementations(api => {
       }
     `);
 
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Product {
+          upc: String!
+          weight: Int
+          price: Int
+          inStock: Boolean
+          shippingEstimate: Int
+          name: String
+          reviews: [Review]
+        }
+      `);
+    }
+
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type User @join__type(graph: ACCOUNTS, key: "id") @join__type(graph: REVIEWS, key: "id") {
         id: ID!
@@ -168,6 +214,17 @@ testImplementations(api => {
       }
     `);
 
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type User {
+          id: ID!
+          name: String
+          username: String
+          reviews: [Review]
+        }
+      `);
+    }
+
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type Review @join__type(graph: REVIEWS, key: "id") {
         id: ID!
@@ -176,6 +233,17 @@ testImplementations(api => {
         product: Product
       }
     `);
+
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Review {
+          id: ID!
+          body: String
+          author: User
+          product: Product
+        }
+      `);
+    }
   });
 
   test('[Fed v1] set @join__type(extension: true) to types with @extends', () => {
@@ -355,6 +423,16 @@ testImplementations(api => {
         price: Int @join__field(graph: FOO)
       }
     `);
+
+    if (api.library === 'guild') {
+      expect(result.publicSdl).toContainGraphQL(/* GraphQL */ `
+        type Product {
+          id: ID!
+          variants: [Variant!]!
+          price: Int
+        }
+      `);
+    }
   });
 
   test('[Fed v1] @override', () => {
