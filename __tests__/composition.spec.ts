@@ -2983,17 +2983,6 @@ testImplementations(api => {
         return;
       }
 
-      if (api.library === 'guild') {
-        // TODO: we don't support @interfaceObject yet
-        assertCompositionFailure(result);
-        expect(result.errors).toContainEqual(
-          expect.objectContaining({
-            message: expect.stringContaining('@interfaceObject is not yet supported'),
-          }),
-        );
-        return;
-      }
-
       assertCompositionSuccess(result);
 
       // KNOW: which interface should be extended by @interfaceObject
