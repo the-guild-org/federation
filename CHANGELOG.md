@@ -1,5 +1,36 @@
 # @theguild/federation-composition
 
+## 0.10.0
+
+### Minor Changes
+
+- [#51](https://github.com/the-guild-org/federation/pull/51)
+  [`8cd5287`](https://github.com/the-guild-org/federation/commit/8cd52870faa34ca174bc31a79c41d11b66197464)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Proper implementation of
+  SATISFIABILITY_ERROR
+
+### Patch Changes
+
+- [#51](https://github.com/the-guild-org/federation/pull/51)
+  [`8cd5287`](https://github.com/the-guild-org/federation/commit/8cd52870faa34ca174bc31a79c41d11b66197464)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix REQUIRES_FIELDS_MISSING_EXTERNAL in
+  Fed v1
+
+- [#51](https://github.com/the-guild-org/federation/pull/51)
+  [`8cd5287`](https://github.com/the-guild-org/federation/commit/8cd52870faa34ca174bc31a79c41d11b66197464)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix FIELD_TYPE_MISMATCH for unions and
+  union members
+
+- [#51](https://github.com/the-guild-org/federation/pull/51)
+  [`8cd5287`](https://github.com/the-guild-org/federation/commit/8cd52870faa34ca174bc31a79c41d11b66197464)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix PROVIDES_FIELDS_MISSING_EXTERNAL in
+  Fed v1
+
+- [#51](https://github.com/the-guild-org/federation/pull/51)
+  [`8cd5287`](https://github.com/the-guild-org/federation/commit/8cd52870faa34ca174bc31a79c41d11b66197464)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix REQUIRES_INVALID_FIELDS_TYPE for
+  enum value
+
 ## 0.9.0
 
 ### Minor Changes
