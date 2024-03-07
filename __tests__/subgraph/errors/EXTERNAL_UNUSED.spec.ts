@@ -81,37 +81,36 @@ testVersions((api, version) => {
   });
 
   test('Fed v1: No EXTERNAL_UNUSED', () => {
-    assertCompositionSuccess(
-      api.composeServices([
-        {
-          name: 'b',
-          typeDefs: graphql`
-            type User @key(fields: "id") {
-              id: ID!
-              nickname: String! @external
-              age: Int!
-            }
+    const result = api.composeServices([
+      {
+        name: 'b',
+        typeDefs: graphql`
+          type User @key(fields: "id") {
+            id: ID!
+            nickname: String! @external
+            age: Int!
+          }
 
-            type Query {
-              user: User
-            }
-          `,
-        },
-        {
-          name: 'a',
-          typeDefs: graphql`
-            type Admin @key(fields: "id") {
-              id: ID!
-              age: Int!
-            }
+          type Query {
+            user: User
+          }
+        `,
+      },
+      {
+        name: 'a',
+        typeDefs: graphql`
+          type Admin @key(fields: "id") {
+            id: ID!
+            age: Int!
+          }
 
-            type Query {
-              admin: Admin
-            }
-          `,
-        },
-      ]),
-    );
+          type Query {
+            admin: Admin
+          }
+        `,
+      },
+    ]);
+    assertCompositionSuccess(result);
   });
 
   test('Fed v1: No EXTERNAL_UNUSED when @external is used on a type', () => {

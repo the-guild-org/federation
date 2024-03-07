@@ -222,8 +222,6 @@ export function validate(
     } as const;
   }
 
-  // 50x faster than Apollo (till this point)
-
   // We build the state of the supergraph as we validate the supergraph.
   // We do it for better performance (less iterations and shit like that).
   const state = createSupergraphStateBuilder();
@@ -247,12 +245,7 @@ export function validate(
     } as const;
   }
 
-  // 43x faster than Apollo (till this point)
-
   const nodes = state.build();
-
-  // 36x faster (without printing) than Apollo (till this point)
-  // 32x faster (with printing) than Apollo (till this point)
 
   return {
     success: true,

@@ -158,6 +158,7 @@ export interface Field {
   override: string | null;
   provides: string | null;
   requires: string | null;
+  extension: boolean;
   required: boolean;
   provided: boolean;
   shareable: boolean;
@@ -396,6 +397,10 @@ export function createSubgraphStateBuilder(
             node.name.value,
             printOutputType(node.type),
           );
+
+          if (typeDef.kind === Kind.OBJECT_TYPE_EXTENSION /* TODO:  || has @extends */) {
+            objectTypeBuilder.field.setExtension(typeDef.name.value, node.name.value);
+          }
 
           // In Federation v1, all fields are shareable by default, but only in object type definition.
           // Extensions are not shareable.
@@ -1063,6 +1068,9 @@ function objectTypeFactory(state: SubgraphState, renameObject: (typeName: string
       setType(typeName: string, fieldName: string, fieldType: string) {
         getOrCreateObjectField(state, renameObject, typeName, fieldName).type = fieldType;
       },
+      setExtension(typeName: string, fieldName: string) {
+        getOrCreateObjectField(state, renameObject, typeName, fieldName).extension = true;
+      },
       setDirective(typeName: string, fieldName: string, directive: DirectiveNode) {
         getOrCreateObjectField(state, renameObject, typeName, fieldName).ast.directives.push(
           directive,
@@ -1728,6 +1736,7 @@ function getOrCreateObjectField(
     external: false,
     inaccessible: false,
     authenticated: false,
+    extension: false,
     policies: [],
     scopes: [],
     used: false,
@@ -1778,6 +1787,7 @@ function getOrCreateInterfaceField(
     required: false,
     provided: false,
     shareable: false,
+    extension: false,
     tags: new Set(),
     args: new Map(),
     ast: {

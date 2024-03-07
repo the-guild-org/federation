@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('REQUIRES_FIELDS_MISSING_EXTERNAL', () => {
@@ -45,4 +45,27 @@ testVersions((api, version) => {
       }),
     );
   });
+
+  assertCompositionSuccess(
+    api.composeServices([
+      {
+        name: 'users',
+        typeDefs: graphql`
+          type Query {
+            users: [User]
+          }
+
+          type User @key(fields: "id") {
+            id: ID!
+            internalId: ID!
+            profile: Profile @requires(fields: "internalId")
+          }
+
+          type Profile {
+            name: String
+          }
+        `,
+      },
+    ]),
+  );
 });

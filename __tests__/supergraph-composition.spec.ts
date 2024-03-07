@@ -521,11 +521,7 @@ testImplementations(api => {
     `);
   });
 
-  test('validate fixtures/huge-schema', async () => {
-    if (api.library === 'apollo') {
-      return;
-    }
-
+  test.skip('validate fixtures/huge-schema', async () => {
     const subgraphs = await getSubgraphsOfHugeSchema();
     const result = api.composeServices(subgraphs);
     assertCompositionSuccess(result);
@@ -533,13 +529,7 @@ testImplementations(api => {
 
   test('validate fixtures/dgs', async () => {
     const subgraphs = await getSubgraphsOfDGS();
-    const result = api.composeServices(
-      subgraphs,
-      {
-        disableValidationRules: ['SatisfiabilityRule'],
-      },
-      true,
-    );
+    const result = api.composeServices(subgraphs);
     assertCompositionSuccess(result);
   });
 

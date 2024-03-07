@@ -178,17 +178,19 @@ export function ProvidesRules(context: SubgraphValidationContext): ASTVisitor {
           );
         },
         interceptNonExternalField(info) {
-          isValid = false;
-          context.reportError(
-            new GraphQLError(
-              `On field "${fieldCoordinate}", for @provides(fields: ${printedFieldsValue}): field "${info.typeDefinition.name.value}.${info.fieldName}" should not be part of a @provides since it is already provided by this subgraph (it is not marked @external)`,
-              {
-                extensions: {
-                  code: 'PROVIDES_FIELDS_MISSING_EXTERNAL',
+          if (context.satisfiesVersionRange('> v1.0')) {
+            isValid = false;
+            context.reportError(
+              new GraphQLError(
+                `On field "${fieldCoordinate}", for @provides(fields: ${printedFieldsValue}): field "${info.typeDefinition.name.value}.${info.fieldName}" should not be part of a @provides since it is already provided by this subgraph (it is not marked @external)`,
+                {
+                  extensions: {
+                    code: 'PROVIDES_FIELDS_MISSING_EXTERNAL',
+                  },
                 },
-              },
-            ),
-          );
+              ),
+            );
+          }
         },
         interceptExternalField(info) {
           // Oh, it hurts performance. We will fix it later. First, we need to make sure it works.

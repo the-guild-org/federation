@@ -1,4 +1,5 @@
 import { DirectiveNode } from 'graphql';
+import { FederationVersion } from '../../specifications/federation.js';
 import type { Directive } from '../../subgraph/state.js';
 import { createDirectiveNode } from './ast.js';
 import { convertToConst, MapByGraph, TypeBuilder } from './common.js';
@@ -43,12 +44,14 @@ export function directiveBuilder(): TypeBuilder<Directive, DirectiveState> {
         argState.byGraph.set(graph.id, {
           type: arg.type,
           defaultValue: arg.defaultValue,
+          version: graph.version,
         });
       }
 
       directiveState.byGraph.set(graph.id, {
         locations: directive.locations,
         repeatable: directive.repeatable,
+        version: graph.version,
       });
     },
     composeSupergraphNode(directive) {
@@ -72,6 +75,7 @@ export function directiveBuilder(): TypeBuilder<Directive, DirectiveState> {
 }
 
 export type DirectiveState = {
+  kind: 'directive';
   name: string;
   byGraph: MapByGraph<DirectiveStateInGraph>;
   locations: Set<string>;
@@ -82,6 +86,7 @@ export type DirectiveState = {
 type DirectiveStateInGraph = {
   locations: Set<string>;
   repeatable: boolean;
+  version: FederationVersion;
 };
 
 export type DirectiveArgState = {
@@ -99,6 +104,7 @@ export type DirectiveArgState = {
 type ArgStateInGraph = {
   type: string;
   defaultValue?: string;
+  version: FederationVersion;
 };
 
 function getOrCreateDirective(state: Map<string, DirectiveState>, directiveName: string) {
@@ -109,6 +115,7 @@ function getOrCreateDirective(state: Map<string, DirectiveState>, directiveName:
   }
 
   const def: DirectiveState = {
+    kind: 'directive',
     name: directiveName,
     locations: new Set(),
     byGraph: new Map(),

@@ -60,7 +60,13 @@ export function InvalidFieldSharingRule(
           }
         }
 
-        if (fieldIsShareable || fieldIsUsedAsKey) {
+        const fedV1FieldInExtension = field.version === 'v1.0' && field.extension;
+
+        if (
+          fieldIsShareable ||
+          fieldIsUsedAsKey ||
+          (objectTypeState.isEntity && fedV1FieldInExtension)
+        ) {
           resolvableIn.push(graphId);
           continue;
         }

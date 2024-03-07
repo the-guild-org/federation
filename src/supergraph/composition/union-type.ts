@@ -1,3 +1,4 @@
+import { FederationVersion } from '../../specifications/federation.js';
 import { Description, UnionType } from '../../subgraph/state.js';
 import { createUnionTypeNode } from './ast.js';
 import type { MapByGraph, TypeBuilder } from './common.js';
@@ -24,6 +25,7 @@ export function unionTypeBuilder(): TypeBuilder<UnionType, UnionTypeState> {
 
       unionTypeState.byGraph.set(graph.id, {
         members: type.members,
+        version: graph.version,
       });
 
       for (const member of type.members) {
@@ -54,6 +56,7 @@ export function unionTypeBuilder(): TypeBuilder<UnionType, UnionTypeState> {
 }
 
 export type UnionTypeState = {
+  kind: 'union';
   name: string;
   tags: Set<string>;
   hasDefinition: boolean;
@@ -65,6 +68,7 @@ export type UnionTypeState = {
 
 type UnionTypeInGraph = {
   members: Set<string>;
+  version: FederationVersion;
 };
 
 function getOrCreateUnionType(state: Map<string, UnionTypeState>, typeName: string) {
@@ -75,6 +79,7 @@ function getOrCreateUnionType(state: Map<string, UnionTypeState>, typeName: stri
   }
 
   const def: UnionTypeState = {
+    kind: 'union',
     name: typeName,
     members: new Set(),
     tags: new Set(),

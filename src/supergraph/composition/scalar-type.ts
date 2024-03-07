@@ -1,4 +1,5 @@
 import { DirectiveNode } from 'graphql';
+import { FederationVersion } from '../../specifications/federation.js';
 import { Description, ScalarType } from '../../subgraph/state.js';
 import { createScalarTypeNode } from './ast.js';
 import { convertToConst, MapByGraph, TypeBuilder } from './common.js';
@@ -40,6 +41,7 @@ export function scalarTypeBuilder(): TypeBuilder<ScalarType, ScalarTypeState> {
 
       scalarTypeState.byGraph.set(graph.id, {
         inaccessible: type.inaccessible,
+        version: graph.version,
       });
     },
     composeSupergraphNode(scalarType: ScalarTypeState) {
@@ -66,6 +68,7 @@ export function scalarTypeBuilder(): TypeBuilder<ScalarType, ScalarTypeState> {
 }
 
 export type ScalarTypeState = {
+  kind: 'scalar';
   name: string;
   tags: Set<string>;
   inaccessible: boolean;
@@ -82,6 +85,7 @@ export type ScalarTypeState = {
 
 type ScalarTypeStateInGraph = {
   inaccessible: boolean;
+  version: FederationVersion;
 };
 
 function getOrCreateScalarType(state: Map<string, ScalarTypeState>, typeName: string) {
@@ -92,6 +96,7 @@ function getOrCreateScalarType(state: Map<string, ScalarTypeState>, typeName: st
   }
 
   const def: ScalarTypeState = {
+    kind: 'scalar',
     name: typeName,
     tags: new Set(),
     inaccessible: false,

@@ -37,7 +37,7 @@ export function validateSupergraph(
   const context = createSupergraphValidationContext(subgraphStates);
 
   for (const subgraphState of subgraphStates.values()) {
-    state.addGraph(subgraphState.graph);
+    state.addSubgraph(subgraphState);
   }
 
   const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule];

@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql';
+import { TypeKind } from '../../../subgraph/state.js';
 import { SupergraphVisitorMap } from '../../composition/visitor.js';
 import { SupergraphValidationContext } from '../validation-context.js';
 
@@ -73,8 +74,32 @@ export function FieldsOfTheSameTypeRule(
   return {
     ObjectTypeField(objectTypeState, fieldState) {
       const typeToGraphs = new Map<string, string[]>();
+      const typeNameToPossibleTypeNames = new Map<string, Set<string>>();
 
       fieldState.byGraph.forEach((field, graphName) => {
+        const typeName = field.type.replaceAll('!', '').replaceAll('[', '').replaceAll(']', '');
+        const typeState = context.subgraphStates.get(graphName)?.types.get(typeName);
+
+        if (typeState?.kind === TypeKind.UNION) {
+          if (!typeNameToPossibleTypeNames.has(typeName)) {
+            typeNameToPossibleTypeNames.set(typeName, new Set());
+          }
+          const list = typeNameToPossibleTypeNames.get(typeName)!;
+
+          typeState.members.forEach(member => {
+            list.add(member);
+          });
+        } else if (typeState?.kind === TypeKind.INTERFACE) {
+          if (!typeNameToPossibleTypeNames.has(typeName)) {
+            typeNameToPossibleTypeNames.set(typeName, new Set());
+          }
+          const list = typeNameToPossibleTypeNames.get(typeName)!;
+
+          typeState.implementedBy.forEach(member => {
+            list.add(member);
+          });
+        }
+
         const normalizedOutputTypes = normalizeOutputTypeStrings({
           superType: fieldState.type,
           localType: field.type,
@@ -93,6 +118,25 @@ export function FieldsOfTheSameTypeRule(
       });
 
       if (typeToGraphs.size > 1) {
+        if (typeNameToPossibleTypeNames.size === 1) {
+          const possibleTypeNames: string[] = [];
+
+          typeNameToPossibleTypeNames.forEach((list, unionOrInterfaceName) => {
+            possibleTypeNames.push(unionOrInterfaceName);
+            for (const typeName of list) {
+              possibleTypeNames.push(typeName);
+            }
+          });
+
+          const outputTypeNames = Array.from(typeToGraphs.keys()).map(t =>
+            t.replaceAll('!', '').replaceAll('[', '').replaceAll(']', ''),
+          );
+
+          if (outputTypeNames.every(t => possibleTypeNames.includes(t))) {
+            return;
+          }
+        }
+
         const groups = Array.from(typeToGraphs.entries()).map(([outputType, graphs]) => {
           const plural = graphs.length > 1 ? 's' : '';
           return `type "${outputType}" in subgraph${plural} "${graphs
@@ -100,6 +144,7 @@ export function FieldsOfTheSameTypeRule(
             .join('", "')}"`;
         });
         const [first, second, ...rest] = groups;
+
         context.reportError(
           new GraphQLError(
             `Type of field "${objectTypeState.name}.${
