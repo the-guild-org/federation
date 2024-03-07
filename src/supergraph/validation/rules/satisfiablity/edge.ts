@@ -1,4 +1,5 @@
 import { SatisfiabilityError } from './errors';
+import { lazy } from './helpers';
 import { AbstractMove, EntityMove, FieldMove, Move } from './moves';
 import { Node } from './node';
 
@@ -43,7 +44,8 @@ export function assertFieldEdge(edge: Edge): asserts edge is Edge<FieldMove> {
 }
 
 export class Edge<T = Move> {
-  private resolvable: EdgeResolvabilityResult | undefined;
+  private resolvable: Array<[string[], EdgeResolvabilityResult]> = [];
+  private _toString = lazy(() => `${this.head} -(${this.move})-> ${this.tail}`);
 
   constructor(
     public head: Node,
@@ -56,25 +58,28 @@ export class Edge<T = Move> {
   }
 
   toString() {
-    return `${this.head} -(${this.move})-> ${this.tail}`;
+    return this._toString.get();
   }
 
-  isChecked() {
-    return typeof this.resolvable !== 'undefined';
+  getResolvability(graphNames: string[]) {
+    return this.resolvable.find(([checkedGraphNames]) => {
+      return checkedGraphNames.every(name => graphNames.includes(name));
+    })?.[1];
   }
 
-  isResolvable() {
-    if (this.resolvable === undefined) {
-      throw new Error('Expected resolvable to be set');
-    }
-
-    return this.resolvable;
-  }
-
-  setResolvable(success: true): EdgeResolvabilityResult;
-  setResolvable(success: false, error: SatisfiabilityError): EdgeResolvabilityResult;
-  setResolvable(success: boolean, error?: SatisfiabilityError): EdgeResolvabilityResult {
-    this.resolvable = success ? { success, error: undefined } : { success, error: error! };
-    return this.resolvable;
+  setResolvable(success: true, graphNames: string[]): EdgeResolvabilityResult;
+  setResolvable(
+    success: false,
+    graphNames: string[],
+    error: SatisfiabilityError,
+  ): EdgeResolvabilityResult;
+  setResolvable(
+    success: boolean,
+    graphNames: string[],
+    error?: SatisfiabilityError,
+  ): EdgeResolvabilityResult {
+    const result = success ? { success, error: undefined } : { success, error: error! };
+    this.resolvable.push([graphNames, result]);
+    return result;
   }
 }

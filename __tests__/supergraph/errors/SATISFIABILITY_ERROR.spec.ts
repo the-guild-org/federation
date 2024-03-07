@@ -2657,7 +2657,7 @@ testVersions((api, version) => {
           type ProductList @key(fields: "products{id pid}") {
             products: [Product!]!
             first: Product @shareable
-            selected: Product @shareable
+            last: Product @shareable
           }
 
           type Product @key(fields: "id pid") {
@@ -2672,10 +2672,10 @@ testVersions((api, version) => {
             extend schema
               @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key", "@shareable"])
 
-            type ProductList @key(fields: "products{id pid category{id tag}} selected{id}") {
+            type ProductList @key(fields: "products{id pid category{id tag}} last{id}") {
               products: [Product!]!
               first: Product @shareable
-              selected: Product @shareable
+              last: Product @shareable
             }
 
             type Product @key(fields: "id pid category{id tag}") {
@@ -2834,7 +2834,42 @@ testVersions((api, version) => {
     );
   });
 
-  test('Fed1: @external and @extends', () => {
+  test('Fed1: @external and @extends/extend', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            type Query {
+              randomUser: User
+            }
+
+            extend type User @key(fields: "id") {
+              id: ID! @external
+            }
+
+            extend type User {
+              name: String! @external
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            type Query {
+              userById(id: ID): User
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+              nickname: String
+            }
+          `,
+        },
+      ]),
+    );
+
     assertCompositionSuccess(
       api.composeServices([
         {
@@ -2866,5 +2901,607 @@ testVersions((api, version) => {
         },
       ]),
     );
+  });
+
+  test('@requires with interface field', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            type Query {
+              userFromA(id: ID): User
+            }
+
+            interface Address {
+              id: ID!
+            }
+
+            type HomeAddress implements Address @key(fields: "id") {
+              id: ID!
+              city: String
+            }
+
+            type WorkAddress implements Address @key(fields: "id") {
+              id: ID!
+              city: String
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+              address: Address @external
+              city: String @requires(fields: "address { id }")
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            type Query {
+              userFromB(id: ID): User
+            }
+
+            interface Address {
+              id: ID!
+            }
+
+            type HomeAddress implements Address @key(fields: "id") {
+              id: ID!
+              city: String
+            }
+
+            type WorkAddress implements Address @key(fields: "id") {
+              id: ID!
+              city: String
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+              address: Address
+              city: String @requires(fields: "address { id }")
+            }
+          `,
+        },
+      ]),
+    );
+  });
+
+  test('@requires with a lot of nested entities', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+            type Publisher @key(fields: "id", resolvable: false) {
+              id: ID!
+            }
+
+            type Details @key(fields: "id") {
+              publisher: Publisher!
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+            type Publisher @key(fields: "id") {
+              id: ID!
+              books: [Book!]!
+            }
+
+            type Book @key(fields: "id", resolvable: false) {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'c',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+            type Book @key(fields: "id") {
+              id: ID!
+              genres: [Genre!]!
+            }
+
+            type Genre {
+              details: Details!
+              name: String
+            }
+
+            type Details @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'd',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.0"
+                import: ["@key", "@requires", "@external"]
+              )
+
+            type Query {
+              noop: String
+            }
+
+            type Mutation {
+              order: Book!
+            }
+
+            type Genre {
+              name: String @external
+            }
+
+            type Book @key(fields: "id") {
+              id: ID!
+              genres: [Genre!]! @external
+              price: Float @requires(fields: "genres { name }")
+            }
+          `,
+        },
+      ]),
+    );
+
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id isbn author{id name}") {
+            id: ID!
+            isbn: ID
+            author: Author
+          }
+
+          type Author @key(fields: "id name") {
+            id: ID!
+            name: String
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id") @key(fields: "id isbn title") {
+            id: ID!
+            isbn: ID
+            title: String
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@shareable"]
+            )
+
+          type Author @key(fields: "id") {
+            id: ID!
+            name: String @shareable
+          }
+
+          type Book @key(fields: "id") {
+            author: Author @shareable
+            id: ID! @external
+          }
+
+          type Query {
+            books: [Book]!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors[0].message).toEqual(expect.stringContaining('"Book.id"'));
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id isbn author{id name}") {
+            id: ID!
+            isbn: ID
+            author: Author
+          }
+
+          type BookList @key(fields: "books{id isbn author{id name nickname}} last{id}") {
+            books: [Book!]!
+            first: Book @shareable
+            last: Book @shareable
+            related: BookList!
+          }
+
+          type Author @key(fields: "id name") {
+            id: ID!
+            name: String
+            nickname: String
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id") @key(fields: "id isbn title") @key(fields: "id publisher") {
+            id: ID!
+            isbn: ID
+            title: String
+            publisher: String
+          }
+
+          type BookList
+            @key(fields: "books{id publisher} last{id}")
+            @key(fields: "books{id isbn title}") {
+            books: [Book!]!
+            first: Book @shareable
+            groupBy: [BookList!]!
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@shareable"]
+            )
+
+          type Author @key(fields: "id") {
+            id: ID!
+            name: String @shareable
+          }
+
+          type Book @key(fields: "id") {
+            author: Author @shareable
+            id: ID! @external
+          }
+
+          type BookList @key(fields: "books{id}") {
+            books: [Book!]!
+            first: Book @shareable
+          }
+
+          type Query {
+            books: [Book]!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+    expect(result.errors[0].message).toEqual(expect.stringContaining('"Book.id"'));
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id title isbn") {
+            id: ID!
+            title: String
+            isbn: String
+          }
+
+          type BookList @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id isbn author{id name country}") {
+            id: ID!
+            isbn: String
+            author: Author
+          }
+
+          type BookList @key(fields: "books{id isbn author{id name country}} last{id}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+
+          type Author @key(fields: "id name country") {
+            name: String!
+            country: String
+            id: ID
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id") @key(fields: "id publisher") @key(fields: "id title isbn") {
+            id: ID!
+            publisher: String
+            title: String
+            isbn: String
+          }
+
+          type BookList @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            fav: Book
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'd',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@extends", "@shareable"]
+            )
+
+          type Author @key(fields: "id name") {
+            name: String!
+            country: String @shareable
+            id: ID!
+          }
+
+          type Book @extends @key(fields: "id") {
+            author: Author @shareable
+            id: ID! @external
+          }
+
+          type BookList @key(fields: "books{id}") {
+            books: [Book!]!
+          }
+
+          type Query {
+            allBooks: BookList!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('"BookList.fav"'),
+      }),
+    );
+    expect(result.errors).toHaveLength(1);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id title isbn") {
+            id: ID!
+            title: String
+            isbn: String
+          }
+
+          type BookList @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id isbn author{id name country}") {
+            id: ID!
+            isbn: String
+            author: Author
+          }
+
+          type BookList @key(fields: "books{id isbn author{id name country}} last{id}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+
+          type Author @key(fields: "id name country") {
+            name: String!
+            country: String
+            id: ID
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id") @key(fields: "id publisher") @key(fields: "id title isbn") {
+            id: ID!
+            publisher: String
+            title: String
+            isbn: String
+          }
+
+          type BookList
+            @key(fields: "books{id publisher} last{id}")
+            @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            fav: Book
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'd',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@extends", "@shareable"]
+            )
+
+          type Author @key(fields: "id name") {
+            name: String!
+            country: String @shareable
+            id: ID!
+          }
+
+          type Book @extends @key(fields: "id") {
+            author: Author @shareable
+            id: ID! @external
+          }
+
+          type BookList @key(fields: "books{id}") {
+            books: [Book!]!
+          }
+
+          type Query {
+            books: BookList!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('"BookList.fav"'),
+      }),
+    );
+    expect(result.errors).toHaveLength(1);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id title isbn") {
+            id: ID!
+            title: String
+            isbn: String
+          }
+
+          type BookList @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@extends", "@shareable"]
+            )
+
+          type Book @extends @key(fields: "id publisher") {
+            id: ID! @external
+            publisher: String
+          }
+
+          type BookList @key(fields: "books{id publisher} last{id}") {
+            books: [Book!]!
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+          type Book @key(fields: "id") @key(fields: "id publisher") @key(fields: "id title isbn") {
+            id: ID!
+            publisher: String
+            title: String
+            isbn: String
+          }
+
+          type BookList
+            @key(fields: "books{id publisher} last{id}")
+            @key(fields: "books{id title isbn}") {
+            books: [Book!]!
+            fav: Book
+            last: Book @shareable
+          }
+        `,
+      },
+      {
+        name: 'd',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.0"
+              import: ["@key", "@external", "@extends", "@shareable"]
+            )
+
+          type Author @key(fields: "id name") {
+            name: String!
+            country: String @shareable
+            id: String!
+          }
+
+          type Book @extends @key(fields: "id") {
+            author: Author @shareable
+            id: ID! @external
+          }
+
+          type BookList @key(fields: "books{id}") {
+            books: [Book!]!
+          }
+
+          type Query {
+            allBooks: BookList!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('"BookList.fav"'),
+      }),
+    );
+    expect(result.errors).toHaveLength(1);
   });
 });

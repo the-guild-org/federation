@@ -1,9 +1,26 @@
 import type { Logger } from '../../../../utils/logger';
 import { Edge, isAbstractEdge, isEntityEdge, isFieldEdge } from './edge';
 import { SatisfiabilityError } from './errors';
+import { Fields } from './fields';
 import type { Graph } from './graph';
 import type { MoveValidator } from './move-validator';
 import type { OperationPath } from './operation-path';
+
+export function concatIfNotExistsString(list: string[], item: string): string[] {
+  if (list.includes(item)) {
+    return list;
+  }
+
+  return list.concat(item);
+}
+
+export function concatIfNotExistsFields(list: Fields[], item: Fields): Fields[] {
+  if (list.some(f => f.equals(item))) {
+    return list;
+  }
+
+  return list.concat(item);
+}
 
 type PathFinderResult =
   | {
@@ -36,7 +53,7 @@ export class PathFinder {
     const isFieldTarget = fieldName !== null;
     const id = isFieldTarget ? `${typeName}.${fieldName}` : `... on ${typeName}`;
 
-    this.logger.group(() => 'Finding direct paths to ' + id + ' from: ' + tail);
+    this.logger.group(() => 'Direct paths to ' + id + ' from: ' + tail);
 
     const edges = isFieldTarget
       ? this.graph.fieldEdgesOfHead(tail, fieldName)
@@ -49,11 +66,6 @@ export class PathFinder {
       this.logger.group(() => 'Checking #' + i++ + ' ' + edge);
       if (edge.isCrossGraphEdge()) {
         this.logger.groupEnd(() => 'Cross graph edge: ' + edge);
-        continue;
-      }
-
-      if (path.isVisitedEdge(edge)) {
-        this.logger.groupEnd(() => 'Already visited: ' + edge);
         continue;
       }
 
@@ -77,7 +89,7 @@ export class PathFinder {
         edge.move.typeName === typeName &&
         edge.move.fieldName === fieldName
       ) {
-        const resolvable = this.moveValidator.isEdgeResolvable(edge, path, []);
+        const resolvable = this.moveValidator.isEdgeResolvable(edge, path, [], [], []);
         if (!resolvable.success) {
           errors.push(resolvable.error);
           this.logger.groupEnd(() => 'Not resolvable: ' + edge);
@@ -164,6 +176,8 @@ export class PathFinder {
     typeName: string,
     fieldName: string | null,
     visitedEdges: Edge[],
+    visitedGraphs: string[],
+    visitedFields: Fields[],
   ): PathFinderResult {
     const errors: SatisfiabilityError[] = [];
     const tail = path.tail() ?? path.rootNode();
@@ -171,20 +185,21 @@ export class PathFinder {
     const isFieldTarget = fieldName !== null;
     const id = isFieldTarget ? `${typeName}.${fieldName}` : `... on ${typeName}`;
 
-    this.logger.group(() => 'Finding indirect paths to ' + id + ' from: ' + tail);
+    this.logger.group(() => 'Indirect paths to ' + id + ' from: ' + tail);
 
-    const queue: OperationPath[] = [path];
+    const queue: [string[], Fields[], OperationPath][] = [[visitedGraphs, visitedFields, path]];
     const finalPaths: OperationPath[] = [];
     const shortestPathPerGraph = new Map<string, OperationPath>();
     const edgesToIgnore: Edge[] = visitedEdges.slice();
 
     while (queue.length > 0) {
-      const path = queue.pop();
+      const item = queue.pop();
 
-      if (!path) {
+      if (!item) {
         throw new Error('Unexpected end of queue');
       }
 
+      const [visitedGraphs, visitedFields, path] = item;
       const tail = path.tail() ?? path.rootNode();
       const edges = this.graph.crossGraphEdgesOfHead(tail);
 
@@ -195,10 +210,15 @@ export class PathFinder {
 
       this.logger.log(() => 'At path: ' + path);
       this.logger.log(() => 'Checking ' + edges.length + ' edges');
-      this.logger.log(() => 'Paths in queue: ' + queue.length);
       let i = 0;
       for (const edge of edges) {
         this.logger.group(() => 'Checking #' + i++ + ' ' + edge);
+        this.logger.log(() => 'Visited graphs: ' + visitedGraphs.join(','));
+
+        if (visitedGraphs.includes(edge.tail.graphName)) {
+          this.logger.groupEnd(() => 'Ignore: already visited graph');
+          continue;
+        }
 
         if (!edge.isCrossGraphEdge()) {
           this.logger.groupEnd(() => 'Not cross-graph edge');
@@ -218,14 +238,25 @@ export class PathFinder {
         }
 
         if (isFieldTarget && isEntityEdge(edge)) {
-          if (path.isVisitedEdge(edge)) {
-            this.logger.groupEnd(() => 'Already visited');
+          if (visitedFields.some(f => f.equals(edge.move.keyFields))) {
+            // A huge win for performance, is when you do less work :D
+            // We can ignore an edge that has already been visited with the same key fields / requirements.
+            // The way entity-move edges are created, where every graph points to every other graph:
+            //  Graph A: User @key(id) @key(name)
+            //  Graph B: User @key(id)
+            //  Edges in a merged graph:
+            //    - User/A @key(id) -> User/B
+            //    - User/B @key(id) -> User/A
+            //    - User/B @key(name) -> User/A
+            // Allows us to ignore an edge with the same key fields.
+            // That's because in some other path, we will or already have checked the other edge.
+            this.logger.groupEnd(() => 'Ignore: already visited fields');
             continue;
           }
 
           const shortestPathToThisGraph = shortestPathPerGraph.get(edge.tail.graphName);
           if (shortestPathToThisGraph && shortestPathToThisGraph.depth() <= path.depth()) {
-            this.logger.groupEnd(() => '1 Already found a shorter path');
+            this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
             continue;
           }
 
@@ -233,6 +264,8 @@ export class PathFinder {
             edge,
             path,
             edgesToIgnore.concat(edge),
+            visitedGraphs,
+            visitedFields,
           );
 
           if (!resolvable.success) {
@@ -243,11 +276,9 @@ export class PathFinder {
 
           const newPath = path.clone().move(edge);
 
-          if (!newPath.isPossible()) {
-            this.logger.groupEnd(() => 'Not resolvable: circular path');
-            continue;
-          }
-
+          this.logger.log(
+            () => 'From indirect path, look for direct paths to ' + id + ' from: ' + edge,
+          );
           const direct = this.findDirectPaths(newPath, typeName, fieldName, [edge]);
 
           if (direct.success) {
@@ -261,18 +292,15 @@ export class PathFinder {
 
           errors.push(...direct.errors);
 
-          if (newPath.isPossible()) {
-            this.logger.log(() => 'Adding to queue: ' + newPath);
+          setShortest(newPath, shortestPathPerGraph);
 
-            const shortest = shortestPathPerGraph.get(edge.tail.graphName);
-
-            if (!shortest || shortest.depth() > newPath.depth()) {
-              shortestPathPerGraph.set(edge.tail.graphName, newPath);
-            }
-
-            queue.push(newPath);
-          }
-          this.logger.groupEnd(() => 'Not resolvable: ' + edge);
+          queue.push([
+            concatIfNotExistsString(visitedGraphs, edge.tail.graphName),
+            concatIfNotExistsFields(visitedFields, edge.move.keyFields),
+            newPath,
+          ]);
+          this.logger.log(() => 'Did not find direct paths');
+          this.logger.groupEnd(() => 'Adding to queue: ' + newPath);
         } else if (isFieldTarget && isFieldEdge(edge)) {
           this.logger.log(() => 'Cross graph field move:' + edge.move);
           if (path.isVisitedEdge(edge)) {
@@ -286,10 +314,20 @@ export class PathFinder {
             continue;
           }
 
+          if (edge.move.requires && visitedFields.some(f => f.equals(edge.move.requires!))) {
+            // double check if we should ignore it for non field target
+            this.logger.groupEnd(() => 'Ignore: already visited fields');
+            continue;
+          }
+
           const resolvable = this.moveValidator.isEdgeResolvable(
             edge,
             path,
             visitedEdges.concat(edge),
+            visitedGraphs,
+            edge.move.requires
+              ? concatIfNotExistsFields(visitedFields, edge.move.requires)
+              : visitedFields,
           );
 
           if (!resolvable.success) {
@@ -298,21 +336,16 @@ export class PathFinder {
             continue;
           }
 
-          const shortest = shortestPathPerGraph.get(edge.tail.graphName);
-          const newPath = path.clone().move(edge);
-
-          if (!shortest || shortest.depth() > newPath.depth()) {
-            shortestPathPerGraph.set(edge.tail.graphName, newPath);
-          }
+          setShortest(path.clone().move(edge), shortestPathPerGraph);
           this.logger.groupEnd(() => 'Resolvable: ' + edge);
         } else if (!isFieldTarget && isAbstractEdge(edge)) {
           if (shortestPathPerGraph.has(edge.tail.graphName)) {
-            this.logger.groupEnd(() => '2 Already found a shorter path');
+            this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
             continue;
           }
 
           const newPath = path.clone().move(edge);
-          shortestPathPerGraph.set(edge.tail.graphName, newPath);
+          setShortest(newPath, shortestPathPerGraph);
           finalPaths.push(newPath);
           this.logger.groupEnd(() => 'Resolvable');
         } else {
@@ -336,5 +369,19 @@ export class PathFinder {
       paths: finalPaths,
       errors: undefined,
     };
+  }
+}
+
+function setShortest(path: OperationPath, shortestPathPerGraph: Map<string, OperationPath>) {
+  const edge = path.edge();
+
+  if (!edge) {
+    throw new Error('Unexpected end of path');
+  }
+
+  const shortest = shortestPathPerGraph.get(edge.tail.graphName);
+
+  if (!shortest || shortest.depth() > path.depth()) {
+    shortestPathPerGraph.set(edge.tail.graphName, path);
   }
 }

@@ -32,10 +32,42 @@ export function printLink(link: Link): string {
         },
         value: {
           kind: Kind.LIST,
-          values: link.imports.map(im => ({
-            kind: Kind.STRING,
-            value: im.name,
-          })),
+          values: link.imports.map(im => {
+            if (!im.alias) {
+              return {
+                kind: Kind.STRING,
+                value: im.name,
+              };
+            }
+
+            return {
+              kind: Kind.OBJECT,
+              fields: [
+                {
+                  kind: Kind.OBJECT_FIELD,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'name',
+                  },
+                  value: {
+                    kind: Kind.STRING,
+                    value: im.name,
+                  },
+                },
+                {
+                  kind: Kind.OBJECT_FIELD,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'as',
+                  },
+                  value: {
+                    kind: Kind.STRING,
+                    value: im.alias,
+                  },
+                },
+              ],
+            };
+          }),
         },
       },
     ],
@@ -239,7 +271,11 @@ export function mergeLinks(links: readonly Link[]): readonly Link[] {
   return Array.from(groupByIdentity.entries()).map(([identity, link]) => ({
     identity,
     version: link.highestVersion,
-    imports: Array.from(link.imports).map(link => ({ kind: link.kind, name: link.name })),
+    imports: Array.from(link.imports).map(link => ({
+      kind: link.kind,
+      name: link.name,
+      alias: link.alias,
+    })),
     name: link.name,
   }));
 }

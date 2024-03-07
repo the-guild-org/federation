@@ -1,5 +1,3 @@
-import type { OperationPath } from './operation-path';
-
 export function occurrences(str: string, subString: string) {
   if (subString.length <= 0) {
     return str.length + 1;
@@ -26,14 +24,19 @@ export function scoreKeyFields(keyFields: string) {
   return fields + innerSelectionSets;
 }
 
-export function isShortestPathToTail(currentPath: OperationPath, paths: OperationPath[]): boolean {
-  for (let i = 0; i < paths.length; i++) {
-    const path = paths[i];
+export function lazy(factory: () => string) {
+  let value: string | undefined;
 
-    if (path.depth() <= currentPath.depth() && path.tail() === currentPath.tail()) {
-      return false;
-    }
-  }
+  return {
+    get() {
+      if (value === undefined) {
+        value = factory();
+      }
 
-  return true;
+      return value;
+    },
+    invalidate() {
+      value = undefined;
+    },
+  };
 }

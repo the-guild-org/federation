@@ -5,18 +5,26 @@ import {
   GraphQLError,
   InterfaceTypeDefinitionNode,
   InterfaceTypeExtensionNode,
+  isTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
+  parse,
   specifiedScalarTypes,
   TypeDefinitionNode,
   TypeExtensionNode,
 } from 'graphql';
 import { TypeNodeInfo } from '../../graphql/type-node-info.js';
 import { createSpecSchema, FederationVersion } from '../../specifications/federation.js';
-import { LinkImport } from '../../specifications/link.js';
+import { LinkImport, sdl as linkSpecSdl } from '../../specifications/link.js';
 import { stripTypeModifiers } from '../../utils/state.js';
 import { TypeKind, type SubgraphStateBuilder } from '../state.js';
+
+const linkSpec = parse(linkSpecSdl);
+const linkSpecDirectives = linkSpec.definitions.filter(
+  (def): def is DirectiveDefinitionNode => def.kind === Kind.DIRECTIVE_DEFINITION,
+);
+const linkSpecTypes = linkSpec.definitions.filter(isTypeDefinitionNode);
 
 export type SubgraphValidationContext = ReturnType<typeof createSubgraphValidationContext>;
 export type SimpleValidationContext = ReturnType<typeof createSimpleValidationContext>;
@@ -256,6 +264,12 @@ export function createSubgraphValidationContext(
 
   return {
     stateBuilder,
+    isLinkSpecDirective(name: string) {
+      return linkSpecDirectives.some(d => d.name.value === name);
+    },
+    isLinkSpecType(name: string) {
+      return linkSpecTypes.some(t => t.name.value === name);
+    },
     /**
      * Check if a type is available to the subgraph (either imported directly or available out of the box).
      */

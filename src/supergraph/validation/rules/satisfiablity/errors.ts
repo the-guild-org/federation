@@ -5,8 +5,7 @@ type SatisfiabilityErrorKind =
   | 'REQUIRE' // cannot satisfy @require conditions on field "User.name".
   | 'EXTERNAL' // field "User.name" is not resolvable because marked @external
   | 'MISSING_FIELD' // cannot find field "User.name".
-  | 'NO_KEY' // cannot move to subgraph "X", which has field "User.name", because type "User" has no @key defined in subgraph "Y".
-  | 'IGNORED'; // error to be ignored (yes, our logic is AMAZING)
+  | 'NO_KEY'; // cannot move to subgraph "X", which has field "User.name", because type "User" has no @key defined in subgraph "Y".
 
 export class SatisfiabilityError extends Error {
   static forKey(
@@ -80,17 +79,6 @@ export class SatisfiabilityError extends Error {
       `cannot move to subgraph "${targetGraphName}", which has field "${typeName}.${fieldName}", because type "${typeName}" has no @key defined in subgraph "${targetGraphName}".`,
     );
   }
-
-  static ignored(edge: Edge): SatisfiabilityError {
-    return new SatisfiabilityError(
-      'IGNORED',
-      edge.head.graphName,
-      edge.head.typeName,
-      null,
-      'ignored',
-    );
-  }
-
   private constructor(
     public kind: SatisfiabilityErrorKind,
     public sourceGraphName: string,
@@ -99,10 +87,6 @@ export class SatisfiabilityError extends Error {
     message: string,
   ) {
     super(message);
-  }
-
-  isIgnored() {
-    return this.kind === 'IGNORED';
   }
 
   isMatchingField(typeName: string, fieldName: string) {
@@ -115,5 +99,9 @@ export class SatisfiabilityError extends Error {
     }
 
     return true;
+  }
+
+  toString() {
+    return this.message;
   }
 }

@@ -224,7 +224,7 @@ export function validateSubgraph(
   );
 
   // validate built subgraph state
-  const subgraphStateErrors = validateSubgraphState(stateBuilder.state);
+  const subgraphStateErrors = validateSubgraphState(stateBuilder.state, validationContext);
 
   const simpleValidationContext = createSimpleValidationContext(fullTypeDefs, typeNodeInfo);
 
@@ -474,7 +474,11 @@ function cleanSubgraphTypeDefsFromSubgraphSpec(typeDefs: DocumentNode) {
       .value ?? 'Query';
 
   (typeDefs.definitions as unknown as DefinitionNode[]) = typeDefs.definitions.filter(def => {
-    if (def.kind === Kind.SCALAR_TYPE_DEFINITION && def.name.value === '_Any') {
+    if (
+      (def.kind === Kind.SCALAR_TYPE_DEFINITION ||
+        def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) &&
+      def.name.value === '_Any'
+    ) {
       return false;
     }
 

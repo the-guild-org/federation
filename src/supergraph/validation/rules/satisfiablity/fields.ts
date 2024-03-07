@@ -26,6 +26,50 @@ export class Fields {
     return this._contains(typeName, fieldName, this.fields);
   }
 
+  equals(other: Fields) {
+    if (this.typeName !== other.typeName) {
+      return false;
+    }
+
+    if (this.source === other.source) {
+      return true;
+    }
+
+    return this._fieldsEqual(this.fields, other.fields);
+  }
+
+  private _fieldsEqual(fields: Field[], otherFields: Field[]): boolean {
+    if (fields.length !== otherFields.length) {
+      return false;
+    }
+
+    for (let i = 0; i < fields.length; i++) {
+      // Fields are sorted by typeName and fieldName, so we can compare them directly.
+      // See: FieldsResolver#sortFields
+      const field = fields[i];
+      const otherField = otherFields[i];
+
+      // Compare typeName and fieldName
+      if (field.typeName !== otherField.typeName || field.fieldName !== otherField.fieldName) {
+        return false;
+      }
+
+      const areEqual =
+        // Compare selectionSet if both are arrays
+        // Otherwise, compare nullability of selectionSet
+        Array.isArray(field.selectionSet) && Array.isArray(otherField.selectionSet)
+          ? this._fieldsEqual(field.selectionSet, otherField.selectionSet)
+          : field.selectionSet === otherField.selectionSet;
+
+      // Avoid unnecessary iterations if we already know that fields are not equal
+      if (!areEqual) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private _contains(typeName: string, fieldName: string, fields: Field[]): boolean {
     return fields.some(
       f =>
@@ -153,6 +197,12 @@ export class FieldsResolver {
       }
     }
 
-    return fields;
+    return this.sortFields(fields);
+  }
+
+  private sortFields(fields: Field[]) {
+    return fields.sort((a, b) =>
+      `${a.typeName}.${a.fieldName}`.localeCompare(`${b.typeName}.${b.fieldName}`),
+    );
   }
 }

@@ -3,8 +3,10 @@ import type { InterfaceTypeState } from '../../../composition/interface-type';
 import type { ObjectTypeState } from '../../../composition/object-type';
 import type { ScalarTypeState } from '../../../composition/scalar-type';
 import type { UnionTypeState } from '../../../composition/union-type';
+import { lazy } from './helpers';
 
 export class Node {
+  private _toString = lazy(() => `${this.typeName}/${this.graphName}`);
   public isLeaf = false;
   private childrenIndex = new Map<string, number[]>();
   /**
@@ -111,6 +113,6 @@ export class Node {
   }
 
   toString() {
-    return `${this.typeName}/${this.graphName}`;
+    return this._toString.get();
   }
 }

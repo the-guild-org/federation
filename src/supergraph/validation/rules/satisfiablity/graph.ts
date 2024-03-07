@@ -634,6 +634,18 @@ export class Graph {
     return this.edgesByTailTypeIndex[tail.index]?.filter(e => e.tail === tail) ?? [];
   }
 
+  possibleTypesOf(typeName: string) {
+    if (this.supergraphState.interfaceTypes.has(typeName)) {
+      return Array.from(this.supergraphState.interfaceTypes.get(typeName)!.implementedBy);
+    }
+
+    if (this.supergraphState.unionTypes.has(typeName)) {
+      return Array.from(this.supergraphState.unionTypes.get(typeName)!.members);
+    }
+
+    return [typeName];
+  }
+
   canReachTypeFromType(fromTypeName: string, toTypeName: string): boolean {
     if (fromTypeName === toTypeName) {
       return true;

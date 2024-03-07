@@ -28,12 +28,13 @@ import {
   TypeKind,
   UnionType,
 } from '../state.js';
+import { SubgraphValidationContext } from './validation-context.js';
 
 const specifiedScalars = new Set(specifiedScalarTypes.map(t => t.name));
 
 type ReportErrorFn = (message: string) => void;
 
-export function validateSubgraphState(state: SubgraphState) {
+export function validateSubgraphState(state: SubgraphState, context: SubgraphValidationContext) {
   const errors: GraphQLError[] = [];
 
   function reportError(message: string) {
@@ -47,7 +48,7 @@ export function validateSubgraphState(state: SubgraphState) {
   }
 
   validateRootTypes(state, reportError);
-  validateDirectives(state, reportError);
+  validateDirectives(state, reportError, context);
   validateTypes(state, reportError);
 
   return errors;
@@ -103,9 +104,17 @@ function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-function validateDirectives(state: SubgraphState, reportError: ReportErrorFn): void {
+function validateDirectives(
+  state: SubgraphState,
+  reportError: ReportErrorFn,
+  context: SubgraphValidationContext,
+): void {
   for (const directive of state.types.values()) {
     if (isDirective(directive)) {
+      if (context.isLinkSpecDirective(directive.name)) {
+        continue;
+      }
+
       // Ensure they are named correctly.
       validateName(reportError, directive.name);
 
@@ -116,6 +125,10 @@ function validateDirectives(state: SubgraphState, reportError: ReportErrorFn): v
 
         // Ensure the type is an input type.
         const argInputTypeName = stripTypeModifiers(arg.type);
+
+        if (context.isLinkSpecType(argInputTypeName)) {
+          continue;
+        }
 
         if (!isInputType(state, argInputTypeName)) {
           reportError(

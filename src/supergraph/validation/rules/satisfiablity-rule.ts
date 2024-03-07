@@ -3,7 +3,7 @@ import { isList, isNonNull, stripNonNull, stripTypeModifiers } from '../../../ut
 import type { SupergraphVisitorMap } from '../../composition/visitor.js';
 import type { SupergraphState } from '../../state.js';
 import type { SupergraphValidationContext } from '../validation-context.js';
-import { isAbstractEdge, isFieldEdge } from './satisfiablity/edge.js';
+import { isFieldEdge } from './satisfiablity/edge.js';
 import { SatisfiabilityError } from './satisfiablity/errors.js';
 import { Supergraph } from './satisfiablity/supergraph.js';
 import { WalkTracker } from './satisfiablity/walker.js';
@@ -32,7 +32,7 @@ export function SatisfiabilityRule(
     const edge = unreachable.superPath.edge();
 
     if (!edge) {
-      throw new Error('Edge not found');
+      throw new Error('Expected edge to be defined');
     }
 
     if (isFieldEdge(edge)) {
@@ -65,6 +65,7 @@ export function SatisfiabilityRule(
 
         const errorsBySourceGraph: Record<string, SatisfiabilityError[]> = {};
         const reasons: Array<[string, string[]]> = [];
+
         for (const error of unreachable.listErrors()) {
           const sourceGraphName = error.sourceGraphName;
 
@@ -80,7 +81,10 @@ export function SatisfiabilityRule(
           reasons.push([sourceGraphName, errors.map(e => e.message)]);
         }
 
-        // console.log('reporting error', objectState.name, fieldState.name);
+        if (reasons.length === 0) {
+          continue;
+        }
+
         context.reportError(
           new GraphQLError(
             [

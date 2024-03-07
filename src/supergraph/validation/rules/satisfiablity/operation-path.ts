@@ -1,39 +1,41 @@
 import { isFieldEdge, type Edge } from './edge';
+import { lazy } from './helpers';
 import { FieldMove } from './moves';
 import type { Node } from './node';
 
-type Step = FieldStep | AbstractStep;
+export type Step = FieldStep | AbstractStep;
 
-type FieldStep = {
+export type FieldStep = {
   fieldName: string;
   typeName: string;
 };
 
-type AbstractStep = {
+export type AbstractStep = {
   typeName: string;
 };
 
 export class OperationPath {
+  private _toString = lazy(() => {
+    let str = this._rootNode.toString();
+    for (let i = 0; i < this.previousEdges.length; i++) {
+      const edge = this.previousEdges[i];
+      if (edge) {
+        str += ` -(${edge.move})-> ${edge.tail}`;
+      }
+    }
+
+    return str;
+  });
   private previousNodes: Node[] = [];
   private previousEdges: Edge[] = [];
   private previousSteps: Step[] = [];
-  private _isPossible = true;
 
   constructor(private _rootNode: Node) {}
 
   move(edge: Edge): OperationPath {
-    if (this.isEdgeVisited(edge)) {
-      this._isPossible = false;
-      return this;
-    }
-
+    this._toString.invalidate();
     this.advance(edge);
-
     return this;
-  }
-
-  isPossible() {
-    return this._isPossible === true;
   }
 
   clone() {
@@ -42,7 +44,6 @@ export class OperationPath {
     newPath.previousNodes = this.previousNodes.slice();
     newPath.previousEdges = this.previousEdges.slice();
     newPath.previousSteps = this.previousSteps.slice();
-    newPath._isPossible = this._isPossible;
 
     return newPath;
   }
@@ -72,15 +73,7 @@ export class OperationPath {
   }
 
   toString() {
-    let str = ' *';
-    for (let i = 0; i < this.previousEdges.length; i++) {
-      const edge = this.previousEdges[i];
-      if (edge) {
-        str += ' --> ' + edge;
-      }
-    }
-
-    return str;
+    return this._toString.get();
   }
 
   private advance(edge: Edge) {
@@ -96,9 +89,5 @@ export class OperationPath {
             typeName: edge.tail.typeName,
           },
     );
-  }
-
-  private isEdgeVisited(visitingEdge: Edge) {
-    return this.previousEdges.includes(visitingEdge);
   }
 }

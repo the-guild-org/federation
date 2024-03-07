@@ -1,9 +1,11 @@
+import { OperationTypeNode } from 'graphql';
 import { Logger, LoggerContext } from '../../../../utils/logger';
 import type { SupergraphState } from '../../../state';
 import { SUPERGRAPH_ID } from './constants';
 import { FieldsResolver } from './fields';
 import { Graph } from './graph';
 import { MoveValidator } from './move-validator';
+import { Step } from './operation-path';
 import { Walker } from './walker';
 
 export class Supergraph {
@@ -14,7 +16,6 @@ export class Supergraph {
   private logger = new Logger('Supergraph', new LoggerContext());
 
   constructor(supergraphState: SupergraphState) {
-    this.logger.log(() => 'Creating Supergraph');
     this.fieldsResolver = new FieldsResolver(supergraphState);
     this.supergraph = new Graph(
       this.logger,
@@ -60,5 +61,14 @@ export class Supergraph {
       this.supergraph,
       this.mergedGraph,
     ).walk('dfs');
+  }
+
+  validateOperation(operation: OperationTypeNode, steps: Step[]) {
+    return new Walker(
+      this.logger,
+      this.moveRequirementChecker,
+      this.supergraph,
+      this.mergedGraph,
+    ).walkTrail(operation, steps);
   }
 }
