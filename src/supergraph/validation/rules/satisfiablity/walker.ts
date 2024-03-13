@@ -1,12 +1,12 @@
 import { OperationTypeNode } from 'graphql';
-import type { Logger } from '../../../../utils/logger';
-import { isAbstractEdge, isFieldEdge, type Edge } from './edge';
-import { SatisfiabilityError } from './errors';
-import { PathFinder } from './finder';
-import type { Graph } from './graph';
-import type { MoveValidator } from './move-validator';
-import type { Node } from './node';
-import { OperationPath, type Step } from './operation-path';
+import type { Logger } from '../../../../utils/logger.js';
+import { isAbstractEdge, isFieldEdge, type Edge } from './edge.js';
+import { SatisfiabilityError } from './errors.js';
+import { PathFinder } from './finder.js';
+import type { Graph } from './graph.js';
+import type { MoveValidator } from './move-validator.js';
+import type { Node } from './node.js';
+import { OperationPath, type Step } from './operation-path.js';
 
 export class WalkTracker {
   private errors: SatisfiabilityError[] = [];

@@ -1,13 +1,13 @@
 import { specifiedScalarTypes } from 'graphql';
-import type { Logger } from '../../../../utils/logger';
-import { stripTypeModifiers } from '../../../../utils/state';
-import type { EnumTypeState } from '../../../composition/enum-type';
-import type { InterfaceTypeState } from '../../../composition/interface-type';
-import type { ObjectTypeFieldState, ObjectTypeState } from '../../../composition/object-type';
-import type { ScalarTypeState } from '../../../composition/scalar-type';
-import type { UnionTypeState } from '../../../composition/union-type';
-import type { SupergraphState } from '../../../state';
-import { SUPERGRAPH_ID } from './constants';
+import type { Logger } from '../../../../utils/logger.js';
+import { stripTypeModifiers } from '../../../../utils/state.js';
+import type { EnumTypeState } from '../../../composition/enum-type.js';
+import type { InterfaceTypeState } from '../../../composition/interface-type.js';
+import type { ObjectTypeFieldState, ObjectTypeState } from '../../../composition/object-type.js';
+import type { ScalarTypeState } from '../../../composition/scalar-type.js';
+import type { UnionTypeState } from '../../../composition/union-type.js';
+import type { SupergraphState } from '../../../state.js';
+import { SUPERGRAPH_ID } from './constants.js';
 import {
   assertAbstractEdge,
   assertFieldEdge,
@@ -15,11 +15,11 @@ import {
   isAbstractEdge,
   isEntityEdge,
   isFieldEdge,
-} from './edge';
-import type { Field, FieldsResolver } from './fields';
-import { scoreKeyFields } from './helpers';
-import { AbstractMove, EntityMove, FieldMove } from './moves';
-import { Node } from './node';
+} from './edge.js';
+import type { Field, FieldsResolver } from './fields.js';
+import { scoreKeyFields } from './helpers.js';
+import { AbstractMove, EntityMove, FieldMove } from './moves.js';
+import { Node } from './node.js';
 
 export class Graph {
   private _warnedAboutIncorrectEdge = false;

@@ -48,7 +48,7 @@
   ],
   "scripts": {
     "bench": "tsx ./benchmark.ts",
-    "build": "rimraf dist && bob check && bob build",
+    "build": "rimraf dist && bob build && bob check",
     "format": "prettier --write .",
     "release": "pnpm build && changeset publish",
     "test": "vitest --config ./vitest.config.js",

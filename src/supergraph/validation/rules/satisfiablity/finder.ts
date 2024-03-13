@@ -1,10 +1,10 @@
-import type { Logger } from '../../../../utils/logger';
-import { Edge, isAbstractEdge, isEntityEdge, isFieldEdge } from './edge';
-import { SatisfiabilityError } from './errors';
-import { Fields } from './fields';
-import type { Graph } from './graph';
-import type { MoveValidator } from './move-validator';
-import type { OperationPath } from './operation-path';
+import type { Logger } from '../../../../utils/logger.js';
+import { Edge, isAbstractEdge, isEntityEdge, isFieldEdge } from './edge.js';
+import { SatisfiabilityError } from './errors.js';
+import { Fields } from './fields.js';
+import type { Graph } from './graph.js';
+import type { MoveValidator } from './move-validator.js';
+import type { OperationPath } from './operation-path.js';
 
 export function concatIfNotExistsString(list: string[], item: string): string[] {
   if (list.includes(item)) {
