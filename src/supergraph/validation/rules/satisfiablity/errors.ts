@@ -1,5 +1,3 @@
-import { Edge } from './edge';
-
 type SatisfiabilityErrorKind =
   | 'KEY' // cannot move to subgraph "X" using @key(fields: "a b c") of "User", the key field(s) cannot be resolved from subgraph "Y".
   | 'REQUIRE' // cannot satisfy @require conditions on field "User.name".

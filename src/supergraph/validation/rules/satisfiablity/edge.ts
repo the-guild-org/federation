@@ -1,7 +1,7 @@
-import { SatisfiabilityError } from './errors';
-import { lazy } from './helpers';
-import { AbstractMove, EntityMove, FieldMove, Move } from './moves';
-import { Node } from './node';
+import { SatisfiabilityError } from './errors.js';
+import { lazy } from './helpers.js';
+import { AbstractMove, EntityMove, FieldMove, Move } from './moves.js';
+import { Node } from './node.js';
 
 type EdgeResolvabilityResult =
   | {

@@ -1,7 +1,7 @@
 import { FieldNode, InlineFragmentNode, Kind, SelectionSetNode } from 'graphql';
-import { parseFields } from '../../../../subgraph/helpers';
-import { stripTypeModifiers } from '../../../../utils/state';
-import { SupergraphState } from '../../../state';
+import { parseFields } from '../../../../subgraph/helpers.js';
+import { stripTypeModifiers } from '../../../../utils/state.js';
+import { SupergraphState } from '../../../state.js';
 
 export type Field =
   | {

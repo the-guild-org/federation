@@ -1,10 +1,10 @@
-import type { Logger } from '../../../../utils/logger';
-import { Edge, isEntityEdge, isFieldEdge } from './edge';
-import { SatisfiabilityError } from './errors';
-import type { Field, Fields } from './fields';
-import { concatIfNotExistsFields, concatIfNotExistsString, PathFinder } from './finder';
-import type { Graph } from './graph';
-import { OperationPath } from './operation-path';
+import type { Logger } from '../../../../utils/logger.js';
+import { Edge, isEntityEdge, isFieldEdge } from './edge.js';
+import { SatisfiabilityError } from './errors.js';
+import type { Field, Fields } from './fields.js';
+import { concatIfNotExistsFields, concatIfNotExistsString, PathFinder } from './finder.js';
+import type { Graph } from './graph.js';
+import { OperationPath } from './operation-path.js';
 
 type MoveRequirement = {
   paths: OperationPath[];

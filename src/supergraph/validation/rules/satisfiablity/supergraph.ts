@@ -1,12 +1,12 @@
 import { OperationTypeNode } from 'graphql';
-import { Logger, LoggerContext } from '../../../../utils/logger';
-import type { SupergraphState } from '../../../state';
-import { SUPERGRAPH_ID } from './constants';
-import { FieldsResolver } from './fields';
-import { Graph } from './graph';
-import { MoveValidator } from './move-validator';
-import { Step } from './operation-path';
-import { Walker } from './walker';
+import { Logger, LoggerContext } from '../../../../utils/logger.js';
+import type { SupergraphState } from '../../../state.js';
+import { SUPERGRAPH_ID } from './constants.js';
+import { FieldsResolver } from './fields.js';
+import { Graph } from './graph.js';
+import { MoveValidator } from './move-validator.js';
+import { Step } from './operation-path.js';
+import { Walker } from './walker.js';
 
 export class Supergraph {
   private supergraph: Graph;

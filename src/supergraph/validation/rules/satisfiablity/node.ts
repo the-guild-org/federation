@@ -1,9 +1,9 @@
-import type { EnumTypeState } from '../../../composition/enum-type';
-import type { InterfaceTypeState } from '../../../composition/interface-type';
-import type { ObjectTypeState } from '../../../composition/object-type';
-import type { ScalarTypeState } from '../../../composition/scalar-type';
-import type { UnionTypeState } from '../../../composition/union-type';
-import { lazy } from './helpers';
+import type { EnumTypeState } from '../../../composition/enum-type.js';
+import type { InterfaceTypeState } from '../../../composition/interface-type.js';
+import type { ObjectTypeState } from '../../../composition/object-type.js';
+import type { ScalarTypeState } from '../../../composition/scalar-type.js';
+import type { UnionTypeState } from '../../../composition/union-type.js';
+import { lazy } from './helpers.js';
 
 export class Node {
   private _toString = lazy(() => `${this.typeName}/${this.graphName}`);

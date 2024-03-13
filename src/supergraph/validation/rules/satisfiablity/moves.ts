@@ -1,5 +1,5 @@
-import type { Fields } from './fields';
-import { lazy } from './helpers';
+import type { Fields } from './fields.js';
+import { lazy } from './helpers.js';
 
 export interface Move {
   toString(): string;
