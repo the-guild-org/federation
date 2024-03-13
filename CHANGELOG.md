@@ -1,5 +1,13 @@
 # @theguild/federation-composition
 
+## 0.10.1
+
+### Patch Changes
+
+- [#55](https://github.com/the-guild-org/federation/pull/55)
+  [`5c4431d`](https://github.com/the-guild-org/federation/commit/5c4431da9ce343d3bb7bf9db30b6e2ceb026e2e3)
+  Thanks [@n1ru4l](https://github.com/n1ru4l)! - fix esm support
+
 ## 0.10.0
 
 ### Minor Changes
