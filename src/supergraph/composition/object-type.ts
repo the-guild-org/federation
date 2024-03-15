@@ -5,6 +5,7 @@ import { isDefined } from '../../utils/helpers.js';
 import { createObjectTypeNode, JoinFieldAST } from './ast.js';
 import type { Key, MapByGraph, TypeBuilder } from './common.js';
 import { convertToConst } from './common.js';
+import { InterfaceTypeFieldState } from './interface-type.js';
 
 export function isRealExtension(meta: ObjectTypeStateInGraph, version: FederationVersion) {
   const hasExtendsDirective = meta.extensionType === '@extends';
@@ -126,6 +127,10 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         if (shouldChangeType) {
           // Replace the non-null type with a nullable type
           fieldState.type = field.type;
+        }
+
+        if (field.isLeaf) {
+          fieldState.isLeaf = true;
         }
 
         if (!fieldState.internal.seenNonExternal && !isExternal) {
@@ -259,6 +264,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
       const fieldNamesOfImplementedInterfaces: {
         [fieldName: string]: /* Graph IDs */ Set<string>;
       } = {};
+      const resolvableFieldsFromInterfaceObjects: InterfaceTypeFieldState[] = [];
 
       for (const interfaceName of objectType.interfaces) {
         const interfaceState = supergraphState.interfaceTypes.get(interfaceName);
@@ -278,6 +284,14 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             fieldNamesOfImplementedInterfaces[interfaceFieldName] = new Set(
               Array.from(interfaceField.byGraph.keys()),
             );
+          }
+
+          if (!interfaceState.hasInterfaceObject) {
+            continue;
+          }
+
+          if (!resolvableFieldsFromInterfaceObjects.some(f => f.name === interfaceFieldName)) {
+            resolvableFieldsFromInterfaceObjects.push(interfaceField);
           }
         }
       }
@@ -644,7 +658,53 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                 }),
             };
           })
-          .filter(isDefined),
+          .filter(isDefined)
+          .concat(
+            resolvableFieldsFromInterfaceObjects
+              .filter(f => !objectType.fields.has(f.name))
+              .map(field => {
+                return {
+                  name: field.name,
+                  type: field.type,
+                  inaccessible: field.inaccessible,
+                  authenticated: field.authenticated,
+                  policies: field.policies,
+                  scopes: field.scopes,
+                  tags: Array.from(field.tags),
+                  description: field.description,
+                  deprecated: field.deprecated,
+                  ast: {
+                    directives: convertToConst(field.ast.directives),
+                  },
+                  join: {
+                    field: [{}],
+                  },
+                  arguments: Array.from(field.args.values())
+                    .filter(arg => {
+                      // ignore the argument if it's not available in all subgraphs implementing the field
+                      if (arg.byGraph.size !== field.byGraph.size) {
+                        return false;
+                      }
+
+                      return true;
+                    })
+                    .map(arg => {
+                      return {
+                        name: arg.name,
+                        type: arg.type,
+                        inaccessible: false,
+                        tags: Array.from(arg.tags),
+                        defaultValue: arg.defaultValue,
+                        description: arg.description,
+                        deprecated: arg.deprecated,
+                        ast: {
+                          directives: convertToConst(arg.ast.directives),
+                        },
+                      };
+                    }),
+                };
+              }),
+          ),
         interfaces: Array.from(objectType.interfaces),
         tags: Array.from(objectType.tags),
         inaccessible: objectType.inaccessible,
@@ -719,6 +779,7 @@ export type ObjectTypeFieldState = {
   type: string;
   tags: Set<string>;
   inaccessible: boolean;
+  isLeaf: boolean;
   authenticated: boolean;
   policies: string[][];
   scopes: string[][];
@@ -826,6 +887,7 @@ function getOrCreateField(objectTypeState: ObjectTypeState, fieldName: string, f
   const def: ObjectTypeFieldState = {
     name: fieldName,
     type: fieldType,
+    isLeaf: false,
     tags: new Set(),
     inaccessible: false,
     authenticated: false,

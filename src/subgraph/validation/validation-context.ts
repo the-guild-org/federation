@@ -18,6 +18,7 @@ import { TypeNodeInfo } from '../../graphql/type-node-info.js';
 import { createSpecSchema, FederationVersion } from '../../specifications/federation.js';
 import { LinkImport, sdl as linkSpecSdl } from '../../specifications/link.js';
 import { stripTypeModifiers } from '../../utils/state.js';
+import { satisfiesVersionRange } from '../../utils/version.js';
 import { TypeKind, type SubgraphStateBuilder } from '../state.js';
 
 const linkSpec = parse(linkSpecSdl);
@@ -306,19 +307,7 @@ export function createSubgraphValidationContext(
       return false;
     },
     satisfiesVersionRange(range: `${'<' | '>=' | '>'} ${FederationVersion}`) {
-      const [sign, ver] = range.split(' ') as ['<' | '>=' | '>', FederationVersion];
-      const versionInRange = parseFloat(ver.replace('v', ''));
-      const detectedVersion = parseFloat(version.replace('v', ''));
-
-      if (sign === '<') {
-        return detectedVersion < versionInRange;
-      }
-
-      if (sign === '>') {
-        return detectedVersion > versionInRange;
-      }
-
-      return detectedVersion >= versionInRange;
+      return satisfiesVersionRange(version, range);
     },
     /**
      * Get a list of directives defined by the spec.
@@ -443,7 +432,11 @@ export function createSubgraphValidationContext(
 
         const typeDef = stateBuilder.state.types.get(typeName);
 
-        if (typeDef && typeDef.kind === TypeKind.OBJECT) {
+        if (!typeDef) {
+          return true;
+        }
+
+        if (typeDef.kind === TypeKind.OBJECT && !stateBuilder.isInterfaceObject(typeName)) {
           const fieldDef = typeDef.fields.get(fieldName);
 
           if (fieldDef) {
@@ -453,6 +446,20 @@ export function createSubgraphValidationContext(
             if (outputType?.kind === TypeKind.OBJECT && outputType.shareable) {
               // If a field is marked as @external but the output type is @shareable, it should not be marked as unused.
               return false;
+            }
+          }
+
+          for (const interfaceName of typeDef.interfaces) {
+            const iDef = stateBuilder.state.types.get(interfaceName);
+
+            if (!iDef) {
+              continue;
+            }
+
+            if (iDef.kind === TypeKind.INTERFACE && iDef.fields.has(fieldName)) {
+              if (iDef.fields.has(fieldName)) {
+                return false;
+              }
             }
           }
         }

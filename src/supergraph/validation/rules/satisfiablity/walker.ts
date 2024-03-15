@@ -362,11 +362,13 @@ export class Walker {
     const unreachable: WalkTracker[] = [];
     const queue: WalkTracker[] = [];
 
-    const rootNodes = ['Query', 'Mutation', 'Subscription']
-      .map(name => this.supergraph.nodeOf(name, false))
-      .filter((node): node is Node => !!node);
+    for (const name of ['Query', 'Mutation', 'Subscription']) {
+      const rootNode = this.supergraph.nodeOf(name, false);
 
-    for (const rootNode of rootNodes) {
+      if (!rootNode) {
+        continue;
+      }
+
       queue.push(
         new WalkTracker(
           new OperationPath(rootNode),

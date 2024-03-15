@@ -12,16 +12,27 @@ const mapIRKindToString = {
   [TypeKind.DIRECTIVE]: 'Directive',
 };
 
+export type GraphTypeValidationContext = {
+  graphName: string;
+  isInterfaceObject: boolean;
+};
+
 export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
   /**
    * Map<typeName, Map<kind, Set<graphName>>>
    */
-  const typeToKindWithGraphs = new Map<string, Map<TypeKind, Set<string>>>();
+  const typeToKindWithGraphs = new Map<string, Map<TypeKind, Set<GraphTypeValidationContext>>>();
   const typesWithConflict = new Set<string>();
 
   for (const [graph, state] of context.subgraphStates) {
     state.types.forEach(type => {
       const kindToGraphs = typeToKindWithGraphs.get(type.name);
+      const isInterfaceObject = type.kind === TypeKind.INTERFACE ? type.isInterfaceObject : false;
+
+      const graphsValue = {
+        graphName: context.graphIdToName(graph),
+        isInterfaceObject,
+      };
 
       if (kindToGraphs) {
         // Seems like we've already seen this type
@@ -30,10 +41,10 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
         if (graphs) {
           // If we've already seen this kind
           // Add the graph to the set.
-          graphs.add(graph);
+          graphs.add(graphsValue);
         } else {
           // Add the kind to the map of kinds for that type
-          kindToGraphs.set(type.kind, new Set([graph]));
+          kindToGraphs.set(type.kind, new Set([graphsValue]));
         }
 
         // If it has more than 1 kind
@@ -43,17 +54,22 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
         }
       } else {
         // We haven't seen this type yet
-        typeToKindWithGraphs.set(type.name, new Map([[type.kind, new Set([graph])]]));
+        typeToKindWithGraphs.set(type.name, new Map([[type.kind, new Set([graphsValue])]]));
       }
     });
   }
 
   for (const typeName of typesWithConflict) {
     const kindToGraphs = typeToKindWithGraphs.get(typeName)!;
+
+    if (interfaceObjectConditions(kindToGraphs)) {
+      continue;
+    }
+
     const groups = Array.from(kindToGraphs.entries()).map(([kind, graphs]) => {
       const plural = graphs.size > 1 ? 's' : '';
       return `${mapIRKindToString[kind]} Type in subgraph${plural} "${Array.from(graphs)
-        .map(context.graphIdToName)
+        .map(typeValidationContext => typeValidationContext.graphName)
         .join('", "')}"`;
     });
     const [first, second, ...rest] = groups;
@@ -71,4 +87,16 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
       ),
     );
   }
+}
+
+function interfaceObjectConditions(
+  kindToGraphs: Map<TypeKind, Set<GraphTypeValidationContext>>,
+): boolean {
+  const interfaceTypes = kindToGraphs.get(TypeKind.INTERFACE) || [];
+  for (const graphTypeValidationContext of interfaceTypes) {
+    if (graphTypeValidationContext.isInterfaceObject) {
+      return true;
+    }
+  }
+  return false;
 }

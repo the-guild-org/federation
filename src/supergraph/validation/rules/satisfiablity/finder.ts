@@ -1,10 +1,10 @@
 import type { Logger } from '../../../../utils/logger.js';
 import { Edge, isAbstractEdge, isEntityEdge, isFieldEdge } from './edge.js';
 import { SatisfiabilityError } from './errors.js';
-import { Fields } from './fields.js';
 import type { Graph } from './graph.js';
 import type { MoveValidator } from './move-validator.js';
 import type { OperationPath } from './operation-path.js';
+import { Selection } from './selection.js';
 
 export function concatIfNotExistsString(list: string[], item: string): string[] {
   if (list.includes(item)) {
@@ -14,7 +14,7 @@ export function concatIfNotExistsString(list: string[], item: string): string[] 
   return list.concat(item);
 }
 
-export function concatIfNotExistsFields(list: Fields[], item: Fields): Fields[] {
+export function concatIfNotExistsFields(list: Selection[], item: Selection): Selection[] {
   if (list.some(f => f.equals(item))) {
     return list;
   }
@@ -83,12 +83,7 @@ export class PathFinder {
         }
       }
 
-      if (
-        isFieldTarget &&
-        isFieldEdge(edge) &&
-        edge.move.typeName === typeName &&
-        edge.move.fieldName === fieldName
-      ) {
+      if (isFieldTarget && isFieldEdge(edge) && edge.move.fieldName === fieldName) {
         const resolvable = this.moveValidator.isEdgeResolvable(edge, path, [], [], []);
         if (!resolvable.success) {
           errors.push(resolvable.error);
@@ -107,56 +102,15 @@ export class PathFinder {
 
     this.logger.groupEnd(() => 'Found ' + nextPaths.length + ' direct paths');
 
-    // TODO: we will have to adjust pushed errors as we moved Abstract and Field moves here, to direct paths finder.
-    if (nextPaths.length === 0) {
-      // In case of no errors, we know that there were no edges matching the field name.
-      if (errors.length === 0) {
-        if (isFieldTarget) {
-          errors.push(SatisfiabilityError.forMissingField(tail.graphName, typeName, fieldName));
+    if (nextPaths.length > 0) {
+      return {
+        success: true,
+        paths: nextPaths,
+        errors: undefined,
+      };
+    }
 
-          // find graphs with the same type and field name, but no @key defined
-          const typeNodes = this.graph.nodesOf(typeName);
-          for (const typeNode of typeNodes) {
-            const edges = this.graph.fieldEdgesOfHead(typeNode, fieldName);
-            for (const edge of edges) {
-              if (
-                isFieldEdge(edge) &&
-                edge.move.typeName === typeName &&
-                edge.move.fieldName === fieldName &&
-                !this.moveValidator.isExternal(edge)
-              ) {
-                const typeStateInGraph =
-                  edge.head.typeState &&
-                  edge.head.typeState.kind === 'object' &&
-                  edge.head.typeState.byGraph.get(edge.head.graphId);
-                const keys = typeStateInGraph
-                  ? typeStateInGraph.keys.filter(key => key.resolvable)
-                  : [];
-
-                if (keys.length === 0) {
-                  errors.push(
-                    SatisfiabilityError.forNoKey(
-                      tail.graphName,
-                      edge.tail.graphName,
-                      typeName,
-                      fieldName,
-                    ),
-                  );
-                }
-              }
-            }
-          }
-        } else {
-          // This is a special case where we are looking for an abstract type, but there are no edges leading to it.
-          // It's completely fine, as abstract types are not resolvable by themselves and Federation will handle it (return empty result).
-          return {
-            success: true,
-            errors: undefined,
-            paths: [],
-          };
-        }
-      }
-
+    if (errors.length > 0) {
       return {
         success: false,
         errors,
@@ -164,11 +118,219 @@ export class PathFinder {
       };
     }
 
+    if (!isFieldTarget) {
+      if (tail.typeState?.kind === 'interface' && tail.typeState.hasInterfaceObject) {
+        const typeStateInGraph = tail.typeState.byGraph.get(tail.graphId);
+
+        if (typeStateInGraph?.isInterfaceObject) {
+          // no subgraph can be reached to resolve the implementation type of @interfaceObject type
+          return {
+            success: false,
+            errors: [SatisfiabilityError.forNoImplementation(tail.graphName, tail.typeName)],
+            paths: undefined,
+          };
+        }
+      }
+
+      // This is a special case where we are looking for an abstract type, but there are no edges leading to it.
+      // It's completely fine, as abstract types are not resolvable by themselves and Federation will handle it (return empty result).
+      return {
+        success: true,
+        errors: undefined,
+        paths: [],
+      };
+    }
+
+    // In case of no errors, we know that there were no edges matching the field name.
+    errors.push(SatisfiabilityError.forMissingField(tail.graphName, typeName, fieldName));
+
+    // find graphs with the same type and field name, but no @key defined
+    const typeNodes = this.graph.nodesOf(typeName);
+    for (const typeNode of typeNodes) {
+      const edges = this.graph.fieldEdgesOfHead(typeNode, fieldName);
+      for (const edge of edges) {
+        if (
+          isFieldEdge(edge) &&
+          // edge.move.typeName === typeName &&
+          edge.move.fieldName === fieldName &&
+          !this.moveValidator.isExternal(edge)
+        ) {
+          const typeStateInGraph =
+            edge.head.typeState &&
+            edge.head.typeState.kind === 'object' &&
+            edge.head.typeState.byGraph.get(edge.head.graphId);
+          const keys = typeStateInGraph ? typeStateInGraph.keys.filter(key => key.resolvable) : [];
+
+          if (keys.length === 0) {
+            errors.push(
+              SatisfiabilityError.forNoKey(
+                tail.graphName,
+                edge.tail.graphName,
+                typeName,
+                fieldName,
+              ),
+            );
+          }
+        }
+      }
+    }
+
     return {
-      success: true,
-      paths: nextPaths,
-      errors: undefined,
+      success: false,
+      errors,
+      paths: undefined,
     };
+  }
+
+  private findFieldIndirectly(
+    path: OperationPath,
+    typeName: string,
+    fieldName: string,
+    visitedEdges: Edge[],
+    visitedGraphs: string[],
+    visitedFields: Selection[],
+    errors: SatisfiabilityError[],
+    finalPaths: OperationPath[],
+    queue: [string[], Selection[], OperationPath][],
+    shortestPathPerGraph: Map<string, OperationPath>,
+    edge: Edge,
+  ) {
+    if (!isEntityEdge(edge) && !isAbstractEdge(edge)) {
+      this.logger.groupEnd(() => 'Ignored');
+      return;
+    }
+
+    const shortestPathToThisGraph = shortestPathPerGraph.get(edge.tail.graphName);
+    if (shortestPathToThisGraph && shortestPathToThisGraph.depth() <= path.depth()) {
+      this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
+      return;
+    }
+
+    // A huge win for performance, is when you do less work :D
+    // We can ignore an edge that has already been visited with the same key fields / requirements.
+    // The way entity-move edges are created, where every graph points to every other graph:
+    //  Graph A: User @key(id) @key(name)
+    //  Graph B: User @key(id)
+    //  Edges in a merged graph:
+    //    - User/A @key(id) -> User/B
+    //    - User/B @key(id) -> User/A
+    //    - User/B @key(name) -> User/A
+    // Allows us to ignore an edge with the same key fields.
+    // That's because in some other path, we will or already have checked the other edge.
+    if (!!edge.move.keyFields && visitedFields.some(f => f.equals(edge.move.keyFields!))) {
+      this.logger.groupEnd(() => 'Ignore: already visited fields');
+      return;
+    }
+
+    if (isAbstractEdge(edge)) {
+      // prevent a situation where we are doing a second abstract move
+      const tailEdge = path.edge();
+
+      if (tailEdge && isAbstractEdge(tailEdge) && !tailEdge.move.keyFields) {
+        this.logger.groupEnd(() => 'Ignore: cannot do two abstract moves in a row');
+        return;
+      }
+
+      if (!edge.isCrossGraphEdge()) {
+        const newPath = path.clone().move(edge);
+        queue.push([visitedGraphs, visitedFields, newPath]);
+        this.logger.log(() => 'Abstract move');
+        this.logger.groupEnd(() => 'Adding to queue: ' + newPath);
+        return;
+      }
+    }
+
+    const resolvable = this.moveValidator.isEdgeResolvable(
+      edge,
+      path,
+      visitedEdges.concat(edge),
+      visitedGraphs,
+      visitedFields,
+    );
+
+    if (!resolvable.success) {
+      errors.push(resolvable.error);
+      this.logger.groupEnd(() => 'Not resolvable: ' + resolvable.error);
+      return;
+    }
+
+    const newPath = path.clone().move(edge);
+
+    this.logger.log(
+      () =>
+        'From indirect path, look for direct paths to ' +
+        typeName +
+        '.' +
+        fieldName +
+        ' from: ' +
+        edge,
+    );
+    const direct = this.findDirectPaths(newPath, typeName, fieldName, [edge]);
+
+    if (direct.success) {
+      this.logger.groupEnd(() => 'Resolvable: ' + edge + ' with ' + direct.paths.length + ' paths');
+
+      finalPaths.push(...direct.paths);
+      return;
+    }
+
+    errors.push(...direct.errors);
+
+    setShortest(newPath, shortestPathPerGraph);
+
+    queue.push([
+      concatIfNotExistsString(visitedGraphs, edge.tail.graphName),
+      'keyFields' in edge.move && edge.move.keyFields
+        ? concatIfNotExistsFields(visitedFields, edge.move.keyFields)
+        : visitedFields,
+      newPath,
+    ]);
+    this.logger.log(() => 'Did not find direct paths');
+    this.logger.groupEnd(() => 'Adding to queue: ' + newPath);
+  }
+
+  private findTypeIndirectly(
+    path: OperationPath,
+    typeName: string,
+    visitedGraphs: string[],
+    visitedFields: Selection[],
+    finalPaths: OperationPath[],
+    queue: [string[], Selection[], OperationPath][],
+    shortestPathPerGraph: Map<string, OperationPath>,
+    edge: Edge,
+  ) {
+    if (!isAbstractEdge(edge)) {
+      this.logger.groupEnd(() => 'Ignored');
+      return;
+    }
+
+    if (shortestPathPerGraph.has(edge.tail.graphName)) {
+      this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
+      return;
+    }
+
+    if (edge.move.keyFields && visitedFields.some(f => f.equals(edge.move.keyFields!))) {
+      this.logger.groupEnd(() => 'Ignore: already visited fields');
+      return;
+    }
+
+    const newPath = path.clone().move(edge);
+
+    // If the target is the tail of this edge, we have found a path
+    if (edge.tail.typeName === typeName) {
+      setShortest(newPath, shortestPathPerGraph);
+      finalPaths.push(newPath);
+    } else {
+      // Otherwise, we need to continue searching for the target
+      queue.push([
+        visitedGraphs,
+        edge.move.keyFields
+          ? concatIfNotExistsFields(visitedFields, edge.move.keyFields)
+          : visitedFields,
+        newPath,
+      ]);
+    }
+    this.logger.groupEnd(() => 'Resolvable');
   }
 
   findIndirectPaths(
@@ -177,7 +339,7 @@ export class PathFinder {
     fieldName: string | null,
     visitedEdges: Edge[],
     visitedGraphs: string[],
-    visitedFields: Fields[],
+    visitedFields: Selection[],
   ): PathFinderResult {
     const errors: SatisfiabilityError[] = [];
     const tail = path.tail() ?? path.rootNode();
@@ -187,10 +349,9 @@ export class PathFinder {
 
     this.logger.group(() => 'Indirect paths to ' + id + ' from: ' + tail);
 
-    const queue: [string[], Fields[], OperationPath][] = [[visitedGraphs, visitedFields, path]];
+    const queue: [string[], Selection[], OperationPath][] = [[visitedGraphs, visitedFields, path]];
     const finalPaths: OperationPath[] = [];
     const shortestPathPerGraph = new Map<string, OperationPath>();
-    const edgesToIgnore: Edge[] = visitedEdges.slice();
 
     while (queue.length > 0) {
       const item = queue.pop();
@@ -201,12 +362,7 @@ export class PathFinder {
 
       const [visitedGraphs, visitedFields, path] = item;
       const tail = path.tail() ?? path.rootNode();
-      const edges = this.graph.crossGraphEdgesOfHead(tail);
-
-      if (!this.graph.canReachTypeFromType(tail.typeName, typeName)) {
-        this.logger.log(() => 'Cannot reach ' + typeName + ' from ' + tail.typeName);
-        continue;
-      }
+      const edges = this.graph.indirectEdgesOfHead(tail);
 
       this.logger.log(() => 'At path: ' + path);
       this.logger.log(() => 'Checking ' + edges.length + ' edges');
@@ -220,12 +376,7 @@ export class PathFinder {
           continue;
         }
 
-        if (!edge.isCrossGraphEdge()) {
-          this.logger.groupEnd(() => 'Not cross-graph edge');
-          continue;
-        }
-
-        if (edgesToIgnore.includes(edge)) {
+        if (visitedEdges.includes(edge)) {
           this.logger.groupEnd(() => 'Ignore: already visited edge');
           continue;
         }
@@ -237,119 +388,31 @@ export class PathFinder {
           continue;
         }
 
-        if (isFieldTarget && isEntityEdge(edge)) {
-          if (visitedFields.some(f => f.equals(edge.move.keyFields))) {
-            // A huge win for performance, is when you do less work :D
-            // We can ignore an edge that has already been visited with the same key fields / requirements.
-            // The way entity-move edges are created, where every graph points to every other graph:
-            //  Graph A: User @key(id) @key(name)
-            //  Graph B: User @key(id)
-            //  Edges in a merged graph:
-            //    - User/A @key(id) -> User/B
-            //    - User/B @key(id) -> User/A
-            //    - User/B @key(name) -> User/A
-            // Allows us to ignore an edge with the same key fields.
-            // That's because in some other path, we will or already have checked the other edge.
-            this.logger.groupEnd(() => 'Ignore: already visited fields');
-            continue;
-          }
-
-          const shortestPathToThisGraph = shortestPathPerGraph.get(edge.tail.graphName);
-          if (shortestPathToThisGraph && shortestPathToThisGraph.depth() <= path.depth()) {
-            this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
-            continue;
-          }
-
-          const resolvable = this.moveValidator.isEdgeResolvable(
-            edge,
+        if (isFieldTarget) {
+          this.findFieldIndirectly(
             path,
-            edgesToIgnore.concat(edge),
+            typeName,
+            fieldName,
+            visitedEdges,
             visitedGraphs,
             visitedFields,
-          );
-
-          if (!resolvable.success) {
-            errors.push(resolvable.error);
-            this.logger.groupEnd(() => 'Not resolvable: ' + resolvable.error);
-            continue;
-          }
-
-          const newPath = path.clone().move(edge);
-
-          this.logger.log(
-            () => 'From indirect path, look for direct paths to ' + id + ' from: ' + edge,
-          );
-          const direct = this.findDirectPaths(newPath, typeName, fieldName, [edge]);
-
-          if (direct.success) {
-            this.logger.groupEnd(
-              () => 'Resolvable: ' + edge + ' with ' + direct.paths.length + ' paths',
-            );
-
-            finalPaths.push(...direct.paths);
-            continue;
-          }
-
-          errors.push(...direct.errors);
-
-          setShortest(newPath, shortestPathPerGraph);
-
-          queue.push([
-            concatIfNotExistsString(visitedGraphs, edge.tail.graphName),
-            concatIfNotExistsFields(visitedFields, edge.move.keyFields),
-            newPath,
-          ]);
-          this.logger.log(() => 'Did not find direct paths');
-          this.logger.groupEnd(() => 'Adding to queue: ' + newPath);
-        } else if (isFieldTarget && isFieldEdge(edge)) {
-          this.logger.log(() => 'Cross graph field move:' + edge.move);
-          if (path.isVisitedEdge(edge)) {
-            this.logger.groupEnd(() => 'Already visited');
-            continue;
-          }
-
-          if (isFieldTarget && edge.move.requires?.contains(typeName, fieldName)) {
-            errors.push(SatisfiabilityError.forRequire(tail.graphName, typeName, fieldName));
-            this.logger.groupEnd(() => 'Ignored');
-            continue;
-          }
-
-          if (edge.move.requires && visitedFields.some(f => f.equals(edge.move.requires!))) {
-            // double check if we should ignore it for non field target
-            this.logger.groupEnd(() => 'Ignore: already visited fields');
-            continue;
-          }
-
-          const resolvable = this.moveValidator.isEdgeResolvable(
+            errors,
+            finalPaths,
+            queue,
+            shortestPathPerGraph,
             edge,
-            path,
-            visitedEdges.concat(edge),
-            visitedGraphs,
-            edge.move.requires
-              ? concatIfNotExistsFields(visitedFields, edge.move.requires)
-              : visitedFields,
           );
-
-          if (!resolvable.success) {
-            errors.push(resolvable.error);
-            this.logger.groupEnd(() => 'Not resolvable: ' + resolvable.error);
-            continue;
-          }
-
-          setShortest(path.clone().move(edge), shortestPathPerGraph);
-          this.logger.groupEnd(() => 'Resolvable: ' + edge);
-        } else if (!isFieldTarget && isAbstractEdge(edge)) {
-          if (shortestPathPerGraph.has(edge.tail.graphName)) {
-            this.logger.groupEnd(() => 'Already found a shorter path to ' + edge.tail);
-            continue;
-          }
-
-          const newPath = path.clone().move(edge);
-          setShortest(newPath, shortestPathPerGraph);
-          finalPaths.push(newPath);
-          this.logger.groupEnd(() => 'Resolvable');
         } else {
-          this.logger.groupEnd(() => 'Ignored...');
+          this.findTypeIndirectly(
+            path,
+            typeName,
+            visitedGraphs,
+            visitedFields,
+            finalPaths,
+            queue,
+            shortestPathPerGraph,
+            edge,
+          );
         }
       }
     }

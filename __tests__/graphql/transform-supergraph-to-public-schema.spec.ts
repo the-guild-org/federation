@@ -275,7 +275,7 @@ describe('transformSupergraphToPublicSchema', () => {
     const resultSdl = transformSupergraphToPublicSchema(sdl);
     expect(print(resultSdl)).toMatchInlineSnapshot(`
       "type Query {
-        foo: String @deprecated(reason: \\"jooo\\")
+        foo: String @deprecated(reason: "jooo")
       }"
     `);
   });

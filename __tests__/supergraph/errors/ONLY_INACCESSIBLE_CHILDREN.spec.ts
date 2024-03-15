@@ -204,5 +204,59 @@ testVersions((api, version) => {
         },
       ]),
     );
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@inaccessible"]
+              )
+
+            type Query {
+              users: [User]
+            }
+
+            interface Node @key(fields: "id") {
+              id: ID @inaccessible
+            }
+
+            type User implements Node @key(fields: "id") {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'products',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Node @key(fields: "id", resolvable: false) @interfaceObject {
+              id: ID
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              `Type "Node" is in the API schema but all of its fields are @inaccessible.`,
+            ),
+            extensions: expect.objectContaining({
+              code: 'ONLY_INACCESSIBLE_CHILDREN',
+            }),
+          }),
+        ]),
+      }),
+    );
   });
 });

@@ -14,6 +14,7 @@ import { FieldsOfTheSameTypeRule } from './rules/fields-of-the-same-type-rule.js
 import { InputFieldDefaultMismatchRule } from './rules/input-field-default-mismatch-rule.js';
 import { InputObjectValuesRule } from './rules/input-object-values-rule.js';
 import { InterfaceKeyMissingImplementationTypeRule } from './rules/interface-key-missing-implementation-type.js';
+import { InterfaceObjectUsageErrorRule } from './rules/interface-object-usage-error.js';
 import { InvalidFieldSharingRule } from './rules/invalid-field-sharing-rule.js';
 import { OnlyInaccessibleChildrenRule } from './rules/only-inaccessible-children-rule.js';
 import { OverrideSourceHasOverrideRule } from './rules/override-source-has-override.js';
@@ -39,7 +40,6 @@ export function validateSupergraph(
   for (const subgraphState of subgraphStates.values()) {
     state.addSubgraph(subgraphState);
   }
-
   const preSupergraphRules = [RequiredQueryRule, TypesOfTheSameKindRule];
   const rulesToSkip = __internal?.disableValidationRules ?? [];
 
@@ -71,6 +71,7 @@ export function validateSupergraph(
     OnlyInaccessibleChildrenRule,
     ReferencedInaccessibleRule,
     DirectiveCompositionRule,
+    InterfaceObjectUsageErrorRule,
     InterfaceKeyMissingImplementationTypeRule,
     ExternalTypeMismatchRule,
     InvalidFieldSharingRule,

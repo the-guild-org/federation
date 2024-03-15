@@ -35,11 +35,12 @@ export function KeyRules(context: SubgraphValidationContext): ASTVisitor {
 
       const typeCoordinate = typeDef.name.value;
 
-      const usedOnInterface =
-        typeDef.kind === Kind.INTERFACE_TYPE_DEFINITION ||
-        typeDef.kind === Kind.INTERFACE_TYPE_EXTENSION;
       const usedOnObject =
         typeDef.kind === Kind.OBJECT_TYPE_DEFINITION || typeDef.kind === Kind.OBJECT_TYPE_EXTENSION;
+      const usedOnInterface =
+        typeDef.kind === Kind.INTERFACE_TYPE_DEFINITION ||
+        typeDef.kind === Kind.INTERFACE_TYPE_EXTENSION ||
+        (usedOnObject && context.stateBuilder.isInterfaceObject(typeDef.name.value));
 
       if (!usedOnObject && !usedOnInterface) {
         return; // Let regular validation handle this

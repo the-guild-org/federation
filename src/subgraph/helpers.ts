@@ -217,7 +217,7 @@ export function visitFields({
         interceptUnknownField,
         interceptInterfaceType,
       });
-      break;
+      continue;
     }
 
     const selectionFieldDef: FieldDefinitionNode | undefined =

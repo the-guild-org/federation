@@ -37,6 +37,20 @@ export function OnlyInaccessibleChildrenRule(
         );
       }
     },
+    InterfaceType(interfaceState) {
+      if (interfaceState.inaccessible === false && areAllInaccessible(interfaceState.fields)) {
+        context.reportError(
+          new GraphQLError(
+            `Type "${interfaceState.name}" is in the API schema but all of its fields are @inaccessible.`,
+            {
+              extensions: {
+                code: 'ONLY_INACCESSIBLE_CHILDREN',
+              },
+            },
+          ),
+        );
+      }
+    },
     InputObjectType(inputObjectTypeState) {
       if (
         inputObjectTypeState.inaccessible === false &&

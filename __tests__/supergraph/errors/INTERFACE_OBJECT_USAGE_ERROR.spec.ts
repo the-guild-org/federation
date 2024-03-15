@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
-  test.skipIf(api.library === 'guild')('INTERFACE_OBJECT_USAGE_ERROR', () => {
+  test('INTERFACE_OBJECT_USAGE_ERROR', () => {
     expect(
       api.composeServices([
         {

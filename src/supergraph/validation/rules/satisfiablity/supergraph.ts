@@ -2,27 +2,27 @@ import { OperationTypeNode } from 'graphql';
 import { Logger, LoggerContext } from '../../../../utils/logger.js';
 import type { SupergraphState } from '../../../state.js';
 import { SUPERGRAPH_ID } from './constants.js';
-import { FieldsResolver } from './fields.js';
 import { Graph } from './graph.js';
 import { MoveValidator } from './move-validator.js';
-import { Step } from './operation-path.js';
+import type { Step } from './operation-path.js';
+import { SelectionResolver } from './selection.js';
 import { Walker } from './walker.js';
 
 export class Supergraph {
   private supergraph: Graph;
   private mergedGraph: Graph;
-  private fieldsResolver: FieldsResolver;
+  private selectionResolver: SelectionResolver;
   private moveRequirementChecker: MoveValidator;
   private logger = new Logger('Supergraph', new LoggerContext());
 
   constructor(supergraphState: SupergraphState) {
-    this.fieldsResolver = new FieldsResolver(supergraphState);
+    this.selectionResolver = new SelectionResolver(supergraphState);
     this.supergraph = new Graph(
       this.logger,
       SUPERGRAPH_ID,
       'supergraph',
       supergraphState,
-      this.fieldsResolver,
+      this.selectionResolver,
       true,
     );
     this.mergedGraph = new Graph(
@@ -30,7 +30,7 @@ export class Supergraph {
       SUPERGRAPH_ID,
       'merged',
       supergraphState,
-      this.fieldsResolver,
+      this.selectionResolver,
     );
     for (const [id, subgraphState] of supergraphState.subgraphs) {
       this.mergedGraph.addSubgraph(
@@ -39,7 +39,7 @@ export class Supergraph {
           id,
           subgraphState.graph.name,
           supergraphState,
-          this.fieldsResolver,
+          this.selectionResolver,
           false,
         )
           .addFromRoots()
@@ -49,7 +49,8 @@ export class Supergraph {
     }
 
     this.mergedGraph.joinSubgraphs();
-    this.supergraph.addFromRoots();
+
+    this.supergraph.addFromRoots().addInterfaceObjectFields();
 
     this.moveRequirementChecker = new MoveValidator(this.logger, this.mergedGraph);
   }

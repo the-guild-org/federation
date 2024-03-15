@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql';
+import { satisfiesVersionRange } from '../../../utils/version.js';
 import { SupergraphVisitorMap } from '../../composition/visitor.js';
 import { SupergraphValidationContext } from '../validation-context.js';
 
@@ -7,18 +8,26 @@ export function InterfaceKeyMissingImplementationTypeRule(
 ): SupergraphVisitorMap {
   return {
     InterfaceType(interfaceState) {
-      // Check first if the interface is not implemented somewhere in the supergraph.
-      // If at least one subgraph defines/extends the interface, but none of its object types implement it, then we look for two kinds of issues:
-      //  - Subgraph that implements the interface needs to define all the object types that implement the interface in the supergraph. (It's madness, I know..., it shouldn't be like that, it should be ignored.)
-      //  - Subgraph that defines/extends the interface but doesn't implement it needs to define all the object types that implement the interface in the supergraph.
+      if (!interfaceState.isEntity || interfaceState.hasInterfaceObject) {
+        // We don't need to check for this rule for non-entities or when at least one subgraph uses @interfaceObject
+        return;
+      }
+
       let someSubgraphsAreMissingImplementation = false;
 
       for (const interfaceStateInGraph of interfaceState.byGraph.values()) {
+        if (satisfiesVersionRange(interfaceStateInGraph.version, '< v2.3')) {
+          continue;
+        }
+
         if (interfaceStateInGraph.keys.length === 0) {
           continue;
         }
 
-        if (interfaceStateInGraph.implementedBy.size === 0) {
+        if (
+          interfaceStateInGraph.implementedBy.size === 0 &&
+          !interfaceStateInGraph.isInterfaceObject
+        ) {
           someSubgraphsAreMissingImplementation = true;
           break;
         }

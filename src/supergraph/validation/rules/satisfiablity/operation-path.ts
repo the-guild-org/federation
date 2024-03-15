@@ -1,6 +1,5 @@
 import { isFieldEdge, type Edge } from './edge.js';
 import { lazy } from './helpers.js';
-import { FieldMove } from './moves.js';
 import type { Node } from './node.js';
 
 export type Step = FieldStep | AbstractStep;
