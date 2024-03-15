@@ -2,7 +2,10 @@ import { specifiedScalarTypes } from 'graphql';
 import type { Logger } from '../../../../utils/logger.js';
 import { stripTypeModifiers } from '../../../../utils/state.js';
 import type { EnumTypeState } from '../../../composition/enum-type.js';
-import type { InterfaceTypeState } from '../../../composition/interface-type.js';
+import type {
+  InterfaceTypeFieldState,
+  InterfaceTypeState,
+} from '../../../composition/interface-type.js';
 import type { ObjectTypeFieldState, ObjectTypeState } from '../../../composition/object-type.js';
 import type { ScalarTypeState } from '../../../composition/scalar-type.js';
 import type { UnionTypeState } from '../../../composition/union-type.js';
@@ -16,10 +19,10 @@ import {
   isEntityEdge,
   isFieldEdge,
 } from './edge.js';
-import type { Field, FieldsResolver } from './fields.js';
 import { scoreKeyFields } from './helpers.js';
 import { AbstractMove, EntityMove, FieldMove } from './moves.js';
 import { Node } from './node.js';
+import type { SelectionNode, SelectionResolver } from './selection.js';
 
 export class Graph {
   private _warnedAboutIncorrectEdge = false;
@@ -49,7 +52,7 @@ export class Graph {
     id: string | Symbol,
     public name: string,
     private supergraphState: SupergraphState,
-    private fieldsResolver: FieldsResolver,
+    private selectionResolver: SelectionResolver,
     private ignoreInaccessible = false,
   ) {
     this.logger = logger.create('Graph');
@@ -112,8 +115,56 @@ export class Graph {
     return this;
   }
 
+  /**
+   * Add fields from @interfaceObject types
+   */
+  addInterfaceObjectFields() {
+    if (this.isSubgraph) {
+      throw new Error('Expected to be called only on supergraph');
+    }
+
+    for (const interfaceState of this.supergraphState.interfaceTypes.values()) {
+      if (!interfaceState.hasInterfaceObject) {
+        // This is a regular interface, we don't need to do anything
+        continue;
+      }
+
+      for (const implementedBy of interfaceState.implementedBy) {
+        const objectState = this.supergraphState.objectTypes.get(implementedBy);
+
+        if (!objectState) {
+          throw new Error(
+            `Expected object type ${implementedBy} to be defined as it implements ${interfaceState.name}`,
+          );
+        }
+
+        // If a Node is not defined, it means it's not reachable from the root as we first start from the root and add all reachable nodes
+        const head = this.nodeOf(objectState.name, false);
+
+        if (!head) {
+          continue;
+        }
+
+        for (const [interfaceFieldName, interfaceField] of interfaceState.fields) {
+          if (objectState.fields.has(interfaceFieldName)) {
+            // It already has a field with the same name, we don't need to do anything
+            continue;
+          }
+
+          // even though it's an object type...
+          this.createEdgeForInterfaceTypeField(head, interfaceField);
+        }
+      }
+
+      for (const [typeName, state] of this.supergraphState.objectTypes) {
+        if (state.byGraph.has(this.id)) {
+          this.createNodesAndEdgesForType(typeName);
+        }
+      }
+    }
+  }
+
   addFromEntities() {
-    // TODO: support entity interfaces (if necessary... haven't seen anything broken yet)
     for (const typeState of this.supergraphState.objectTypes.values()) {
       if (typeState?.isEntity && this.trueOrIfSubgraphThen(() => typeState.byGraph.has(this.id))) {
         this.createNodesAndEdgesForType(typeState.name);
@@ -193,7 +244,11 @@ export class Graph {
               edgesToAdd.push(
                 new Edge(
                   headNode,
-                  new EntityMove(this.fieldsResolver.resolve(headNode.typeName, key.fields)),
+                  tailNode.typeState.kind === 'object'
+                    ? new EntityMove(this.selectionResolver.resolve(headNode.typeName, key.fields))
+                    : new AbstractMove(
+                        this.selectionResolver.resolve(headNode.typeName, key.fields),
+                      ),
                   tailNode,
                 ),
               );
@@ -206,10 +261,10 @@ export class Graph {
 
   private addProvidedInterfaceFields(
     head: Node,
-    providedFields: Field[],
+    providedFields: SelectionNode[],
     queue: {
       head: Node;
-      providedFields: Field[];
+      providedFields: SelectionNode[];
     }[],
   ) {
     const abstractIndexes = head.getAbstractEdgeIndexes(head.typeName);
@@ -218,9 +273,9 @@ export class Graph {
       throw new Error('Expected abstract indexes to be defined');
     }
 
-    const interfaceFields: Field[] = [];
+    const interfaceFields: SelectionNode[] = [];
 
-    const fieldsByType = new Map<string, Field[]>();
+    const fieldsByType = new Map<string, SelectionNode[]>();
 
     for (const providedField of providedFields) {
       if (providedField.typeName === head.typeName) {
@@ -302,14 +357,22 @@ export class Graph {
 
   private addProvidedField(
     head: Node,
-    providedField: Field,
+    providedField: SelectionNode,
     queue: {
       head: Node;
-      providedFields: Field[];
+      providedFields: SelectionNode[];
     }[],
   ) {
     // As we only need to check if all fields are reachable from the head, we can ignore __typename
-    if (providedField.fieldName === '__typename') {
+    if (providedField.kind === 'field' && providedField.fieldName === '__typename') {
+      return;
+    }
+
+    if (providedField.kind === 'fragment') {
+      queue.push({
+        head,
+        providedFields: providedField.selectionSet,
+      });
       return;
     }
 
@@ -384,8 +447,71 @@ export class Graph {
         continue;
       }
 
-      if (typeNode.typeState?.kind === 'object' && typeNode.typeState?.isEntity) {
+      if (
+        (typeNode.typeState?.kind === 'object' || typeNode.typeState?.kind === 'interface') &&
+        typeNode.typeState?.isEntity
+      ) {
         this.connectEntities(i, otherNodesIndexes, edgesToAdd);
+
+        for (const h of otherNodesIndexes) {
+          const head = this.nodesByTypeIndex[h][0];
+
+          // For example, if we have
+          // Subgraph 1:
+          //  type A @interfaceObject @key(fields: "id") {}
+          // Subgraph 2:
+          //  interface A @key(fields: "id") {}
+          //  type B implements A @key(fields: "id") {}
+          // We need to add an edge from A to B
+          //
+          // The general idea here is to allow to move from a type that implements an interface to another type that implements the same interface
+
+          for (const interfaceName of typeNode.typeState.interfaces) {
+            const interfaceNodes = this.nodesOf(interfaceName, false);
+
+            if (interfaceNodes.length === 0) {
+              continue;
+            }
+
+            const interfaceTypeNode = interfaceNodes[0];
+
+            if (!interfaceTypeNode.typeState || interfaceTypeNode.typeState?.kind !== 'interface') {
+              continue;
+            }
+
+            if (!interfaceTypeNode.typeState.hasInterfaceObject) {
+              continue;
+            }
+
+            for (const interfaceNode of interfaceNodes) {
+              if (interfaceNode.typeState?.kind !== 'interface') {
+                throw new Error(
+                  `Expected interfaceNode ${interfaceNode.toString()} to be an interface`,
+                );
+              }
+
+              const keys = interfaceNode.typeState.byGraph.get(interfaceNode.graphId)?.keys;
+
+              if (!keys || keys.length === 0) {
+                continue;
+              }
+
+              for (const key of keys) {
+                if (!key.resolvable) {
+                  continue;
+                }
+
+                edgesToAdd.push(
+                  new Edge(
+                    head,
+                    new AbstractMove(this.selectionResolver.resolve(interfaceName, key.fields)),
+                    interfaceNode,
+                  ),
+                );
+              }
+            }
+          }
+        }
       } else if (typeNode.typeState.kind === 'union' || typeNode.typeState.kind === 'interface') {
         this.connectUnionOrInterface(i, otherNodesIndexes, edgesToAdd);
       }
@@ -425,11 +551,11 @@ export class Graph {
 
         const queue: {
           head: Node;
-          providedFields: Field[];
+          providedFields: SelectionNode[];
         }[] = [
           {
             head: newTail,
-            providedFields: edge.move.provides.fields,
+            providedFields: edge.move.provides.selectionSet,
           },
         ];
 
@@ -530,6 +656,9 @@ export class Graph {
     }
   }
 
+  nodeOf(typeName: string): Node;
+  nodeOf(typeName: string, failIfMissing: true): Node;
+  nodeOf(typeName: string, failIfMissing?: false): Node | undefined;
   nodeOf(typeName: string, failIfMissing = true) {
     const indexes = this.getIndexesOfType(typeName);
 
@@ -618,12 +747,16 @@ export class Graph {
     return this.getSameGraphEdgesOfIndex(head, head.getEntityEdgeIndexes(head.typeName), 'entity');
   }
 
-  crossGraphEdgesOfHead(head: Node) {
+  indirectEdgesOfHead(head: Node) {
     return this.getSameGraphEdgesOfIndex(
       head,
       head.getCrossGraphEdgeIndexes(head.typeName),
       'cross-graph',
-    );
+    )
+      .concat(
+        this.getSameGraphEdgesOfIndex(head, head.getAbstractEdgeIndexes(head.typeName), 'abstract'),
+      )
+      .filter((edge, i, all) => all.indexOf(edge) === i);
   }
 
   edgesOfHead(head: Node) {
@@ -829,7 +962,53 @@ export class Graph {
       }
     }
 
+    if (typeState.hasInterfaceObject && this.isSubgraph) {
+      // We need to add fields of interface types with @interfaceObject
+      // but only add fields that are owned by the subgraph.
+      for (const field of typeState.fields.values()) {
+        if (field.byGraph.has(this.id)) {
+          this.createEdgeForInterfaceTypeField(head, field);
+        }
+      }
+    } else if (this.isSubgraph) {
+      // We're adding just leafs
+      for (const field of typeState.fields.values()) {
+        if (field.isLeaf && field.byGraph.has(this.id)) {
+          this.createEdgeForInterfaceTypeField(head, field);
+        }
+      }
+    }
+
     return head;
+  }
+
+  private createEdgeForInterfaceTypeField(head: Node, field: InterfaceTypeFieldState) {
+    if (this.ignoreInaccessible && field.inaccessible) {
+      return;
+    }
+
+    const outputTypeName = stripTypeModifiers(field.type);
+    const tail = this.createNodesAndEdgesForType(outputTypeName);
+
+    if (!tail) {
+      throw new Error(`Failed to create Node for ${outputTypeName} in subgraph ${this.id}`);
+    }
+
+    const requires = field.byGraph.get(head.graphId)?.requires;
+    const provides = field.byGraph.get(head.graphId)?.provides;
+
+    return this.addEdge(
+      new Edge(
+        head,
+        new FieldMove(
+          head.typeName,
+          field.name,
+          requires ? this.selectionResolver.resolve(head.typeName, requires) : null,
+          provides ? this.selectionResolver.resolve(outputTypeName, provides) : null,
+        ),
+        tail,
+      ),
+    );
   }
 
   private createEdgeForObjectTypeField(head: Node, field: ObjectTypeFieldState) {
@@ -867,8 +1046,8 @@ export class Graph {
         new FieldMove(
           head.typeName,
           field.name,
-          requires ? this.fieldsResolver.resolve(head.typeName, requires) : null,
-          provides ? this.fieldsResolver.resolve(outputTypeName, provides) : null,
+          requires ? this.selectionResolver.resolve(head.typeName, requires) : null,
+          provides ? this.selectionResolver.resolve(outputTypeName, provides) : null,
         ),
         tail,
       ),

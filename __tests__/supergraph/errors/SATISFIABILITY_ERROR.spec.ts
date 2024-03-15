@@ -1489,7 +1489,6 @@ testVersions((api, version) => {
   });
 
   // ADD IT TO THE COLLECTION
-  // TODO: maximum call stack size exceeded
   test('external but somehow resolvable', () => {
     assertCompositionSuccess(
       api.composeServices([
@@ -3503,5 +3502,295 @@ testVersions((api, version) => {
       }),
     );
     expect(result.errors).toHaveLength(1);
+  });
+
+  test('@require in interfaceObject', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject"]
+            )
+
+          type Product @key(fields: "id") @interfaceObject {
+            id: String!
+            category: Category!
+          }
+
+          type Category @key(fields: "id") {
+            id: ID!
+            name: String!
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject", "@requires", "@external"]
+            )
+
+          type Product @key(fields: "id") @interfaceObject {
+            id: String!
+            categoryName: String @requires(fields: "category { name }")
+            category: Category! @external
+          }
+
+          type Category {
+            name: String! @external
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject"]
+            )
+
+          interface Product @key(fields: "id") {
+            id: String!
+          }
+
+          type Tile implements Product @key(fields: "id") {
+            id: String!
+            size: Int!
+          }
+
+          type Query {
+            tiles: [Tile!]!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+  });
+
+  test('deeply nested interfaces with @requires(fields: <fragment>)', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@external", "@requires"]
+              )
+
+            interface Product {
+              id: ID!
+            }
+
+            interface Location {
+              id: ID!
+            }
+
+            type Warsaw implements Location @key(fields: "id") {
+              id: ID!
+              products: [Product!]! @external
+            }
+
+            type Lidl @key(fields: "id") {
+              id: ID!
+              locations: [Location!] @external
+              products(location: ID): [Product]!
+                @requires(
+                  fields: """
+                  locations {
+                    ... on Warsaw {
+                      products {
+                        id
+                      }
+                    }
+                  }
+                  """
+                )
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+            type Query {
+              products: [Product]!
+            }
+
+            interface Shop @key(fields: "id") {
+              id: ID!
+            }
+
+            interface Location @key(fields: "id") {
+              id: ID!
+            }
+
+            type Lidl implements Shop @key(fields: "id") {
+              id: ID!
+              locations: [Location!]
+            }
+
+            type Warsaw implements Location @key(fields: "id") {
+              id: ID!
+              products: [Product!]!
+            }
+
+            interface Product @key(fields: "id") {
+              id: ID!
+            }
+
+            type Bread implements Product @key(fields: "id") {
+              id: ID!
+              shops: [Shop!]!
+            }
+          `,
+        },
+      ]),
+    );
+  });
+
+  test('unreachable interface implementation (@interfaceObject) - interface lacks @key', () => {
+    // This is a valid composition, as the interface is annotated with @key
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+            interface IData @key(fields: "id") {
+              id: String
+            }
+
+            type Data implements IData @key(fields: "id") {
+              id: String
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Query {
+              idata: IData
+            }
+
+            type IData @interfaceObject @key(fields: "id") {
+              id: String
+            }
+          `,
+        },
+      ]),
+    );
+
+    // This is an invalid composition, as the interface is NOT annotated with @key
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          interface IData {
+            id: String
+          }
+
+          type Data implements IData @key(fields: "id") {
+            id: String
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject"]
+            )
+
+          type Query {
+            idata: IData
+          }
+
+          type IData @interfaceObject @key(fields: "id") {
+            id: String
+          }
+        `,
+      },
+    ]);
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message: expect.stringMatching(normalizeErrorMessage`
+          The following supergraph API query:
+          {
+            idata {
+              ... on Data {
+                ...
+              }
+            }
+          }
+          cannot be satisfied by the subgraphs because:
+          - from subgraph "b": no subgraph can be reached to resolve the implementation type of @interfaceObject type "IData".`),
+        extensions: expect.objectContaining({
+          code: 'SATISFIABILITY_ERROR',
+        }),
+      }),
+    );
+  });
+
+  test('make sure moving from @interfaceObject to an implementation of the interface is allowed', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Query {
+              products: Product!
+            }
+
+            type Product @key(fields: "id", resolvable: false) @interfaceObject {
+              id: ID!
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+            interface Product @key(fields: "id") {
+              id: ID!
+            }
+
+            type Bread implements Product @key(fields: "id") {
+              id: ID!
+              name: String!
+            }
+          `,
+        },
+      ]),
+    );
   });
 });

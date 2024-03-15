@@ -1,30 +1,30 @@
 import type { Logger } from '../../../../utils/logger.js';
-import { Edge, isEntityEdge, isFieldEdge } from './edge.js';
+import { Edge, isAbstractEdge, isEntityEdge, isFieldEdge } from './edge.js';
 import { SatisfiabilityError } from './errors.js';
-import type { Field, Fields } from './fields.js';
 import { concatIfNotExistsFields, concatIfNotExistsString, PathFinder } from './finder.js';
 import type { Graph } from './graph.js';
 import { OperationPath } from './operation-path.js';
+import type { Field, Fragment, Selection, SelectionNode } from './selection.js';
 
-type MoveRequirement = {
+type MoveRequirement<T = SelectionNode> = {
   paths: OperationPath[];
-} & (
-  | {
-      field: Field;
-    }
-  | {
-      type: {
-        parentTypeName: string;
-        childTypeName: string;
-        field: Field;
-      };
-    }
-);
+  selection: T;
+};
 
-type EdgeResolvabilityResult =
+function isFragmentRequirement(
+  requirement: MoveRequirement,
+): requirement is MoveRequirement<Fragment> {
+  return requirement.selection.kind === 'fragment';
+}
+
+function isFieldRequirement(requirement: MoveRequirement): requirement is MoveRequirement<Field> {
+  return requirement.selection.kind === 'field';
+}
+
+type RequirementResult =
   | {
       success: true;
-      errors: undefined;
+      requirements: MoveRequirement[];
     }
   | {
       success: false;
@@ -32,7 +32,6 @@ type EdgeResolvabilityResult =
     };
 
 export class MoveValidator {
-  private cache: Map<string, EdgeResolvabilityResult> = new Map();
   private logger: Logger;
   private pathFinder: PathFinder;
 
@@ -44,41 +43,22 @@ export class MoveValidator {
     this.pathFinder = new PathFinder(this.logger, supergraph, this);
   }
 
-  private canResolveFields(
-    fields: Field[],
+  private canResolveSelectionSet(
+    selectionSet: SelectionNode[],
     path: OperationPath,
     visitedEdges: Edge[],
     visitedGraphs: string[],
-    visitedFields: Fields[],
-  ): EdgeResolvabilityResult {
-    // TODO: adjust cache key to have required fields instead of edge.move
-    const cacheKey =
-      JSON.stringify(fields) +
-      ' | ' +
-      visitedGraphs.join(',') +
-      visitedFields.join(',') +
-      ' | ' +
-      visitedEdges
-        .map(e => e.toString())
-        .sort()
-        .join(',');
-    const cached = this.cache.get(cacheKey);
-
-    if (cached) {
-      return cached;
-    }
-
+    visitedFields: Selection[],
+  ) {
     const requirements: MoveRequirement[] = [];
 
-    for (const field of fields) {
+    for (const selection of selectionSet) {
       requirements.unshift({
-        field,
+        selection,
         paths: [path.clone()],
       });
     }
 
-    // it should look for complex paths lazily
-    // Look for direct paths
     while (requirements.length > 0) {
       // it's important to pop from the end as we want to process the last added requirement first
       const requirement = requirements.pop();
@@ -95,20 +75,13 @@ export class MoveValidator {
       );
 
       if (result.success === false) {
-        this.cache.set(cacheKey, result);
         return result;
       }
 
       for (const innerRequirement of result.requirements) {
-        // at this point we should have a list of ignored tails
         requirements.unshift(innerRequirement);
       }
     }
-
-    this.cache.set(cacheKey, {
-      success: true,
-      errors: undefined,
-    });
 
     return {
       success: true,
@@ -116,142 +89,35 @@ export class MoveValidator {
     };
   }
 
-  private validateRequirement(
-    requirement: MoveRequirement,
+  private validateFragmentRequirement(
+    requirement: MoveRequirement<Fragment>,
     visitedEdges: Edge[],
     visitedGraphs: string[],
-    visitedFields: Fields[],
-  ):
-    | {
-        success: true;
-        requirements: MoveRequirement[];
-      }
-    | {
-        success: false;
-        errors: SatisfiabilityError[];
-      } {
+    visitedFields: Selection[],
+  ): RequirementResult {
+    this.logger.log(() => 'Validating: ... on ' + requirement.selection.typeName);
+
     const nextPaths: OperationPath[] = [];
     const errors: SatisfiabilityError[] = [];
 
-    if ('type' in requirement) {
-      for (const path of requirement.paths) {
-        const directPathsResult = this.pathFinder.findDirectPaths(
-          path,
-          requirement.type.childTypeName,
-          null,
-          visitedEdges,
-        );
-        if (directPathsResult.success) {
-          if (this.logger.isEnabled) {
-            this.logger.log(() => 'Possible direct paths:');
-            for (const path of directPathsResult.paths) {
-              this.logger.log(() => ' ' + path.toString());
-            }
-          }
-          nextPaths.push(...directPathsResult.paths);
-        } else {
-          errors.push(...directPathsResult.errors);
-        }
-      }
-
-      // // we could add these as lazy
-      // try indirect paths
-      for (const path of requirement.paths) {
-        const indirectPathsResult = this.pathFinder.findIndirectPaths(
-          path,
-          requirement.type.childTypeName,
-          null,
-          visitedEdges,
-          visitedGraphs,
-          visitedFields,
-        );
-
-        if (indirectPathsResult.success) {
-          if (this.logger.isEnabled) {
-            this.logger.log(() => 'Possible indirect paths:');
-            for (const path of indirectPathsResult.paths) {
-              this.logger.log(() => ' ' + path.toString());
-            }
-          }
-          nextPaths.push(...indirectPathsResult.paths);
-        } else {
-          errors.push(...indirectPathsResult.errors);
-        }
-      }
-
-      if (nextPaths.length === 0) {
-        if (this.logger.isEnabled) {
-          this.logger.log(() => 'Could not resolve from:');
-          for (const path of requirement.paths) {
-            this.logger.log(() => ' ' + path.toString());
-          }
-        }
-
-        // cannot advance
-        return {
-          success: false,
-          errors,
-        };
-      }
-
-      if (!requirement.type.field) {
-        // we reached the end of the path
-        return {
-          success: true,
-          requirements: [],
-        };
-      }
-
+    // Looks like we hit a fragment spread that matches the current type.
+    // It means that it's a fragment spread on an object type, not a union or interface.
+    // We can ignore the fragment and continue with the selection set.
+    if (requirement.paths[0].tail()?.typeName === requirement.selection.typeName) {
       return {
         success: true,
-        requirements: [
-          {
-            field: requirement.type.field,
-            paths: nextPaths.slice(),
-          },
-        ],
-      };
-    }
-
-    const possibleTypes =
-      /* KAMIL: this was originally equal to [requirement.field.typeName] - kind of */ this.supergraph.possibleTypesOf(
-        requirement.field.typeName,
-      );
-
-    const needsAbstractMove = !possibleTypes.includes(requirement.field.typeName);
-
-    if (needsAbstractMove) {
-      const requirements: MoveRequirement[] = [];
-      for (const possibleType of possibleTypes) {
-        // we need to move to an abstract type first
-        const abstractMoveRequirement: MoveRequirement = {
-          type: {
-            parentTypeName: requirement.field.typeName,
-            childTypeName: possibleType,
-            field: {
-              ...requirement.field,
-              typeName: possibleType,
-            },
-          },
+        requirements: requirement.selection.selectionSet.map(selection => ({
+          selection,
           paths: requirement.paths,
-        };
-
-        requirements.push(abstractMoveRequirement);
-      }
-
-      this.logger.log(() => 'Abstract move');
-
-      return {
-        success: true,
-        requirements,
+        })),
       };
     }
 
     for (const path of requirement.paths) {
       const directPathsResult = this.pathFinder.findDirectPaths(
         path,
-        requirement.field.typeName,
-        requirement.field.fieldName,
+        requirement.selection.typeName,
+        null,
         visitedEdges,
       );
       if (directPathsResult.success) {
@@ -267,12 +133,13 @@ export class MoveValidator {
       }
     }
 
-    // we could add make it lazy
+    // // we could add these as lazy
+    // try indirect paths
     for (const path of requirement.paths) {
       const indirectPathsResult = this.pathFinder.findIndirectPaths(
         path,
-        requirement.field.typeName,
-        requirement.field.fieldName,
+        requirement.selection.typeName,
+        null,
         visitedEdges,
         visitedGraphs,
         visitedFields,
@@ -292,26 +159,21 @@ export class MoveValidator {
     }
 
     if (nextPaths.length === 0) {
-      this.logger.log(
-        () =>
-          `Failed to resolve field ${requirement.field.typeName}.${requirement.field.fieldName} from:`,
-      );
       if (this.logger.isEnabled) {
+        this.logger.log(() => 'Could not resolve from:');
         for (const path of requirement.paths) {
-          this.logger.log(() => ` ` + path);
+          this.logger.log(() => ' ' + path.toString());
         }
       }
 
       // cannot advance
       return {
         success: false,
-        errors: errors.filter(e =>
-          e.isMatchingField(requirement.field.typeName, requirement.field.fieldName),
-        ),
+        errors,
       };
     }
 
-    if (!requirement.field.selectionSet || requirement.field.selectionSet.length === 0) {
+    if (!requirement.selection.selectionSet || requirement.selection.selectionSet.length === 0) {
       // we reached the end of the path
       return {
         success: true,
@@ -321,11 +183,121 @@ export class MoveValidator {
 
     return {
       success: true,
-      requirements: requirement.field.selectionSet.map(field => ({
-        field,
+      requirements: requirement.selection.selectionSet.map(selection => ({
+        selection,
         paths: nextPaths.slice(),
       })),
     };
+  }
+
+  private validateFieldRequirement(
+    requirement: MoveRequirement<Field>,
+    visitedEdges: Edge[],
+    visitedGraphs: string[],
+    visitedFields: Selection[],
+  ): RequirementResult {
+    const { fieldName, typeName } = requirement.selection;
+    this.logger.log(() => 'Validating: ' + typeName + '.' + fieldName);
+
+    const nextPaths: OperationPath[] = [];
+    const errors: SatisfiabilityError[] = [];
+
+    for (const path of requirement.paths) {
+      const directPathsResult = this.pathFinder.findDirectPaths(
+        path,
+        requirement.selection.typeName,
+        requirement.selection.fieldName,
+        visitedEdges,
+      );
+      if (directPathsResult.success) {
+        if (this.logger.isEnabled) {
+          this.logger.log(() => 'Possible direct paths:');
+          for (const path of directPathsResult.paths) {
+            this.logger.log(() => ' ' + path.toString());
+          }
+        }
+        nextPaths.push(...directPathsResult.paths);
+      } else {
+        errors.push(...directPathsResult.errors);
+      }
+    }
+
+    // we could add make it lazy
+    for (const path of requirement.paths) {
+      const indirectPathsResult = this.pathFinder.findIndirectPaths(
+        path,
+        requirement.selection.typeName,
+        requirement.selection.fieldName,
+        visitedEdges,
+        visitedGraphs,
+        visitedFields,
+      );
+
+      if (indirectPathsResult.success) {
+        if (this.logger.isEnabled) {
+          this.logger.log(() => 'Possible indirect paths:');
+          for (const path of indirectPathsResult.paths) {
+            this.logger.log(() => ' ' + path.toString());
+          }
+        }
+        nextPaths.push(...indirectPathsResult.paths);
+      } else {
+        errors.push(...indirectPathsResult.errors);
+      }
+    }
+
+    if (nextPaths.length === 0) {
+      this.logger.log(() => `Failed to resolve field ${typeName}.${fieldName} from:`);
+      if (this.logger.isEnabled) {
+        for (const path of requirement.paths) {
+          this.logger.log(() => ` ` + path);
+        }
+      }
+
+      // cannot advance
+      return {
+        success: false,
+        errors: errors.filter(e => e.isMatchingField(typeName, fieldName)),
+      };
+    }
+
+    if (!requirement.selection.selectionSet || requirement.selection.selectionSet.length === 0) {
+      // we reached the end of the path
+      return {
+        success: true,
+        requirements: [],
+      };
+    }
+
+    return {
+      success: true,
+      requirements: requirement.selection.selectionSet.map(selection => ({
+        selection,
+        paths: nextPaths.slice(),
+      })),
+    };
+  }
+
+  private validateRequirement(
+    requirement: MoveRequirement,
+    visitedEdges: Edge[],
+    visitedGraphs: string[],
+    visitedFields: Selection[],
+  ) {
+    if (isFragmentRequirement(requirement)) {
+      return this.validateFragmentRequirement(
+        requirement,
+        visitedEdges,
+        visitedGraphs,
+        visitedFields,
+      );
+    }
+
+    if (isFieldRequirement(requirement)) {
+      return this.validateFieldRequirement(requirement, visitedEdges, visitedGraphs, visitedFields);
+    }
+
+    throw new Error(`Unsupported requirement: ${requirement.selection.kind}`);
   }
 
   isExternal(edge: Edge): boolean {
@@ -333,15 +305,12 @@ export class MoveValidator {
       return false;
     }
 
-    if (edge.move.provided) {
-      return false;
-    }
-
-    if (!edge.head.typeState) {
-      return false;
-    }
-
-    if (edge.head.typeState.kind !== 'object') {
+    if (
+      !isFieldEdge(edge) ||
+      edge.move.provided ||
+      !edge.head.typeState ||
+      edge.head.typeState.kind !== 'object'
+    ) {
       return false;
     }
 
@@ -352,55 +321,26 @@ export class MoveValidator {
     }
 
     const objectTypeStateInGraph = edge.head.typeState.byGraph.get(edge.head.graphId);
-
-    if (!objectTypeStateInGraph) {
-      return false;
-    }
-
     const fieldStateInGraph = fieldState.byGraph.get(edge.head.graphId);
 
-    if (!fieldStateInGraph) {
+    if (!fieldStateInGraph || !objectTypeStateInGraph) {
       return false;
     }
 
-    const external = fieldState.byGraph.get(edge.head.graphId)?.external ?? false;
-
-    if (!external) {
+    if (!fieldStateInGraph.external) {
       return false;
     }
 
-    const isFedV1 = fieldStateInGraph.version === 'v1.0';
-    if (isFedV1 && objectTypeStateInGraph.extension && fieldState.usedAsKey) {
+    if (
+      fieldStateInGraph.version === 'v1.0' &&
+      objectTypeStateInGraph.extension &&
+      fieldState.usedAsKey
+    ) {
       return false;
     }
 
     if (!fieldStateInGraph.usedAsKey) {
       return true;
-    }
-
-    // ignore if other fields in graph are external
-    let hasNonExternalFields = false;
-    if (isFedV1) {
-      for (const [fieldName, fieldState] of edge.head.typeState.fields) {
-        if (fieldName === edge.move.fieldName) {
-          continue;
-        }
-
-        const fieldStateInGraph = fieldState.byGraph.get(edge.head.graphId);
-
-        if (!fieldStateInGraph) {
-          continue;
-        }
-
-        if (!fieldStateInGraph.external) {
-          hasNonExternalFields = true;
-          break;
-        }
-      }
-    }
-
-    if (hasNonExternalFields) {
-      return false;
     }
 
     if (objectTypeStateInGraph.extension) {
@@ -411,15 +351,7 @@ export class MoveValidator {
   }
 
   private isOverridden(edge: Edge) {
-    if (!isFieldEdge(edge)) {
-      return false;
-    }
-
-    if (!edge.head.typeState) {
-      return false;
-    }
-
-    if (!edge.head.typeState || edge.head.typeState.kind !== 'object') {
+    if (!isFieldEdge(edge) || !edge.head.typeState || edge.head.typeState.kind !== 'object') {
       return false;
     }
 
@@ -447,7 +379,7 @@ export class MoveValidator {
     path: OperationPath,
     visitedEdges: Edge[],
     visitedGraphs: string[],
-    visitedFields: Fields[],
+    visitedFields: Selection[],
   ):
     | {
         success: true;
@@ -487,15 +419,32 @@ export class MoveValidator {
         );
       }
 
+      if (this.isExternal(edge)) {
+        this.logger.groupEnd(
+          () => 'Cannot move to ' + edge + ' because it is external and cross-graph',
+        );
+        return edge.setResolvable(
+          false,
+          visitedGraphs,
+          SatisfiabilityError.forExternal(
+            edge.head.graphName,
+            edge.move.typeName,
+            edge.move.fieldName,
+          ),
+        );
+      }
+
       if (edge.move.requires) {
         this.logger.log(() => 'Detected @requires');
 
-        const newVisitedGraphs = concatIfNotExistsString(visitedGraphs, edge.tail.graphName);
+        const newVisitedGraphs = edge.isCrossGraphEdge()
+          ? concatIfNotExistsString(visitedGraphs, edge.tail.graphName)
+          : visitedGraphs;
         const newVisitedFields = concatIfNotExistsFields(visitedFields, edge.move.requires);
         this.logger.log(() => 'Visited graphs: ' + newVisitedGraphs.join(','));
         if (
-          this.canResolveFields(
-            edge.move.requires.fields,
+          this.canResolveSelectionSet(
+            edge.move.requires.selectionSet,
             path,
             visitedEdges.concat(edge),
             newVisitedGraphs,
@@ -518,56 +467,51 @@ export class MoveValidator {
             edge.move.fieldName,
           ),
         };
-      } else if (this.isExternal(edge)) {
-        this.logger.groupEnd(
-          () => 'Cannot move to ' + edge + ' because it is external and cross-graph',
-        );
-        return edge.setResolvable(
-          false,
-          visitedGraphs,
-          SatisfiabilityError.forExternal(
-            edge.head.graphName,
-            edge.move.typeName,
-            edge.move.fieldName,
-          ),
-        );
-      }
-    } else if (isEntityEdge(edge)) {
-      this.logger.log(() => 'Detected @key');
-      const newVisitedGraphs = concatIfNotExistsString(visitedGraphs, edge.tail.graphName);
-      const newVisitedFields = concatIfNotExistsFields(visitedFields, edge.move.keyFields);
-      this.logger.log(() => 'Visited graphs: ' + newVisitedGraphs.join(','));
-      if (
-        this.canResolveFields(
-          edge.move.keyFields.fields,
-          path,
-          visitedEdges.concat(edge),
-          newVisitedGraphs,
-          newVisitedFields,
-        ).success
-      ) {
-        this.logger.groupEnd(() => 'Can move to ' + edge);
-        return edge.setResolvable(true, newVisitedGraphs);
       }
 
-      this.logger.groupEnd(
-        () => 'Cannot move to ' + edge + ' because key fields are not resolvable',
-      );
-
-      return edge.setResolvable(
-        false,
-        newVisitedGraphs,
-        SatisfiabilityError.forKey(
-          edge.head.graphName,
-          edge.tail.graphName,
-          edge.head.typeName,
-          edge.move.keyFields.toString(),
-        ),
-      );
+      this.logger.groupEnd(() => 'Can move to ' + edge);
+      return edge.setResolvable(true, visitedGraphs);
     }
 
-    this.logger.groupEnd(() => 'Can move to ' + edge);
+    if (!isEntityEdge(edge) && !isAbstractEdge(edge)) {
+      throw new Error('Expected edge to be entity or abstract');
+    }
 
-    return edge.setResolvable(true, visitedGraphs);
+    if (!edge.move.keyFields) {
+      this.logger.groupEnd(() => 'Can move to ' + edge);
+      return edge.setResolvable(true, visitedGraphs);
+    }
+
+    const newVisitedGraphs = concatIfNotExistsString(visitedGraphs, edge.tail.graphName);
+    const newVisitedFields = concatIfNotExistsFields(visitedFields, edge.move.keyFields);
+    const keyFields = edge.move.keyFields;
+
+    this.logger.log(() => 'Detected @key');
+    this.logger.log(() => 'Visited graphs: ' + newVisitedGraphs.join(','));
+    const resolvable = this.canResolveSelectionSet(
+      keyFields.selectionSet,
+      path,
+      visitedEdges.concat(edge),
+      newVisitedGraphs,
+      newVisitedFields,
+    ).success;
+
+    if (resolvable) {
+      this.logger.groupEnd(() => 'Can move to ' + edge);
+      return edge.setResolvable(true, newVisitedGraphs);
+    }
+
+    this.logger.groupEnd(() => 'Cannot move to ' + edge + ' because key fields are not resolvable');
+
+    return edge.setResolvable(
+      false,
+      newVisitedGraphs,
+      SatisfiabilityError.forKey(
+        edge.head.graphName,
+        edge.tail.graphName,
+        edge.head.typeName,
+        keyFields.toString(),
+      ),
+    );
   }
 }

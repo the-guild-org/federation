@@ -76,8 +76,9 @@ export function PolicyRule(context: SubgraphValidationContext): ASTVisitor {
           }
 
           if (
-            typeDef.kind === Kind.OBJECT_TYPE_DEFINITION ||
-            typeDef.kind === Kind.OBJECT_TYPE_EXTENSION
+            (typeDef.kind === Kind.OBJECT_TYPE_DEFINITION ||
+              typeDef.kind === Kind.OBJECT_TYPE_EXTENSION) &&
+            !context.stateBuilder.isInterfaceObject(typeDef.name.value)
           ) {
             context.stateBuilder.objectType.field.setPolicies(
               typeDef.name.value,

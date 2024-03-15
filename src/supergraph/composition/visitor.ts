@@ -2,7 +2,7 @@ import { SupergraphState } from '../state.js';
 import { DirectiveState } from './directive.js';
 import { EnumTypeState } from './enum-type.js';
 import { InputObjectTypeFieldState, InputObjectTypeState } from './input-object-type.js';
-import { InterfaceTypeState } from './interface-type.js';
+import { InterfaceTypeFieldState, InterfaceTypeState } from './interface-type.js';
 import { ObjectTypeFieldArgState, ObjectTypeFieldState, ObjectTypeState } from './object-type.js';
 
 /**
@@ -75,6 +75,14 @@ export function visitSupergraphState(
         visitor.InterfaceType(interfaceTypeState);
       }
     }
+
+    for (const fieldState of interfaceTypeState.fields.values()) {
+      for (const visitor of visitors) {
+        if (visitor.InterfaceTypeField) {
+          visitor.InterfaceTypeField(interfaceTypeState, fieldState);
+        }
+      }
+    }
   });
 
   // Directive
@@ -95,6 +103,11 @@ export interface SupergraphVisitorMap {
     objectState: ObjectTypeState,
     fieldState: ObjectTypeFieldState,
     argState: ObjectTypeFieldArgState,
+  ): void;
+  // Interface
+  InterfaceTypeField?(
+    interfaceState: InterfaceTypeState,
+    fieldState: InterfaceTypeFieldState,
   ): void;
   // Enum
   EnumType?(enumState: EnumTypeState): void;

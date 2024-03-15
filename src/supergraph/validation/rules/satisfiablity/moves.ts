@@ -1,5 +1,5 @@
-import type { Fields } from './fields.js';
 import { lazy } from './helpers.js';
+import type { Selection } from './selection.js';
 
 export interface Move {
   toString(): string;
@@ -27,8 +27,8 @@ export class FieldMove implements Move {
   constructor(
     public typeName: string,
     public fieldName: string,
-    public requires: Fields | null = null,
-    public provides: Fields | null = null,
+    public requires: Selection | null = null,
+    public provides: Selection | null = null,
     public provided: boolean = false,
   ) {}
 
@@ -38,15 +38,19 @@ export class FieldMove implements Move {
 }
 
 export class AbstractMove implements Move {
+  private _toString = lazy(() => (this.keyFields ? `🔮 🔑 ${this.keyFields}` : `🔮`));
+
+  constructor(public keyFields?: Selection) {}
+
   toString() {
-    return `🔮`;
+    return this._toString.get();
   }
 }
 
 export class EntityMove implements Move {
   private _toString = lazy(() => `🔑 ${this.keyFields}`);
 
-  constructor(public keyFields: Fields) {}
+  constructor(public keyFields: Selection) {}
 
   toString() {
     return this._toString.get();

@@ -1,5 +1,15 @@
-import { GraphQLError, Kind, ListValueNode, print, specifiedScalarTypes, ValueNode } from 'graphql';
+import {
+  GraphQLError,
+  Kind,
+  ListValueNode,
+  OperationTypeNode,
+  print,
+  specifiedScalarTypes,
+  ValueNode,
+} from 'graphql';
 import { isList, isNonNull, stripNonNull, stripTypeModifiers } from '../../../utils/state.js';
+import { InterfaceTypeFieldState } from '../../composition/interface-type.js';
+import { ObjectTypeFieldState } from '../../composition/object-type.js';
 import type { SupergraphVisitorMap } from '../../composition/visitor.js';
 import type { SupergraphState } from '../../state.js';
 import type { SupergraphValidationContext } from '../validation-context.js';
@@ -26,7 +36,7 @@ export function SatisfiabilityRule(
 
   const unreachables = supergraph.validate();
 
-  const errorByFieldCoordinate: Record<string, WalkTracker[]> = {};
+  const errorByCoordinate: Record<string, WalkTracker[]> = {};
 
   for (const unreachable of unreachables) {
     const edge = unreachable.superPath.edge();
@@ -38,77 +48,98 @@ export function SatisfiabilityRule(
     if (isFieldEdge(edge)) {
       const fieldCoordinate = `${edge.move.typeName}.${edge.move.fieldName}`;
 
-      if (!errorByFieldCoordinate[fieldCoordinate]) {
-        errorByFieldCoordinate[fieldCoordinate] = [];
+      if (!errorByCoordinate[fieldCoordinate]) {
+        errorByCoordinate[fieldCoordinate] = [];
       }
 
-      errorByFieldCoordinate[fieldCoordinate].push(unreachable);
+      errorByCoordinate[fieldCoordinate].push(unreachable);
+    } else {
+      const coordinate = edge.head.typeName;
+
+      if (!errorByCoordinate[coordinate]) {
+        errorByCoordinate[coordinate] = [];
+      }
+
+      errorByCoordinate[coordinate].push(unreachable);
+    }
+  }
+
+  function check(typeName: string, fieldName?: string) {
+    const coordinate = fieldName ? `${typeName}.${fieldName}` : typeName;
+
+    const unreachables = errorByCoordinate[coordinate];
+
+    if (!unreachables?.length) {
+      return;
+    }
+
+    for (const unreachable of unreachables) {
+      const queryString = printQueryPath(supergraphState, unreachable.superPath.steps());
+
+      if (!queryString) {
+        return;
+      }
+
+      const errorsBySourceGraph: Record<string, SatisfiabilityError[]> = {};
+      const reasons: Array<[string, string[]]> = [];
+
+      for (const error of unreachable.listErrors()) {
+        const sourceGraphName = error.sourceGraphName;
+
+        if (!errorsBySourceGraph[sourceGraphName]) {
+          errorsBySourceGraph[sourceGraphName] = [];
+        }
+
+        errorsBySourceGraph[sourceGraphName].push(error);
+      }
+
+      for (const sourceGraphName in errorsBySourceGraph) {
+        const errors = errorsBySourceGraph[sourceGraphName];
+        reasons.push([sourceGraphName, errors.map(e => e.message)]);
+      }
+
+      if (reasons.length === 0) {
+        continue;
+      }
+
+      context.reportError(
+        new GraphQLError(
+          [
+            'The following supergraph API query:',
+            queryString,
+            'cannot be satisfied by the subgraphs because:',
+            ...reasons.map(([graphName, reasons]) => {
+              if (reasons.length === 1) {
+                return `- from subgraph "${graphName}": ${reasons[0]}`;
+              }
+
+              return `- from subgraph "${graphName}":\n` + reasons.map(r => `  - ${r}`).join('\n');
+            }),
+          ].join('\n'),
+          {
+            extensions: {
+              code: 'SATISFIABILITY_ERROR',
+            },
+          },
+        ),
+      );
     }
   }
 
   return {
+    InterfaceType(interfaceState) {
+      check(interfaceState.name);
+      interfaceState.implementedBy.forEach(typeName => check(typeName));
+    },
+    ObjectType(objectState) {
+      check(objectState.name);
+    },
+    InterfaceTypeField(interfaceState, fieldState) {
+      check(interfaceState.name, fieldState.name);
+      interfaceState.implementedBy.forEach(typeName => check(typeName, fieldState.name));
+    },
     ObjectTypeField(objectState, fieldState) {
-      const coordinate = `${objectState.name}.${fieldState.name}`;
-
-      const unreachables = errorByFieldCoordinate[coordinate];
-
-      if (!unreachables?.length) {
-        return;
-      }
-
-      for (const unreachable of unreachables) {
-        const queryString = printQueryPath(supergraphState, unreachable.superPath.steps());
-
-        if (!queryString) {
-          return;
-        }
-
-        const errorsBySourceGraph: Record<string, SatisfiabilityError[]> = {};
-        const reasons: Array<[string, string[]]> = [];
-
-        for (const error of unreachable.listErrors()) {
-          const sourceGraphName = error.sourceGraphName;
-
-          if (!errorsBySourceGraph[sourceGraphName]) {
-            errorsBySourceGraph[sourceGraphName] = [];
-          }
-
-          errorsBySourceGraph[sourceGraphName].push(error);
-        }
-
-        for (const sourceGraphName in errorsBySourceGraph) {
-          const errors = errorsBySourceGraph[sourceGraphName];
-          reasons.push([sourceGraphName, errors.map(e => e.message)]);
-        }
-
-        if (reasons.length === 0) {
-          continue;
-        }
-
-        context.reportError(
-          new GraphQLError(
-            [
-              'The following supergraph API query:',
-              queryString,
-              'cannot be satisfied by the subgraphs because:',
-              ...reasons.map(([graphName, reasons]) => {
-                if (reasons.length === 1) {
-                  return `- from subgraph "${graphName}": ${reasons[0]}`;
-                }
-
-                return (
-                  `- from subgraph "${graphName}":\n` + reasons.map(r => `  - ${r}`).join('\n')
-                );
-              }),
-            ].join('\n'),
-            {
-              extensions: {
-                code: 'SATISFIABILITY_ERROR',
-              },
-            },
-          ),
-        );
-      }
+      check(objectState.name, fieldState.name);
     },
   };
 }
@@ -126,9 +157,30 @@ function printQueryPath(supergraphState: SupergraphState, queryPath: QueryPath) 
     const point = queryPath[i];
 
     if ('fieldName' in point) {
-      const fieldState = supergraphState.objectTypes
-        .get(point.typeName)
-        ?.fields.get(point.fieldName);
+      const typeState = supergraphState.objectTypes.get(point.typeName);
+
+      if (!typeState) {
+        throw new Error(`Object type "${point.typeName}" not found in Supergraph state`);
+      }
+
+      let fieldState: ObjectTypeFieldState | InterfaceTypeFieldState | undefined =
+        typeState?.fields.get(point.fieldName);
+
+      if (!fieldState) {
+        for (const interfaceName of typeState.interfaces) {
+          const interfaceState = supergraphState.interfaceTypes.get(interfaceName);
+
+          if (!interfaceState) {
+            throw new Error(`Interface type "${interfaceName}" not found in Supergraph state`);
+          }
+
+          fieldState = interfaceState.fields.get(point.fieldName);
+
+          if (fieldState) {
+            break;
+          }
+        }
+      }
 
       if (!fieldState) {
         throw new Error(

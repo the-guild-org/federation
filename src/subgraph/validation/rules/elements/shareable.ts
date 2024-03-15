@@ -20,8 +20,9 @@ export function ShareableRules(context: SubgraphValidationContext): ASTVisitor {
       }
 
       if (
-        typeDef.kind === Kind.OBJECT_TYPE_DEFINITION ||
-        typeDef.kind === Kind.OBJECT_TYPE_EXTENSION
+        (typeDef.kind === Kind.OBJECT_TYPE_DEFINITION ||
+          typeDef.kind === Kind.OBJECT_TYPE_EXTENSION) &&
+        !context.stateBuilder.isInterfaceObject(typeDef.name.value)
       ) {
         if (fieldDef) {
           context.stateBuilder.objectType.field.setShareable(

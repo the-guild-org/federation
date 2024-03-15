@@ -18,13 +18,7 @@ expect.addSnapshotSerializer({
 });
 
 testImplementations(api => {
-  const library = api.library;
   const composeServices = api.composeServices;
-
-  function logSupergraph(result: { supergraphSdl: string }) {
-    console.log('--', library, '--');
-    console.log(result.supergraphSdl);
-  }
 
   test('duplicated Query fields', () => {
     const result = composeServices([
@@ -2960,9 +2954,6 @@ testImplementations(api => {
 
       if (satisfiesVersionRange('< v2.3', version)) {
         assertCompositionFailure(result);
-        if (api.library === 'apollo') {
-          console.log(JSON.stringify(result.errors));
-        }
         expect(result.errors).toContainEqual(
           expect.objectContaining({
             message: '[a] Cannot import unknown element "@interfaceObject".',

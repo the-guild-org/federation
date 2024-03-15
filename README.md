@@ -179,31 +179,18 @@ Your feedback and bug reports are welcome and appreciated.
 - ✅ `REQUIRES_DIRECTIVE_IN_FIELDS_ARG`
 - ✅ `TYPE_DEFINITION_INVALID`
 - ✅ `OVERRIDE_COLLISION_WITH_ANOTHER_DIRECTIVE`
+- ✅ `INTERFACE_OBJECT_USAGE_ERROR`
+- ✅ `REQUIRED_INACCESSIBLE`
+- ✅ `SATISFIABILITY_ERROR`
 
 ### TODOs
 
-- [ ] `INTERFACE_OBJECT_USAGE_ERROR`
 - [ ] `INTERFACE_FIELD_NO_IMPLEM`
-- [ ] `SATISFIABILITY_ERROR`
 - [ ] `DISALLOWED_INACCESSIBLE`
-- [ ] `DOWNSTREAM_SERVICE_ERROR`
 - [ ] `EXTERNAL_ARGUMENT_DEFAULT_MISMATCH`
 - [ ] `EXTERNAL_ARGUMENT_TYPE_MISMATCH`
 - [ ] `EXTERNAL_COLLISION_WITH_ANOTHER_DIRECTIVE`
 - [ ] `IMPLEMENTED_BY_INACCESSIBLE`
-- [ ] `INVALID_FEDERATION_SUPERGRAPH`
 - [ ] `LINK_IMPORT_NAME_MISMATCH`
-- [ ] `REQUIRED_INACCESSIBLE`
-- [ ] `SHAREABLE_HAS_MISMATCHED_RUNTIME_TYPES`
-- [ ] `UNSUPPORTED_FEATURE`
 - [ ] `UNSUPPORTED_LINKED_FEATURE`
 - [ ] `TYPE_WITH_ONLY_UNUSED_EXTERNAL`
-- [ ] `SATISFIABILITY_ERROR` - deeply nested key fields
-- [ ] `SATISFIABILITY_ERROR` - fragments in keys
-- [ ] `SATISFIABILITY_ERROR` - support interfaces... (kill me)
-- [ ] `SATISFIABILITY_ERROR` - @require - check if fields defined by @require can be resolved by
-      current subgraph or by moving to other subgraphs.
-- [ ] `SATISFIABILITY_ERROR` - @provides?
-- [ ] more accurate key fields comparison (I did string ≠ string but we need to make it better)
-- [ ] support `@interfaceObject`
-- [ ] support `[String!]!` and `[String!]` comparison, not only `String!` vs `String`

@@ -1,9 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { ObjectType, TypeKind } from '../../../subgraph/state.js';
-import {
-  allowedInterfaceObjectVersion,
-  importsAllowInterfaceObject,
-} from '../../../subgraph/validation/rules/elements/interface-object.js';
+import { TypeKind } from '../../../subgraph/state.js';
 import { SupergraphValidationContext } from './../validation-context.js';
 
 const mapIRKindToString = {
@@ -18,7 +14,7 @@ const mapIRKindToString = {
 
 export type GraphTypeValidationContext = {
   graphName: string;
-  interfaceObject: boolean;
+  isInterfaceObject: boolean;
 };
 
 export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
@@ -30,12 +26,13 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
 
   for (const [graph, state] of context.subgraphStates) {
     state.types.forEach(type => {
-      let interfaceObject = false;
       const kindToGraphs = typeToKindWithGraphs.get(type.name);
-      const typeIsObject = type.kind === TypeKind.OBJECT;
-      if (typeIsObject && type.interfaceObjectTypeName) {
-        interfaceObject = true;
-      }
+      const isInterfaceObject = type.kind === TypeKind.INTERFACE ? type.isInterfaceObject : false;
+
+      const graphsValue = {
+        graphName: context.graphIdToName(graph),
+        isInterfaceObject,
+      };
 
       if (kindToGraphs) {
         // Seems like we've already seen this type
@@ -44,21 +41,10 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
         if (graphs) {
           // If we've already seen this kind
           // Add the graph to the set.
-          graphs.add({
-            graphName: context.graphIdToName(graph),
-            interfaceObject,
-          });
+          graphs.add(graphsValue);
         } else {
           // Add the kind to the map of kinds for that type
-          kindToGraphs.set(
-            type.kind,
-            new Set([
-              {
-                graphName: context.graphIdToName(graph),
-                interfaceObject,
-              },
-            ]),
-          );
+          kindToGraphs.set(type.kind, new Set([graphsValue]));
         }
 
         // If it has more than 1 kind
@@ -68,20 +54,7 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
         }
       } else {
         // We haven't seen this type yet
-        typeToKindWithGraphs.set(
-          type.name,
-          new Map([
-            [
-              type.kind,
-              new Set([
-                {
-                  graphName: context.graphIdToName(graph),
-                  interfaceObject,
-                },
-              ]),
-            ],
-          ]),
-        );
+        typeToKindWithGraphs.set(type.name, new Map([[type.kind, new Set([graphsValue])]]));
       }
     });
   }
@@ -89,9 +62,7 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
   for (const typeName of typesWithConflict) {
     const kindToGraphs = typeToKindWithGraphs.get(typeName)!;
 
-    // check for @interfaceObject (trkohler)
-    const isInterfaceObjectCandidate = interfaceObjectConditions(kindToGraphs);
-    if (isInterfaceObjectCandidate) {
+    if (interfaceObjectConditions(kindToGraphs)) {
       continue;
     }
 
@@ -121,12 +92,11 @@ export function TypesOfTheSameKindRule(context: SupergraphValidationContext) {
 function interfaceObjectConditions(
   kindToGraphs: Map<TypeKind, Set<GraphTypeValidationContext>>,
 ): boolean {
-  const objectTypes = kindToGraphs.get(TypeKind.OBJECT) || [];
-  let interfaceObject = false;
-  for (const graphTypeValidationContext of objectTypes) {
-    if (graphTypeValidationContext.interfaceObject) {
-      interfaceObject = true;
+  const interfaceTypes = kindToGraphs.get(TypeKind.INTERFACE) || [];
+  for (const graphTypeValidationContext of interfaceTypes) {
+    if (graphTypeValidationContext.isInterfaceObject) {
+      return true;
     }
   }
-  return interfaceObject;
+  return false;
 }

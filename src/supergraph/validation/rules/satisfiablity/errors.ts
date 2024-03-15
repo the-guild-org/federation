@@ -3,7 +3,8 @@ type SatisfiabilityErrorKind =
   | 'REQUIRE' // cannot satisfy @require conditions on field "User.name".
   | 'EXTERNAL' // field "User.name" is not resolvable because marked @external
   | 'MISSING_FIELD' // cannot find field "User.name".
-  | 'NO_KEY'; // cannot move to subgraph "X", which has field "User.name", because type "User" has no @key defined in subgraph "Y".
+  | 'NO_KEY' // cannot move to subgraph "X", which has field "User.name", because type "User" has no @key defined in subgraph "Y".
+  | 'NO_IMPLEMENTATION'; // no subgraph can be reached to resolve the implementation type of @interfaceObject type "X".
 
 export class SatisfiabilityError extends Error {
   static forKey(
@@ -77,6 +78,17 @@ export class SatisfiabilityError extends Error {
       `cannot move to subgraph "${targetGraphName}", which has field "${typeName}.${fieldName}", because type "${typeName}" has no @key defined in subgraph "${targetGraphName}".`,
     );
   }
+
+  static forNoImplementation(sourceGraphName: string, typeName: string): SatisfiabilityError {
+    return new SatisfiabilityError(
+      'NO_IMPLEMENTATION',
+      sourceGraphName,
+      typeName,
+      null,
+      `no subgraph can be reached to resolve the implementation type of @interfaceObject type "${typeName}".`,
+    );
+  }
+
   private constructor(
     public kind: SatisfiabilityErrorKind,
     public sourceGraphName: string,

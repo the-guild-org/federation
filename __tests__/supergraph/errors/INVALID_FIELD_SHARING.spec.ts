@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { assertCompositionSuccess, graphql, testVersions } from '../../shared/testkit.js';
+import {
+  assertCompositionFailure,
+  assertCompositionSuccess,
+  graphql,
+  testVersions,
+} from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   describe('INVALID_FIELD_SHARING', () => {
@@ -443,5 +448,76 @@ testVersions((api, version) => {
         }),
       );
     });
+  });
+
+  test('non-shareable field in @interfaceObject and interface implementation', () => {
+    const result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject", "@shareable"]
+            )
+
+          type Query {
+            hello: String
+          }
+
+          interface MyInterface @key(fields: "id") {
+            id: ID!
+            field: String
+          }
+
+          type MyType implements MyInterface @key(fields: "id") {
+            id: ID!
+            field: String
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject"]
+            )
+
+          type MyInterface @key(fields: "id") @interfaceObject {
+            id: ID!
+            newField: String
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@key", "@interfaceObject"]
+            )
+
+          type MyInterface @key(fields: "id", resolvable: false) @interfaceObject {
+            id: ID!
+            field: String
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message:
+          'Non-shareable field "MyType.field" is resolved from multiple subgraphs: it is resolved from subgraphs "a" and "c" (through @interfaceObject field "MyInterface.field") and defined as non-shareable in all of them',
+        extensions: expect.objectContaining({
+          code: 'INVALID_FIELD_SHARING',
+        }),
+      }),
+    );
   });
 });

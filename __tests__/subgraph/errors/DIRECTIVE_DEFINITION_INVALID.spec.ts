@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
+  assertCompositionFailure,
   assertCompositionSuccess,
   createStarsStuff,
   graphql,
@@ -49,49 +50,59 @@ testVersions((api, version) => {
           },
         ]),
       );
+    });
 
-      test('different location should be ignored if imported but not used', () => {
-        assertCompositionSuccess(
-          api.composeServices([
-            {
-              name: 'users',
-              typeDefs: graphql`
-                  extend schema
-                    @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
+    test('different location should be ignored if imported but not used', () => {
+      const result = api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+                extend schema
+                  @link(url: "https://specs.apollo.dev/federation/${version}", import: ["@key"])
 
-                  type User @key(fields: "id") {
-                    id: ID!
-                  }
+                type User @key(fields: "id") {
+                  id: ID!
+                }
 
-                  type Query {
-                    users: [User]
-                  }
-                `,
-            },
-            {
-              name: 'profiles',
-              typeDefs: graphql`
-                  extend schema
-                    @link(
-                      url: "https://specs.apollo.dev/federation/${version}"
-                      import: ["@key", "@external", "@extends"]
-                    )
+                type Query {
+                  users: [User]
+                }
+              `,
+        },
+        {
+          name: 'profiles',
+          typeDefs: graphql`
+                extend schema
+                  @link(
+                    url: "https://specs.apollo.dev/federation/${version}"
+                    import: ["@key", "@external", "@extends"]
+                  )
 
-                  directive @extends on FIELD_DEFINITION
+                directive @extends on FIELD_DEFINITION
 
-                  type User @key(fields: "id") {
-                    id: ID!
-                    profile: Profile
-                  }
+                type User @key(fields: "id") {
+                  id: ID!
+                  profile: Profile
+                }
 
-                  type Profile {
-                    name: String!
-                  }
-                `,
-            },
-          ]),
-        );
-      });
+                type Profile {
+                  name: String!
+                }
+              `,
+        },
+      ]);
+
+      assertCompositionFailure(result);
+
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({
+          message:
+            '[profiles] Invalid definition for directive "@extends": "@extends" should have locations OBJECT, INTERFACE, but found (non-subset) FIELD_DEFINITION',
+          extensions: expect.objectContaining({
+            code: 'DIRECTIVE_DEFINITION_INVALID',
+          }),
+        }),
+      );
     });
   });
 

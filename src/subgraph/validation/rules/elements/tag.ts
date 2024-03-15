@@ -61,7 +61,8 @@ export function TagRules(context: SubgraphValidationContext): ASTVisitor {
 
           if (
             typeDef.kind === Kind.INTERFACE_TYPE_DEFINITION ||
-            typeDef.kind === Kind.INTERFACE_TYPE_EXTENSION
+            typeDef.kind === Kind.INTERFACE_TYPE_EXTENSION ||
+            context.stateBuilder.isInterfaceObject(typeDef.name.value)
           ) {
             context.stateBuilder.interfaceType.field.setTag(
               typeDef.name.value,

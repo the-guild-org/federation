@@ -26,6 +26,16 @@ export function KnownFederationDirectivesRule(context: SubgraphValidationContext
     Directive(node) {
       const name = node.name.value;
 
+      if (!availableDirectivesSet.has(name) && name === 'interfaceObject') {
+        context.reportError(
+          new GraphQLError(
+            `Unknown directive "@interfaceObject". If you meant the "@interfaceObject" federation 2 directive, note that this schema is a federation 1 schema. To be a federation 2 schema, it needs to @link to the federation specification v2.`,
+            { nodes: node, extensions: { code: 'INVALID_GRAPHQL' } },
+          ),
+        );
+        return;
+      }
+
       if (
         !availableDirectivesSet.has(name) &&
         knownDirectivesSet.has(name) &&

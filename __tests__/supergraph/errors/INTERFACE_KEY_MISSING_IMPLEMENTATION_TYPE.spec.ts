@@ -1,5 +1,10 @@
 import { expect, test } from 'vitest';
-import { graphql, satisfiesVersionRange, testVersions } from '../../shared/testkit.js';
+import {
+  assertCompositionSuccess,
+  graphql,
+  satisfiesVersionRange,
+  testVersions,
+} from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE', () => {
@@ -103,6 +108,41 @@ testVersions((api, version) => {
         ),
       }),
     );
+
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            type Query {
+              a: String
+            }
+
+            extend interface Node @key(fields: "id") {
+              id: ID!
+              name: String
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            type Query {
+              b: String
+            }
+
+            interface Node {
+              id: ID!
+            }
+
+            type User implements Node @key(fields: "id") {
+              id: ID!
+              name: String
+            }
+          `,
+        },
+      ]),
+    );
   });
 
   test('INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE: multiple keys', () => {
@@ -205,6 +245,49 @@ testVersions((api, version) => {
               ],
         ),
       }),
+    );
+  });
+
+  test('INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE: @interfaceObject + interface is valid', () => {
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          name: 'a',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            interface Node @key(fields: "id") {
+              id: ID!
+            }
+
+            type Query {
+              a: String
+            }
+          `,
+        },
+        {
+          name: 'b',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+
+            type Node @key(fields: "id", resolvable: false) @interfaceObject {
+              id: ID!
+            }
+
+            type Query {
+              b: String
+            }
+          `,
+        },
+      ]),
     );
   });
 });

@@ -40,6 +40,7 @@ import { KnownFederationDirectivesRule } from './rules/known-federation-directiv
 import { KnownRootTypeRule } from './rules/known-root-type-rule.js';
 import { KnownTypeNamesRule } from './rules/known-type-names-rule.js';
 import { LoneSchemaDefinitionRule } from './rules/lone-schema-definition-rule.js';
+import { OnlyInterfaceImplementationRule } from './rules/only-interface-implementation-rule.js';
 import { ProvidedArgumentsOnDirectivesRule } from './rules/provided-arguments-on-directives-rule.js';
 import { ProvidedRequiredArgumentsOnDirectivesRule } from './rules/provided-required-arguments-on-directives-rule.js';
 import { QueryRootTypeInaccessibleRule } from './rules/query-root-type-inaccessible-rule.js';
@@ -157,6 +158,7 @@ export function validateSubgraph(
     ComposeDirectiveRules,
   ];
   const graphqlRules = [
+    OnlyInterfaceImplementationRule,
     LoneSchemaDefinitionRule,
     UniqueOperationTypesRule,
     UniqueTypeNamesRule,

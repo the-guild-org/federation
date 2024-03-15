@@ -1,14 +1,6 @@
-import { ASTVisitor } from 'graphql';
+import { ASTVisitor, GraphQLError, Kind } from 'graphql';
 import { validateDirectiveAgainstOriginal } from '../../../helpers.js';
 import type { SubgraphValidationContext } from '../../validation-context.js';
-import { FederationImports } from "../../../../specifications/federation.js";
-
-// new utilities for @interfaceObject (trkohler)
-export const allowedInterfaceObjectVersion = ["v2.3", "v2.4", "v2.5", "v2.6"]
-export const importsAllowInterfaceObject = (imports: FederationImports) => {
-  const allowed = imports.some((importItem) => importItem.name == "@interfaceObject") && imports.some((importItem) => importItem.name == "@key")
-  return allowed
-}
 
 export function InterfaceObjectRules(context: SubgraphValidationContext): ASTVisitor {
   return {
@@ -20,10 +12,42 @@ export function InterfaceObjectRules(context: SubgraphValidationContext): ASTVis
         return;
       }
 
-      if (!context.satisfiesVersionRange('> v2.3')) {
+      if (context.satisfiesVersionRange('< v2.3')) {
+        context.reportError(
+          new GraphQLError(
+            `@interfaceObject is not yet supported. See https://github.com/the-guild-org/federation/issues/7`,
+            {
+              extensions: { code: 'UNSUPPORTED_FEATURE' },
+            },
+          ),
+        );
         return;
       }
 
+      const typeDef = context.typeNodeInfo.getTypeDef();
+
+      if (!typeDef) {
+        return;
+      }
+
+      if (
+        typeDef.kind !== Kind.OBJECT_TYPE_DEFINITION &&
+        typeDef.kind !== Kind.OBJECT_TYPE_EXTENSION
+      ) {
+        // handled by directive location validation
+        return;
+      }
+
+      if (!typeDef.directives?.some(d => d.name.value === 'key')) {
+        context.reportError(
+          new GraphQLError(
+            `The @interfaceObject directive can only be applied to entity types but type "${typeDef.name.value}" has no @key in this subgraph.`,
+            {
+              extensions: { code: 'INTERFACE_OBJECT_USAGE_ERROR' },
+            },
+          ),
+        );
+      }
     },
   };
 }

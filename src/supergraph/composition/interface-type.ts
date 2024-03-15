@@ -1,7 +1,7 @@
 import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, InterfaceType } from '../../subgraph/state.js';
-import { createInterfaceTypeNode } from './ast.js';
+import { createInterfaceTypeNode, JoinFieldAST } from './ast.js';
 import { convertToConst } from './common.js';
 import type { Key, MapByGraph, TypeBuilder } from './common.js';
 
@@ -32,6 +32,10 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         interfaceTypeState.hasDefinition = true;
       }
 
+      if (type.isInterfaceObject) {
+        interfaceTypeState.hasInterfaceObject = true;
+      }
+
       // First description wins
       if (type.description && !interfaceTypeState.description) {
         interfaceTypeState.description = type.description;
@@ -46,11 +50,16 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         interfaceTypeState.implementedBy.add(objectTypeName),
       );
 
+      if (type.keys.length) {
+        interfaceTypeState.isEntity = true;
+      }
+
       interfaceTypeState.byGraph.set(graph.id, {
         extension: type.extension,
         keys: type.keys,
         interfaces: type.interfaces,
         implementedBy: type.implementedBy,
+        isInterfaceObject: type.isInterfaceObject,
         version: graph.version,
       });
 
@@ -62,6 +71,10 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         if (!field.type.endsWith('!') && fieldState.type.endsWith('!')) {
           // Replace the non-null type with a nullable type
           fieldState.type = field.type;
+        }
+
+        if (field.isLeaf) {
+          fieldState.isLeaf = true;
         }
 
         if (field.inaccessible) {
@@ -94,12 +107,21 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
           fieldState.ast.directives.push(directive);
         });
 
+        const usedAsKey = type.fieldsUsedAsKeys.has(field.name);
+
+        if (usedAsKey) {
+          fieldState.usedAsKey = true;
+        }
+
         fieldState.byGraph.set(graph.id, {
           type: field.type,
           override: field.override,
           provides: field.provides,
           requires: field.requires,
           version: graph.version,
+          external: field.external,
+          shareable: field.shareable,
+          usedAsKey,
         });
 
         for (const arg of field.args.values()) {
@@ -140,6 +162,33 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
       return createInterfaceTypeNode({
         name: interfaceType.name,
         fields: Array.from(interfaceType.fields.values()).map(field => {
+          let nonEmptyJoinField = false;
+
+          const joinFields: JoinFieldAST[] = [];
+
+          if (field.byGraph.size !== interfaceType.byGraph.size) {
+            for (const [graphId, meta] of field.byGraph.entries()) {
+              if (
+                meta.type !== field.type ||
+                meta.override ||
+                meta.provides ||
+                meta.requires ||
+                meta.external
+              ) {
+                nonEmptyJoinField = true;
+              }
+
+              joinFields.push({
+                graph: graphId,
+                type: meta.type === field.type ? undefined : meta.type,
+                override: meta.override ?? undefined,
+                provides: meta.provides ?? undefined,
+                requires: meta.requires ?? undefined,
+                external: meta.external,
+              });
+            }
+          }
+
           return {
             name: field.name,
             type: field.type,
@@ -176,19 +225,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
                 };
               }),
             join: {
-              field:
-                // Not sure if it's correct for 100% of cases.
-                // The idea here is to no emit `@join__field` if all graphs have the same field (with the same type)
-                // It probably needs to be more complex than that, but it's a good start.
-                field.byGraph.size === interfaceType.byGraph.size
-                  ? []
-                  : Array.from(field.byGraph.entries()).map(([graphName, meta]) => ({
-                      graph: graphName.toUpperCase(),
-                      type: meta.type === field.type ? undefined : meta.type,
-                      override: meta.override ?? undefined,
-                      provides: meta.provides ?? undefined,
-                      requires: meta.requires ?? undefined,
-                    })),
+              field: joinFields,
             },
           };
         }),
@@ -210,6 +247,8 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
                   graph: graphId,
                   key: key.fields,
                   extension: meta.extension,
+                  isInterfaceObject: meta.isInterfaceObject,
+                  resolvable: key.resolvable,
                 }));
               }
 
@@ -255,14 +294,17 @@ export type InterfaceTypeState = {
   interfaces: Set<string>;
   implementedBy: Set<string>;
   fields: Map<string, InterfaceTypeFieldState>;
+  hasInterfaceObject: boolean;
+  isEntity: boolean;
   ast: {
     directives: DirectiveNode[];
   };
 };
 
-type InterfaceTypeFieldState = {
+export type InterfaceTypeFieldState = {
   name: string;
   type: string;
+  isLeaf: boolean;
   tags: Set<string>;
   inaccessible: boolean;
   authenticated: boolean;
@@ -270,6 +312,7 @@ type InterfaceTypeFieldState = {
   scopes: string[][];
   deprecated?: Deprecated;
   description?: Description;
+  usedAsKey: boolean;
   byGraph: MapByGraph<FieldStateInGraph>;
   args: Map<string, InterfaceTypeFieldArgState>;
   ast: {
@@ -295,6 +338,7 @@ type InterfaceTypeInGraph = {
   keys: Key[];
   interfaces: Set<string>;
   implementedBy: Set<string>;
+  isInterfaceObject: boolean;
   version: FederationVersion;
 };
 
@@ -302,6 +346,9 @@ type FieldStateInGraph = {
   type: string;
   override: string | null;
   provides: string | null;
+  shareable: boolean;
+  usedAsKey: boolean;
+  external: boolean;
   requires: string | null;
   version: FederationVersion;
 };
@@ -328,6 +375,8 @@ function getOrCreateInterfaceType(state: Map<string, InterfaceTypeState>, typeNa
     policies: [],
     scopes: [],
     hasDefinition: false,
+    hasInterfaceObject: false,
+    isEntity: false,
     byGraph: new Map(),
     fields: new Map(),
     interfaces: new Set(),
@@ -356,6 +405,8 @@ function getOrCreateInterfaceField(
   const def: InterfaceTypeFieldState = {
     name: fieldName,
     type: fieldType,
+    isLeaf: false,
+    usedAsKey: false,
     tags: new Set(),
     inaccessible: false,
     authenticated: false,
