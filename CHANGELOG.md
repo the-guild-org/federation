@@ -1,5 +1,15 @@
 # @theguild/federation-composition
 
+## 0.11.0
+
+### Minor Changes
+
+- [#52](https://github.com/the-guild-org/federation/pull/52) [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support @interfaceObject directive
+
+### Patch Changes
+
+- [#52](https://github.com/the-guild-org/federation/pull/52) [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Improve INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE
+
 ## 0.10.1
 
 ### Patch Changes
