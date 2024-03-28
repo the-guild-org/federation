@@ -1,7 +1,8 @@
+import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, InputObjectType } from '../../subgraph/state.js';
 import { createInputObjectTypeNode } from './ast.js';
-import type { MapByGraph, TypeBuilder } from './common.js';
+import { convertToConst, type MapByGraph, type TypeBuilder } from './common.js';
 
 export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObjectTypeState> {
   return {
@@ -14,14 +15,18 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
         inputObjectTypeState.inaccessible = true;
       }
 
-      const isDefinition = type.isDefinition && !type.extension;
-
       if (type.description && !inputObjectTypeState.description) {
         inputObjectTypeState.description = type.description;
       }
 
       if (type.isDefinition) {
         inputObjectTypeState.hasDefinition = true;
+      }
+
+      if (type.ast.directives) {
+        type.ast.directives.forEach(directive => {
+          inputObjectTypeState.ast.directives.push(directive);
+        });
       }
 
       inputObjectTypeState.byGraph.set(graph.id, {
@@ -56,6 +61,10 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
           fieldState.defaultValue = field.defaultValue;
         }
 
+        field.ast.directives.forEach(directive => {
+          fieldState.ast.directives.push(directive);
+        });
+
         fieldState.byGraph.set(graph.id, {
           type: field.type,
           inaccessible: field.inaccessible,
@@ -70,6 +79,9 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
         tags: Array.from(inputObjectType.tags),
         inaccessible: inputObjectType.inaccessible,
         description: inputObjectType.description,
+        ast: {
+          directives: convertToConst(inputObjectType.ast.directives),
+        },
         fields: Array.from(inputObjectType.fields.values())
           .filter(field => {
             if (field.byGraph.size !== inputObjectType.byGraph.size) {
@@ -92,6 +104,9 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
                 : undefined,
               description: field.description,
               deprecated: field.deprecated,
+              ast: {
+                directives: convertToConst(field.ast.directives),
+              },
               join: {
                 field: hasDifferentType
                   ? Array.from(field.byGraph).map(([graph, fieldByGraph]) => ({
@@ -119,6 +134,9 @@ export interface InputObjectTypeState {
   description?: Description;
   byGraph: MapByGraph<InputObjectTypeStateInGraph>;
   fields: Map<string, InputObjectTypeFieldState>;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export type InputObjectTypeFieldState = {
@@ -130,6 +148,9 @@ export type InputObjectTypeFieldState = {
   description?: Description;
   deprecated?: Deprecated;
   byGraph: MapByGraph<InputObjectFieldStateInGraph>;
+  ast: {
+    directives: DirectiveNode[];
+  };
 };
 
 type InputObjectTypeStateInGraph = {
@@ -159,6 +180,9 @@ function getOrCreateInputObjectType(state: Map<string, InputObjectTypeState>, ty
     inaccessible: false,
     byGraph: new Map(),
     fields: new Map(),
+    ast: {
+      directives: [],
+    },
   };
 
   state.set(typeName, def);
@@ -183,6 +207,9 @@ function getOrCreateField(
     tags: new Set(),
     inaccessible: false,
     byGraph: new Map(),
+    ast: {
+      directives: [],
+    },
   };
 
   objectTypeState.fields.set(fieldName, def);

@@ -190,6 +190,9 @@ export interface InputField {
   defaultValue?: string;
   description?: Description;
   deprecated?: Deprecated;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface EnumValue {
@@ -728,7 +731,15 @@ export function createSubgraphStateBuilder(
               }
               case Kind.INPUT_OBJECT_TYPE_DEFINITION:
               case Kind.INPUT_OBJECT_TYPE_EXTENSION: {
-                inputObjectTypeBuilder.setDirective(typeDef.name.value, node);
+                if (fieldDef) {
+                  inputObjectTypeBuilder.field.setDirective(
+                    typeDef.name.value,
+                    fieldDef.name.value,
+                    node,
+                  );
+                } else {
+                  inputObjectTypeBuilder.setDirective(typeDef.name.value, node);
+                }
                 break;
               }
               default:
@@ -1668,6 +1679,9 @@ function inputObjectTypeFactory(state: SubgraphState) {
       setTag(typeName: string, fieldName: string, tag: string) {
         getOrCreateInputObjectField(state, typeName, fieldName).tags.add(tag);
       },
+      setDirective(typeName: string, fieldName: string, directive: DirectiveNode) {
+        getOrCreateInputObjectField(state, typeName, fieldName).ast.directives.push(directive);
+      },
     },
   };
 }
@@ -2098,6 +2112,9 @@ function getOrCreateInputObjectField(
     type: MISSING,
     inaccessible: false,
     tags: new Set(),
+    ast: {
+      directives: [],
+    },
   };
 
   inputObjectType.fields.set(fieldName, field);

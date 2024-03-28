@@ -849,7 +849,9 @@ describe('input object type', () => {
           {
             name: 'name',
             type: 'String',
-            inaccessible: true,
+            ast: {
+              directives: [createDirective('custom')],
+            },
           },
         ],
         ast: {
@@ -858,7 +860,7 @@ describe('input object type', () => {
       }),
     ).toEqualGraphQL(/* GraphQL */ `
       input User @custom {
-        name: String @inaccessible
+        name: String @custom
       }
     `);
   });
