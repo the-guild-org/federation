@@ -123,6 +123,9 @@ export interface InputObjectType {
   tags: Set<string>;
   isDefinition: boolean;
   description?: Description;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface UnionType {
@@ -187,6 +190,9 @@ export interface InputField {
   defaultValue?: string;
   description?: Description;
   deprecated?: Deprecated;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface EnumValue {
@@ -720,6 +726,19 @@ export function createSubgraphStateBuilder(
               case Kind.DIRECTIVE_DEFINITION: {
                 if (fieldDef) {
                   directiveBuilder.arg.setDirective(typeDef.name.value, fieldDef!.name.value, node);
+                }
+                break;
+              }
+              case Kind.INPUT_OBJECT_TYPE_DEFINITION:
+              case Kind.INPUT_OBJECT_TYPE_EXTENSION: {
+                if (fieldDef) {
+                  inputObjectTypeBuilder.field.setDirective(
+                    typeDef.name.value,
+                    fieldDef.name.value,
+                    node,
+                  );
+                } else {
+                  inputObjectTypeBuilder.setDirective(typeDef.name.value, node);
                 }
                 break;
               }
@@ -1625,12 +1644,15 @@ function inputObjectTypeFactory(state: SubgraphState) {
       getOrCreateInputObjectType(state, typeName).description = description;
     },
     setInaccessible(typeName: string) {
-      const objectType = getOrCreateInputObjectType(state, typeName);
-      objectType.inaccessible = true;
+      const inputObjectType = getOrCreateInputObjectType(state, typeName);
+      inputObjectType.inaccessible = true;
 
-      for (const field of objectType.fields.values()) {
+      for (const field of inputObjectType.fields.values()) {
         field.inaccessible = true;
       }
+    },
+    setDirective(typeName: string, directive: DirectiveNode) {
+      getOrCreateInputObjectType(state, typeName).ast.directives.push(directive);
     },
     setTag(typeName: string, tag: string) {
       getOrCreateInputObjectType(state, typeName).tags.add(tag);
@@ -1656,6 +1678,9 @@ function inputObjectTypeFactory(state: SubgraphState) {
       },
       setTag(typeName: string, fieldName: string, tag: string) {
         getOrCreateInputObjectField(state, typeName, fieldName).tags.add(tag);
+      },
+      setDirective(typeName: string, fieldName: string, directive: DirectiveNode) {
+        getOrCreateInputObjectField(state, typeName, fieldName).ast.directives.push(directive);
       },
     },
   };
@@ -1914,6 +1939,9 @@ function getOrCreateInputObjectType(state: SubgraphState, typeName: string): Inp
     inaccessible: false,
     tags: new Set(),
     isDefinition: false,
+    ast: {
+      directives: [],
+    },
   };
 
   state.types.set(typeName, inputObjectType);
@@ -2084,6 +2112,9 @@ function getOrCreateInputObjectField(
     type: MISSING,
     inaccessible: false,
     tags: new Set(),
+    ast: {
+      directives: [],
+    },
   };
 
   inputObjectType.fields.set(fieldName, field);

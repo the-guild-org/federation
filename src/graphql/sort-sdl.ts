@@ -5,6 +5,7 @@ import {
   DocumentNode,
   EnumValueDefinitionNode,
   FieldDefinitionNode,
+  InputValueDefinitionNode,
   Kind,
   NamedTypeNode,
   NameNode,
@@ -50,6 +51,13 @@ export function sortSDL(doc: DocumentNode) {
         };
       },
       InterfaceTypeDefinition(node) {
+        return {
+          ...node,
+          directives: sortNodes(node.directives),
+          fields: sortNodes(node.fields),
+        };
+      },
+      InputObjectTypeDefinition(node) {
         return {
           ...node,
           directives: sortNodes(node.directives),
@@ -165,6 +173,9 @@ function sortNodes(nodes: readonly NameNode[] | undefined): readonly NameNode[] 
 function sortNodes(
   nodes: readonly FieldDefinitionNode[] | undefined,
 ): readonly FieldDefinitionNode[] | undefined;
+function sortNodes(
+  nodes: readonly InputValueDefinitionNode[] | undefined,
+): readonly InputValueDefinitionNode[] | undefined;
 function sortNodes(nodes: readonly any[] | undefined): readonly any[] | undefined {
   if (nodes) {
     if (nodes.length === 0) {
@@ -195,6 +206,10 @@ function sortNodes(nodes: readonly any[] | undefined): readonly any[] | undefine
     }
 
     if (isOfKindList<EnumValueDefinitionNode>(nodes, Kind.ENUM_VALUE_DEFINITION)) {
+      return sortBy(nodes, 'name.value');
+    }
+
+    if (isOfKindList<InputValueDefinitionNode>(nodes, Kind.INPUT_VALUE_DEFINITION)) {
       return sortBy(nodes, 'name.value');
     }
 

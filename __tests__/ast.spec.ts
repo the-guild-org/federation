@@ -749,7 +749,7 @@ describe('union type', () => {
         @join__unionMember(graph: A, member: "Book")
         @join__unionMember(graph: B, member: "Movie")
         @join__unionMember(graph: B, member: "Book") =
-          Movie
+        | Movie
         | Book
     `);
   });
@@ -837,6 +837,30 @@ describe('input object type', () => {
     ).toEqualGraphQL(/* GraphQL */ `
       input UserInput @tag(name: "public") {
         name: String! @tag(name: "public")
+      }
+    `);
+  });
+
+  test('directive', () => {
+    expect(
+      createInputObjectTypeNode({
+        name: 'User',
+        fields: [
+          {
+            name: 'name',
+            type: 'String',
+            ast: {
+              directives: [createDirective('custom')],
+            },
+          },
+        ],
+        ast: {
+          directives: [createDirective('custom')],
+        },
+      }),
+    ).toEqualGraphQL(/* GraphQL */ `
+      input User @custom {
+        name: String @custom
       }
     `);
   });
