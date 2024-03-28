@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.11.1
+
+### Patch Changes
+
+- [#58](https://github.com/the-guild-org/federation/pull/58) [`ab707b9`](https://github.com/the-guild-org/federation/commit/ab707b9517c141377ab10d46ec6ce2efa1401450) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support directives on Input Object types
+
 ## 0.11.0
 
 ### Minor Changes
