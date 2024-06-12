@@ -39,6 +39,11 @@ export enum TypeKind {
   DIRECTIVE = 'DIRECTIVE',
 }
 
+export enum ArgumentKind {
+  SCALAR = 'SCALAR',
+  ENUM = 'ENUM'
+}
+
 type SubgraphID = string;
 
 export interface Directive {
@@ -185,6 +190,7 @@ export interface Field {
 export interface InputField {
   name: string;
   type: string;
+  kind: ArgumentKind;
   inaccessible: boolean;
   tags: Set<string>;
   defaultValue?: string;
@@ -206,6 +212,7 @@ export interface EnumValue {
 export interface Argument {
   name: string;
   type: string;
+  kind: ArgumentKind;
   inaccessible: boolean;
   tags: Set<string>;
   defaultValue?: string;
@@ -308,14 +315,13 @@ export function createSubgraphStateBuilder(
   const schemaDef = typeDefs.definitions.find(isSchemaDefinition);
 
   const leafTypeNames = new Set<string>(specifiedScalars);
+  const enumTypeNames = new Set<string>();
 
   for (const typeDef of typeDefs.definitions) {
-    if (
-      typeDef.kind === Kind.SCALAR_TYPE_DEFINITION ||
-      typeDef.kind === Kind.SCALAR_TYPE_EXTENSION ||
-      typeDef.kind === Kind.ENUM_TYPE_DEFINITION ||
-      typeDef.kind === Kind.ENUM_TYPE_EXTENSION
-    ) {
+    if (typeDef.kind === Kind.ENUM_TYPE_DEFINITION || typeDef.kind === Kind.ENUM_TYPE_EXTENSION) {
+      enumTypeNames.add(typeDef.name.value);
+      leafTypeNames.add(typeDef.name.value);
+    } else if (typeDef.kind === Kind.SCALAR_TYPE_DEFINITION || typeDef.kind === Kind.SCALAR_TYPE_EXTENSION) {
       leafTypeNames.add(typeDef.name.value);
     }
   }
@@ -500,6 +506,12 @@ export function createSubgraphStateBuilder(
               printOutputType(node.type),
             );
 
+            inputObjectTypeBuilder.field.setKind(
+              typeDef.name.value,
+              node.name.value,
+              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
+            );
+
             if (referencesEnumType) {
               enumTypeBuilder.setReferencedByInputType(
                 outputTypeName,
@@ -523,6 +535,13 @@ export function createSubgraphStateBuilder(
               fieldDef.name.value,
               node.name.value,
               printOutputType(node.type),
+            );
+
+            objectTypeBuilder.field.arg.setKind(
+              typeDef.name.value,
+              fieldDef.name.value,
+              node.name.value,
+              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
             );
 
             if (node.defaultValue) {
@@ -549,6 +568,13 @@ export function createSubgraphStateBuilder(
               fieldDef.name.value,
               node.name.value,
               printOutputType(node.type),
+            );
+
+            interfaceTypeBuilder.field.arg.setKind(
+              typeDef.name.value,
+              fieldDef.name.value,
+              node.name.value,
+              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
             );
 
             if (node.defaultValue) {
@@ -875,6 +901,14 @@ export function createSubgraphStateBuilder(
                 printOutputType(arg.type),
               );
 
+              const outputTypeName = resolveTypeName(arg.type);
+
+              directiveBuilder.arg.setKind(
+                directiveName,
+                arg.name.value,
+                enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
+              )
+
               if (typeof arg.defaultValue !== 'undefined') {
                 directiveBuilder.arg.setDefaultValue(
                   directiveName,
@@ -1019,6 +1053,9 @@ function directiveFactory(state: SubgraphState) {
       },
       setType(directiveName: string, argName: string, argType: string) {
         getOrCreateDirectiveArg(state, directiveName, argName).type = argType;
+      },
+      setKind(directiveName: string, argName: string, argKind: ArgumentKind) {
+        getOrCreateDirectiveArg(state, directiveName, argName).kind = argKind;
       },
       setDirective(typeName: string, argName: string, directive: DirectiveNode) {
         getOrCreateDirectiveArg(state, typeName, argName).ast.directives.push(directive);
@@ -1352,6 +1389,13 @@ function objectTypeFactory(
           getOrCreateObjectFieldArgument(state, renameObject, typeName, fieldName, argName).type =
             argType;
         },
+        setKind(typeName: string, fieldName: string, argName: string, argKind: ArgumentKind) {
+          if (isInterfaceObject(typeName)) {
+            return interfaceTypeBuilder.field.arg.setKind(typeName, fieldName, argName, argKind);
+          }
+          
+          getOrCreateObjectFieldArgument(state, renameObject, typeName, fieldName, argName).kind = argKind;
+        },
         setDescription(
           typeName: string,
           fieldName: string,
@@ -1583,6 +1627,9 @@ function interfaceTypeFactory(state: SubgraphState) {
         setType(typeName: string, fieldName: string, argName: string, argType: string) {
           getOrCreateInterfaceFieldArgument(state, typeName, fieldName, argName).type = argType;
         },
+        setKind(typeName: string, fieldName: string, argName: string, argKind: ArgumentKind) {
+          getOrCreateInterfaceFieldArgument(state, typeName, fieldName, argName).kind = argKind;
+        },
         setDefaultValue(
           typeName: string,
           fieldName: string,
@@ -1660,6 +1707,9 @@ function inputObjectTypeFactory(state: SubgraphState) {
     field: {
       setType(typeName: string, fieldName: string, fieldType: string) {
         getOrCreateInputObjectField(state, typeName, fieldName).type = fieldType;
+      },
+      setKind(typeName: string, fieldName: string, fieldKind: ArgumentKind) {
+        getOrCreateInputObjectField(state, typeName, fieldName).kind = fieldKind;
       },
       setDescription(typeName: string, fieldName: string, description: Description) {
         getOrCreateInputObjectField(state, typeName, fieldName).description = description;
@@ -1800,6 +1850,7 @@ function getOrCreateDirectiveArg(
   const arg: Argument = {
     name: argName,
     type: MISSING,
+    kind: ArgumentKind.SCALAR,
     inaccessible: false,
     tags: new Set(),
     ast: {
@@ -2110,6 +2161,7 @@ function getOrCreateInputObjectField(
   const field: InputField = {
     name: fieldName,
     type: MISSING,
+    kind: ArgumentKind.SCALAR,
     inaccessible: false,
     tags: new Set(),
     ast: {
@@ -2164,6 +2216,7 @@ function getOrCreateObjectFieldArgument(
   const arg: Argument = {
     name: argName,
     type: MISSING,
+    kind: ArgumentKind.SCALAR,
     inaccessible: false,
     tags: new Set(),
     ast: {
@@ -2193,6 +2246,7 @@ function getOrCreateInterfaceFieldArgument(
   const arg: Argument = {
     name: argName,
     type: MISSING,
+    kind: ArgumentKind.SCALAR,
     inaccessible: false,
     tags: new Set(),
     ast: {

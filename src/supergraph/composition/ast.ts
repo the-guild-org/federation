@@ -34,6 +34,7 @@ import {
   visitInParallel,
 } from 'graphql';
 import { print } from '../../graphql/printer.js';
+import { ArgumentKind } from '../../subgraph/state.js';
 
 type inferArgument<T> = T extends (arg: infer A) => any ? A : never;
 
@@ -393,6 +394,7 @@ function createEnumValueNode(enumValue: {
 function createFieldArgumentNode(argument: {
   name: string;
   type: string;
+  kind: ArgumentKind;
   defaultValue?: string;
   inaccessible?: boolean;
   tags?: string[];
@@ -410,7 +412,10 @@ function createFieldArgumentNode(argument: {
     },
     defaultValue:
       typeof argument.defaultValue === 'string'
-        ? parseConstValue(argument.defaultValue)
+        ? argument.kind === ArgumentKind.ENUM ? {
+          kind: Kind.ENUM,
+          value: argument.defaultValue.startsWith(`"`) && argument.defaultValue.endsWith(`"`) ? argument.defaultValue.substring(1, argument.defaultValue.length - 1) : argument.defaultValue,
+        } : parseConstValue(argument.defaultValue)
         : undefined,
     type: parseType(argument.type),
     directives: applyDirectives(argument),

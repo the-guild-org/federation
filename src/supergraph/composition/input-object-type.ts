@@ -1,6 +1,6 @@
 import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
-import { Deprecated, Description, InputObjectType } from '../../subgraph/state.js';
+import { Argument, ArgumentKind, Deprecated, Description, InputObjectType } from '../../subgraph/state.js';
 import { createInputObjectTypeNode } from './ast.js';
 import { convertToConst, type MapByGraph, type TypeBuilder } from './common.js';
 
@@ -35,7 +35,7 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
       });
 
       for (const field of type.fields.values()) {
-        const fieldState = getOrCreateField(inputObjectTypeState, field.name, field.type);
+        const fieldState = getOrCreateField(inputObjectTypeState, field.name, field.type, field.kind);
 
         field.tags.forEach(tag => fieldState.tags.add(tag));
 
@@ -60,6 +60,8 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
         if (typeof field.defaultValue !== 'undefined') {
           fieldState.defaultValue = field.defaultValue;
         }
+
+        fieldState.kind = field.kind;
 
         field.ast.directives.forEach(directive => {
           fieldState.ast.directives.push(directive);
@@ -142,6 +144,7 @@ export interface InputObjectTypeState {
 export type InputObjectTypeFieldState = {
   name: string;
   type: string;
+  kind: ArgumentKind;
   tags: Set<string>;
   inaccessible: boolean;
   defaultValue?: string;
@@ -194,6 +197,7 @@ function getOrCreateField(
   objectTypeState: InputObjectTypeState,
   fieldName: string,
   fieldType: string,
+  fieldKind: ArgumentKind,
 ) {
   const existing = objectTypeState.fields.get(fieldName);
 
@@ -204,6 +208,7 @@ function getOrCreateField(
   const def: InputObjectTypeFieldState = {
     name: fieldName,
     type: fieldType,
+    kind: fieldKind,
     tags: new Set(),
     inaccessible: false,
     byGraph: new Map(),

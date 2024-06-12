@@ -1,6 +1,6 @@
 import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
-import { Deprecated, Description, InterfaceType } from '../../subgraph/state.js';
+import { ArgumentKind, Deprecated, Description, InterfaceType } from '../../subgraph/state.js';
 import { createInterfaceTypeNode, JoinFieldAST } from './ast.js';
 import { convertToConst } from './common.js';
 import type { Key, MapByGraph, TypeBuilder } from './common.js';
@@ -125,7 +125,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
         });
 
         for (const arg of field.args.values()) {
-          const argState = getOrCreateArg(fieldState, arg.name, arg.type);
+          const argState = getOrCreateArg(fieldState, arg.name, arg.type, arg.kind);
 
           arg.tags.forEach(tag => argState.tags.add(tag));
 
@@ -150,8 +150,11 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
             argState.ast.directives.push(directive);
           });
 
+          argState.kind = arg.kind
+
           argState.byGraph.set(graph.id, {
             type: arg.type,
+            kind: arg.kind,
             defaultValue: arg.defaultValue,
             version: graph.version,
           });
@@ -215,6 +218,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
                 return {
                   name: arg.name,
                   type: arg.type,
+                  kind: arg.kind,
                   tags: Array.from(arg.tags),
                   defaultValue: arg.defaultValue,
                   deprecated: arg.deprecated,
@@ -323,6 +327,7 @@ export type InterfaceTypeFieldState = {
 export type InterfaceTypeFieldArgState = {
   name: string;
   type: string;
+  kind: ArgumentKind;
   tags: Set<string>;
   defaultValue?: string;
   description?: Description;
@@ -355,6 +360,7 @@ type FieldStateInGraph = {
 
 type ArgStateInGraph = {
   type: string;
+  kind: ArgumentKind;
   defaultValue?: string;
   version: FederationVersion;
 };
@@ -424,7 +430,7 @@ function getOrCreateInterfaceField(
   return def;
 }
 
-function getOrCreateArg(fieldState: InterfaceTypeFieldState, argName: string, argType: string) {
+function getOrCreateArg(fieldState: InterfaceTypeFieldState, argName: string, argType: string, argKind: ArgumentKind) {
   const existing = fieldState.args.get(argName);
 
   if (existing) {
@@ -434,6 +440,7 @@ function getOrCreateArg(fieldState: InterfaceTypeFieldState, argName: string, ar
   const def: InterfaceTypeFieldArgState = {
     name: argName,
     type: argType,
+    kind: argKind,
     tags: new Set(),
     byGraph: new Map(),
     ast: {
