@@ -41,7 +41,8 @@ export enum TypeKind {
 
 export enum ArgumentKind {
   SCALAR = 'SCALAR',
-  ENUM = 'ENUM'
+  OBJECT = 'OBJECT',
+  ENUM = 'ENUM',
 }
 
 type SubgraphID = string;
@@ -316,13 +317,22 @@ export function createSubgraphStateBuilder(
 
   const leafTypeNames = new Set<string>(specifiedScalars);
   const enumTypeNames = new Set<string>();
+  const inputObjectTypeNames = new Set<string>();
 
   for (const typeDef of typeDefs.definitions) {
     if (typeDef.kind === Kind.ENUM_TYPE_DEFINITION || typeDef.kind === Kind.ENUM_TYPE_EXTENSION) {
       enumTypeNames.add(typeDef.name.value);
       leafTypeNames.add(typeDef.name.value);
-    } else if (typeDef.kind === Kind.SCALAR_TYPE_DEFINITION || typeDef.kind === Kind.SCALAR_TYPE_EXTENSION) {
+    } else if (
+      typeDef.kind === Kind.SCALAR_TYPE_DEFINITION ||
+      typeDef.kind === Kind.SCALAR_TYPE_EXTENSION
+    ) {
       leafTypeNames.add(typeDef.name.value);
+    } else if (
+      typeDef.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION ||
+      typeDef.kind === Kind.INPUT_OBJECT_TYPE_EXTENSION
+    ) {
+      inputObjectTypeNames.add(typeDef.name.value);
     }
   }
 
@@ -355,6 +365,18 @@ export function createSubgraphStateBuilder(
   const inputObjectTypeBuilder = inputObjectTypeFactory(state);
   const unionTypeBuilder = unionTypeFactory(state);
   const enumTypeBuilder = enumTypeFactory(state);
+
+  function resolveArgumentKind(typeName: string): ArgumentKind {
+    if (enumTypeNames.has(typeName)) {
+      return ArgumentKind.ENUM;
+    }
+
+    if (inputObjectTypeNames.has(typeName)) {
+      return ArgumentKind.OBJECT;
+    }
+
+    return ArgumentKind.SCALAR;
+  }
 
   function renameObjectType(typeName: string) {
     if (typeName === expectedQueryTypeName) {
@@ -509,7 +531,7 @@ export function createSubgraphStateBuilder(
             inputObjectTypeBuilder.field.setKind(
               typeDef.name.value,
               node.name.value,
-              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
+              resolveArgumentKind(outputTypeName),
             );
 
             if (referencesEnumType) {
@@ -541,7 +563,7 @@ export function createSubgraphStateBuilder(
               typeDef.name.value,
               fieldDef.name.value,
               node.name.value,
-              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
+              resolveArgumentKind(outputTypeName),
             );
 
             if (node.defaultValue) {
@@ -574,7 +596,7 @@ export function createSubgraphStateBuilder(
               typeDef.name.value,
               fieldDef.name.value,
               node.name.value,
-              enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
+              resolveArgumentKind(outputTypeName),
             );
 
             if (node.defaultValue) {
@@ -906,8 +928,8 @@ export function createSubgraphStateBuilder(
               directiveBuilder.arg.setKind(
                 directiveName,
                 arg.name.value,
-                enumTypeNames.has(outputTypeName) ? ArgumentKind.ENUM : ArgumentKind.SCALAR,
-              )
+                resolveArgumentKind(outputTypeName),
+              );
 
               if (typeof arg.defaultValue !== 'undefined') {
                 directiveBuilder.arg.setDefaultValue(
@@ -1393,8 +1415,9 @@ function objectTypeFactory(
           if (isInterfaceObject(typeName)) {
             return interfaceTypeBuilder.field.arg.setKind(typeName, fieldName, argName, argKind);
           }
-          
-          getOrCreateObjectFieldArgument(state, renameObject, typeName, fieldName, argName).kind = argKind;
+
+          getOrCreateObjectFieldArgument(state, renameObject, typeName, fieldName, argName).kind =
+            argKind;
         },
         setDescription(
           typeName: string,

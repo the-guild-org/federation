@@ -391,6 +391,27 @@ function createEnumValueNode(enumValue: {
   };
 }
 
+function createDefaultValue(
+  defaultValue: string | undefined,
+  kind: ArgumentKind,
+): ConstValueNode | undefined {
+  if (typeof defaultValue !== 'string') {
+    return undefined;
+  }
+
+  if (kind === ArgumentKind.ENUM) {
+    return {
+      kind: Kind.ENUM,
+      value:
+        defaultValue.startsWith(`"`) && defaultValue.endsWith(`"`)
+          ? defaultValue.substring(1, defaultValue.length - 1)
+          : defaultValue,
+    };
+  }
+
+  return parseConstValue(defaultValue);
+}
+
 function createFieldArgumentNode(argument: {
   name: string;
   type: string;
@@ -410,13 +431,7 @@ function createFieldArgumentNode(argument: {
       kind: Kind.NAME,
       value: argument.name,
     },
-    defaultValue:
-      typeof argument.defaultValue === 'string'
-        ? argument.kind === ArgumentKind.ENUM ? {
-          kind: Kind.ENUM,
-          value: argument.defaultValue.startsWith(`"`) && argument.defaultValue.endsWith(`"`) ? argument.defaultValue.substring(1, argument.defaultValue.length - 1) : argument.defaultValue,
-        } : parseConstValue(argument.defaultValue)
-        : undefined,
+    defaultValue: createDefaultValue(argument.defaultValue, argument.kind),
     type: parseType(argument.type),
     directives: applyDirectives(argument),
     description: argument.description ? createDescriptionNode(argument.description) : undefined,
