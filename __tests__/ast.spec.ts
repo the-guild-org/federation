@@ -1,4 +1,4 @@
-import { ConstDirectiveNode, Kind, parse } from 'graphql';
+import { ConstDirectiveNode, Kind, TypeKind, parse } from 'graphql';
 import { describe, expect, test } from 'vitest';
 import {
   createEnumTypeNode,
@@ -11,6 +11,7 @@ import {
   createUnionTypeNode,
   stripFederation,
 } from '../src/supergraph/composition/ast.js';
+import { ArgumentKind } from '../src/subgraph/state.js';
 
 function createDirective(name: string): ConstDirectiveNode {
   return {
@@ -366,6 +367,7 @@ describe('object type', () => {
               {
                 name: 'units',
                 type: 'String!',
+                kind: ArgumentKind.SCALAR,
               },
             ],
           },
@@ -409,6 +411,7 @@ describe('object type', () => {
               {
                 name: 'units',
                 type: 'Int!',
+                kind: TypeKind.SCALAR,
                 defaultValue: '1',
               },
             ],
@@ -479,6 +482,7 @@ describe('object type', () => {
               {
                 name: 'limit',
                 type: 'Int',
+                kind: ArgumentKind.SCALAR,
                 tags: ['public'],
               },
             ],
@@ -506,6 +510,7 @@ describe('object type', () => {
               {
                 name: 'limit',
                 type: 'Int',
+                kind: ArgumentKind.SCALAR,
                 inaccessible: true,
               },
             ],
@@ -615,6 +620,7 @@ describe('interface type', () => {
               {
                 name: 'units',
                 type: 'Int!',
+                kind: ArgumentKind.SCALAR,
               },
             ],
           },
@@ -659,6 +665,7 @@ describe('interface type', () => {
               {
                 name: 'units',
                 type: 'Int!',
+                kind: ArgumentKind.SCALAR,
                 defaultValue: '1',
               },
             ],
@@ -685,6 +692,7 @@ describe('interface type', () => {
               {
                 name: 'units',
                 type: 'Int!',
+                kind: ArgumentKind.SCALAR,
                 tags: ['public'],
               },
             ],
@@ -712,6 +720,7 @@ describe('interface type', () => {
               {
                 name: 'limit',
                 type: 'Int',
+                kind: ArgumentKind.SCALAR,
                 inaccessible: true,
               },
             ],
@@ -875,10 +884,16 @@ describe('input object type', () => {
             type: 'Int',
             defaultValue: '2',
           },
+          {
+            name: 'obj',
+            type: 'Obj',
+            defaultValue: '{limit: 1}',
+          },
         ],
       }),
     ).toEqualGraphQL(/* GraphQL */ `
       input Filter {
+        obj: Obj = {limit: 1}
         limit: Int = 2
       }
     `);

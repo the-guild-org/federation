@@ -1,6 +1,6 @@
 import { DirectiveNode } from 'graphql';
 import type { FederationVersion } from '../../specifications/federation.js';
-import { Deprecated, Description, ObjectType } from '../../subgraph/state.js';
+import { ArgumentKind, Deprecated, Description, ObjectType } from '../../subgraph/state.js';
 import { isDefined } from '../../utils/helpers.js';
 import { createObjectTypeNode, JoinFieldAST } from './ast.js';
 import type { Key, MapByGraph, TypeBuilder } from './common.js';
@@ -189,7 +189,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
         });
 
         for (const arg of field.args.values()) {
-          const argState = getOrCreateArg(fieldState, arg.name, arg.type);
+          const argState = getOrCreateArg(fieldState, arg.name, arg.type, arg.kind);
 
           arg.tags.forEach(tag => argState.tags.add(tag));
 
@@ -222,8 +222,11 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             argState.defaultValue = arg.defaultValue;
           }
 
+          argState.kind = arg.kind
+
           argState.byGraph.set(graph.id, {
             type: arg.type,
+            kind: arg.kind,
             inaccessible: arg.inaccessible,
             defaultValue: arg.defaultValue,
             version: graph.version,
@@ -646,6 +649,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                   return {
                     name: arg.name,
                     type: arg.type,
+                    kind: arg.kind,
                     inaccessible: arg.inaccessible,
                     tags: Array.from(arg.tags),
                     defaultValue: arg.defaultValue,
@@ -692,6 +696,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
                       return {
                         name: arg.name,
                         type: arg.type,
+                        kind: arg.kind,
                         inaccessible: false,
                         tags: Array.from(arg.tags),
                         defaultValue: arg.defaultValue,
@@ -800,6 +805,7 @@ export type ObjectTypeFieldState = {
 export type ObjectTypeFieldArgState = {
   name: string;
   type: string;
+  kind: ArgumentKind;
   tags: Set<string>;
   inaccessible: boolean;
   defaultValue?: string;
@@ -842,6 +848,7 @@ type FieldStateInGraph = {
 
 type ArgStateInGraph = {
   type: string;
+  kind: ArgumentKind;
   inaccessible: boolean;
   defaultValue?: string;
   version: FederationVersion;
@@ -910,7 +917,7 @@ function getOrCreateField(objectTypeState: ObjectTypeState, fieldName: string, f
   return def;
 }
 
-function getOrCreateArg(fieldState: ObjectTypeFieldState, argName: string, argType: string) {
+function getOrCreateArg(fieldState: ObjectTypeFieldState, argName: string, argType: string, argKind: ArgumentKind) {
   const existing = fieldState.args.get(argName);
 
   if (existing) {
@@ -920,6 +927,7 @@ function getOrCreateArg(fieldState: ObjectTypeFieldState, argName: string, argTy
   const def: ObjectTypeFieldArgState = {
     name: argName,
     type: argType,
+    kind: argKind,
     tags: new Set(),
     inaccessible: false,
     byGraph: new Map(),

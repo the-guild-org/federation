@@ -1,6 +1,6 @@
 import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
-import type { Directive } from '../../subgraph/state.js';
+import type { ArgumentKind, Directive } from '../../subgraph/state.js';
 import { createDirectiveNode } from './ast.js';
 import { convertToConst, MapByGraph, TypeBuilder } from './common.js';
 
@@ -25,7 +25,7 @@ export function directiveBuilder(): TypeBuilder<Directive, DirectiveState> {
       }
 
       for (const arg of directive.args.values()) {
-        const argState = getOrCreateArg(directiveState, arg.name, arg.type);
+        const argState = getOrCreateArg(directiveState, arg.name, arg.type, arg.kind);
 
         arg.tags.forEach(tag => argState.tags.add(tag));
 
@@ -41,8 +41,11 @@ export function directiveBuilder(): TypeBuilder<Directive, DirectiveState> {
           argState.inaccessible = true;
         }
 
+        argState.kind = arg.kind;
+
         argState.byGraph.set(graph.id, {
           type: arg.type,
+          kind: arg.kind,
           defaultValue: arg.defaultValue,
           version: graph.version,
         });
@@ -62,6 +65,7 @@ export function directiveBuilder(): TypeBuilder<Directive, DirectiveState> {
         arguments: Array.from(directive.args.values()).map(arg => ({
           name: arg.name,
           type: arg.type,
+          kind: arg.kind,
           tags: Array.from(arg.tags),
           inaccessible: arg.inaccessible,
           defaultValue: arg.defaultValue,
@@ -92,6 +96,7 @@ type DirectiveStateInGraph = {
 export type DirectiveArgState = {
   name: string;
   type: string;
+  kind: ArgumentKind;
   tags: Set<string>;
   inaccessible: boolean;
   defaultValue?: string;
@@ -103,6 +108,7 @@ export type DirectiveArgState = {
 
 type ArgStateInGraph = {
   type: string;
+  kind: ArgumentKind;
   defaultValue?: string;
   version: FederationVersion;
 };
@@ -128,7 +134,7 @@ function getOrCreateDirective(state: Map<string, DirectiveState>, directiveName:
   return def;
 }
 
-function getOrCreateArg(directiveState: DirectiveState, argName: string, argType: string) {
+function getOrCreateArg(directiveState: DirectiveState, argName: string, argType: string, argKind: ArgumentKind) {
   const existing = directiveState.args.get(argName);
 
   if (existing) {
@@ -138,6 +144,7 @@ function getOrCreateArg(directiveState: DirectiveState, argName: string, argType
   const def: DirectiveArgState = {
     name: argName,
     type: argType,
+    kind: argKind,
     inaccessible: false,
     tags: new Set(),
     byGraph: new Map(),

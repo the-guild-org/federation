@@ -20,6 +20,40 @@ expect.addSnapshotSerializer({
 testImplementations(api => {
   const composeServices = api.composeServices;
 
+  test('enum value as string as default value', () => {
+    const result = composeServices([
+      {
+        name: 'a',
+        typeDefs: parse(/* GraphQL */ `
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+          type User @key(fields: "id") {
+            id: ID!
+            name: String
+          }
+
+          type Query {
+            users(type: UserType! = "Regular"): [User!]!
+          }
+
+          enum UserType {
+            Regular
+            Admin
+          }
+        `),
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) {
+        users(type: UserType! = Regular): [User!]!
+      }
+    `);
+  });
+
   test('duplicated Query fields', () => {
     const result = composeServices([
       {
