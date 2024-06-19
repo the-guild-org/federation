@@ -223,6 +223,7 @@ export function createSubgraphValidationContext(
       }
 
       setOfNames.add(alias ? alias.replace(/^@/, '') : specDirective.name.value);
+      setOfNames.add(`federation__${specDirective.name.value}`);
     }
   }
 
@@ -251,6 +252,7 @@ export function createSubgraphValidationContext(
       }
 
       setOfNames.add(alias ? alias : specType.name.value);
+      setOfNames.add(`federation__${specType.name.value}`);
     }
   }
 
