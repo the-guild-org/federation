@@ -1098,6 +1098,8 @@ function directiveFactory(state: SubgraphState) {
 export function cleanSubgraphStateFromFederationSpec(state: SubgraphState): SubgraphState {
   state.types.delete('_FieldSet');
   state.types.delete('federation__FieldSet');
+  state.types.delete('federation__Policy');
+  state.types.delete('federation__Scope');
 
   return state;
 }

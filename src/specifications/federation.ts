@@ -228,7 +228,7 @@ const federationSpecFactory = {
         ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
         directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
         directive @requiresScopes(
-          scopes: [[Scope!]!]!
+          scopes: [[federation__Scope!]!]!
         ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
         directive @composeDirective(name: String!) repeatable on SCHEMA
         directive @extends on OBJECT | INTERFACE
@@ -247,7 +247,8 @@ const federationSpecFactory = {
           name: String!
         ) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
         scalar FieldSet
-        scalar Policy
+        scalar federation__Policy
+        scalar federation__Scope
       `,
       prefix,
       imports,
@@ -272,6 +273,14 @@ function createTypeDefinitions(doc: string, prefix: string, imports?: readonly L
   ) {
     toInclude.add('FieldSet');
     toInclude.add('federation__FieldSet');
+  }
+
+  if (toInclude.has('requiresScopes')) {
+    toInclude.add('federation__Scope');
+  }
+
+  if (toInclude.has('policy')) {
+    toInclude.add('federation__Policy');
   }
 
   const directives: DirectiveDefinitionNode[] = [];

@@ -674,4 +674,101 @@ testImplementations(api => {
       }
     `);
   });
+
+  test('removes federation__Policy and federation__Scope scalars', () => {
+    const result = api.composeServices(
+      [
+        {
+          name: 'feed',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.6"
+                import: ["@requiresScopes", "@policy", "@key", "@shareable"]
+              )
+
+            scalar federation__Scope
+            scalar federation__Policy
+
+            directive @federation__requiresScopes(
+              scopes: [[federation__Scope!]!]!
+            ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+            directive @federation__policy(
+              policies: [[federation__Policy!]!]!
+            ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+
+            type Query {
+              feed: [Post!]!
+                @shareable
+                @requiresScopes(scopes: [["read:posts"]])
+                @policy(policies: [["read_posts"]])
+            }
+
+            type Post @key(fields: "id") {
+              id: ID!
+              title: String!
+            }
+          `,
+        },
+        {
+          name: 'comments',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.6"
+                import: [
+                  "@authenticated"
+                  "@requiresScopes"
+                  "@policy"
+                  "@key"
+                  "@external"
+                  "@shareable"
+                ]
+              )
+
+            scalar federation__Scope
+            scalar federation__Policy
+
+            directive @federation__requiresScopes(
+              scopes: [[federation__Scope!]!]!
+            ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+            directive @federation__policy(
+              policies: [[federation__Policy!]!]!
+            ) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
+
+            extend type Post @key(fields: "id") {
+              id: ID! @external
+              comments: [Comment!]! @policy(policies: [["read_post_comments"]])
+            }
+
+            extend type Query {
+              feed: [Post!]!
+                @shareable
+                @policy(policies: [["read_post_comments"], ["read_post_comments"]])
+                @requiresScopes(scopes: [["read:posts"]])
+            }
+
+            type Mutation {
+              commentPost(input: CommentPostInput!): Comment! @authenticated
+            }
+
+            input CommentPostInput {
+              postId: ID!
+              comment: String!
+            }
+
+            type Comment {
+              id: ID!
+              body: String!
+            }
+          `,
+        },
+      ],
+    );
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).not.toMatch('federation__Policy');
+    expect(result.supergraphSdl).not.toMatch('federation__Scope');
+  });
 });
