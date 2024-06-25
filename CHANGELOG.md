@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.11.3
+
+### Patch Changes
+
+- [#62](https://github.com/the-guild-org/federation/pull/62) [`e50bc90`](https://github.com/the-guild-org/federation/commit/e50bc90d4dc65769dbe44fa01994148d968755dc) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix: do not expose `federation__Scope` and `federation__Policy` scalar definitions to a supergraph
+
 ## 0.11.2
 
 ### Patch Changes
