@@ -1,5 +1,6 @@
-import { ConstDirectiveNode, Kind, TypeKind, parse } from 'graphql';
+import { ConstDirectiveNode, Kind, parse, TypeKind } from 'graphql';
 import { describe, expect, test } from 'vitest';
+import { ArgumentKind } from '../src/subgraph/state.js';
 import {
   createEnumTypeNode,
   createInputObjectTypeNode,
@@ -11,7 +12,6 @@ import {
   createUnionTypeNode,
   stripFederation,
 } from '../src/supergraph/composition/ast.js';
-import { ArgumentKind } from '../src/subgraph/state.js';
 
 function createDirective(name: string): ConstDirectiveNode {
   return {
@@ -893,7 +893,7 @@ describe('input object type', () => {
       }),
     ).toEqualGraphQL(/* GraphQL */ `
       input Filter {
-        obj: Obj = {limit: 1}
+        obj: Obj = { limit: 1 }
         limit: Int = 2
       }
     `);

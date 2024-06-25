@@ -1,4 +1,19 @@
-schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible", "@override"]) {
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: [
+      "@key"
+      "@external"
+      "@provides"
+      "@requires"
+      "@extends"
+      "@shareable"
+      "@tag"
+      "@inaccessible"
+      "@override"
+    ]
+  ) {
   query: Query
   mutation: Mutation
 }
@@ -7,9 +22,17 @@ directive @extends on INTERFACE | OBJECT
 
 directive @external(reason: String) on FIELD_DEFINITION | OBJECT
 
-directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+directive @key(
+  fields: federation__FieldSet!
+  resolvable: Boolean = true
+) repeatable on INTERFACE | OBJECT
 
-directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+directive @link(
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+  url: String
+) repeatable on SCHEMA
 
 directive @override(from: String!) on FIELD_DEFINITION
 
@@ -19,7 +42,9 @@ directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
 
 directive @shareable on FIELD_DEFINITION | OBJECT
 
-directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+directive @tag(
+  name: String!
+) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
 
 type barge0fe @key(fields: "where46e") {
   where46e: String
@@ -334,7 +359,10 @@ type noisy3be {
   thongf57: untilffb
 }
 
-type whose2eb @key(fields: "wriste37 shyly5db since9b7 { adornea4 whose18d } aside50a { adornea4 } thick5ed { adornea4 }") {
+type whose2eb
+  @key(
+    fields: "wriste37 shyly5db since9b7 { adornea4 whose18d } aside50a { adornea4 } thick5ed { adornea4 }"
+  ) {
   aside50a: [plate86e!]!
   since9b7: [plate86e!]!
   glass900: plate86e @shareable
@@ -498,7 +526,8 @@ type wetly948 @key(fields: "madlybd2") {
   yowza57c: String @external
   madlybd2: String
   fooeyfc9: plate86e
-  fooeya1c(young7fc: yowza062): givenc6d @requires(fields: "thick5ed { where46e trail84e } zowie555 tauntc02 recur12b yowza57c powerf43")
+  fooeya1c(young7fc: yowza062): givenc6d
+    @requires(fields: "thick5ed { where46e trail84e } zowie555 tauntc02 recur12b yowza57c powerf43")
   thick5ed: barge0fe! @external
 }
 
@@ -507,7 +536,8 @@ type yowzab51 @extends @key(fields: "adornea4") {
   adornea4: smalld4d! @external
   supere4a: yowza033! @external
   yahoo45c: since841 @external
-  fooeya1c(young7fc: since055): givenc6d @requires(fields: "zowie51a yahoo45c vital7d7 wherefd4 supere4a { fooey29e trail84e }")
+  fooeya1c(young7fc: since055): givenc6d
+    @requires(fields: "zowie51a yahoo45c vital7d7 wherefd4 supere4a { fooey29e trail84e }")
   wherefd4: smalld4d! @external
   zowie51a: smalld4d! @external
 }

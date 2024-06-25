@@ -1,20 +1,77 @@
 type Query {
-  kendob21(sadly2d3: String!, madly3bc: abaftb74!, wetly4a7: String, slimy8ee: under62b): stark083 @deprecated(reason: "")
-  shyly083(minor556: String, after1a5: String, given5cd: [scrapa5c], slimy8ee: under62b): bossybc0 @deprecated(reason: "")
-  blackfe9(minor556: String, fooey0ff: String, brave147: String, abafta31: String, wetly4a7: String, slimy8ee: under62b, whilebdb: fixedfa3, hence04b: Int, latchfa9: Int, stake684: Int, aboutb64: String): whirr189 @deprecated(reason: "")
-  poundaa2(slimy8ee: under62b, wetly4a7: String!, yowzae3f: String!, exile934: triala1a, sprayd11: amongc75, aboutb64: String): yahoob6d @deprecated(reason: "")
-  yowzafc6(slimy8ee: under62b, wetly4a7: String!, yowzae3f: String!, exile934: triala1a, yummye2a: String): worth1a1 @deprecated(reason: "")
-  divvy8b4(minor556: String, every5f7: [String!], vividc7d: [String!], while964: [String!], trolle10: [String!]): smartff1 @deprecated(reason: "")
+  kendob21(sadly2d3: String!, madly3bc: abaftb74!, wetly4a7: String, slimy8ee: under62b): stark083
+    @deprecated(reason: "")
+  shyly083(minor556: String, after1a5: String, given5cd: [scrapa5c], slimy8ee: under62b): bossybc0
+    @deprecated(reason: "")
+  blackfe9(
+    minor556: String
+    fooey0ff: String
+    brave147: String
+    abafta31: String
+    wetly4a7: String
+    slimy8ee: under62b
+    whilebdb: fixedfa3
+    hence04b: Int
+    latchfa9: Int
+    stake684: Int
+    aboutb64: String
+  ): whirr189 @deprecated(reason: "")
+  poundaa2(
+    slimy8ee: under62b
+    wetly4a7: String!
+    yowzae3f: String!
+    exile934: triala1a
+    sprayd11: amongc75
+    aboutb64: String
+  ): yahoob6d @deprecated(reason: "")
+  yowzafc6(
+    slimy8ee: under62b
+    wetly4a7: String!
+    yowzae3f: String!
+    exile934: triala1a
+    yummye2a: String
+  ): worth1a1 @deprecated(reason: "")
+  divvy8b4(
+    minor556: String
+    every5f7: [String!]
+    vividc7d: [String!]
+    while964: [String!]
+    trolle10: [String!]
+  ): smartff1 @deprecated(reason: "")
   pushyddd(midst77d: [worth47f!]!): zowiecbd @deprecated(reason: "")
   until79c(lurch6e0: String, wetly4a7: String): above989
   hedge338: yowza37f @deprecated(reason: "")
-  dailyb9f(minor556: String, embedccf: spearf97!, wetly4a7: String!, slimy8ee: under62b, sprayd11: amongc75, aboutb64: String, dimly444: drown56b): cacaod75 @deprecated(reason: "")
-  madly928(abhordc1: String!, yowza5e8: String!, wetly4a7: String!, slimy8ee: under62b): cacaod75 @deprecated(reason: "")
-  slope65b(yahooeeb: String!, zowie361: String!, wetly9b7: String!, fluid1f7: String!, aboutb64: String!): chafee47 @deprecated(reason: "")
+  dailyb9f(
+    minor556: String
+    embedccf: spearf97!
+    wetly4a7: String!
+    slimy8ee: under62b
+    sprayd11: amongc75
+    aboutb64: String
+    dimly444: drown56b
+  ): cacaod75 @deprecated(reason: "")
+  madly928(abhordc1: String!, yowza5e8: String!, wetly4a7: String!, slimy8ee: under62b): cacaod75
+    @deprecated(reason: "")
+  slope65b(
+    yahooeeb: String!
+    zowie361: String!
+    wetly9b7: String!
+    fluid1f7: String!
+    aboutb64: String!
+  ): chafee47 @deprecated(reason: "")
   unify58b(seize765: String!): creakb2c @deprecated(reason: "")
   never6a7: badly479 @deprecated(reason: "")
-  abaft7c8(minor556: String!, zowie361: String!, wetly4a7: String!): never1d1 @deprecated(reason: "")
-  oddly558(minor556: String, wetly4a7: String, aboutb64: String, hence04b: Int, latchfa9: Int, stake684: Int, slimy8ee: under62b): whirr189 @deprecated(reason: "")
+  abaft7c8(minor556: String!, zowie361: String!, wetly4a7: String!): never1d1
+    @deprecated(reason: "")
+  oddly558(
+    minor556: String
+    wetly4a7: String
+    aboutb64: String
+    hence04b: Int
+    latchfa9: Int
+    stake684: Int
+    slimy8ee: under62b
+  ): whirr189 @deprecated(reason: "")
 }
 
 type mimica1e {
@@ -159,7 +216,8 @@ type faint877 @key(fields: "until877 oftend70 about6e9") {
   about6e9: String
 }
 
-type since8b6 @key(fields: "where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 }") {
+type since8b6
+  @key(fields: "where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 }") {
   where46e: String
   underbbc: [faint877!]
   oddlye7e: [smart2a4!]
@@ -187,7 +245,11 @@ type slide8c0 {
   where46e: String
 }
 
-type eager01f @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type eager01f
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -250,7 +312,11 @@ type oftenc6d {
   where46e: String
 }
 
-type these524 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type these524
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -309,7 +375,11 @@ type until172 {
   where46e: String
 }
 
-type which640 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type which640
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -365,7 +435,11 @@ type draft352 {
   where46e: String
 }
 
-type fooey2eb @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type fooey2eb
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -449,7 +523,15 @@ type yahoob6d @key(fields: "madlybd2") {
   oddlya58: whosefe1
   bunch447: where230
   fooey5d8: [roundd0b!]
-  worrye40(creek166: String, yahoo609: String, fooeyc5f: Int, sally487: String, until877: Int, chief6ff: String, messy877: drown56b): cacaod75
+  worrye40(
+    creek166: String
+    yahoo609: String
+    fooeyc5f: Int
+    sally487: String
+    until877: Int
+    chief6ff: String
+    messy877: drown56b
+  ): cacaod75
   madlybd2: String
 }
 
@@ -462,7 +544,9 @@ type where1ed {
   weaveff6: String
 }
 
-type circa3d0 @key(fields: "zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 }") @key(fields: "madlybd2") {
+type circa3d0
+  @key(fields: "zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 }")
+  @key(fields: "madlybd2") {
   fullyff7: where1ed
   fooeyd09: wherefcd
   fooeyebc: where1ed
@@ -498,7 +582,11 @@ type wreak80e {
   where46e: String
 }
 
-type voter0ee @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type voter0ee
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -573,7 +661,11 @@ type curly7d0 {
   where46e: String
 }
 
-type minus92f @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type minus92f
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -629,7 +721,11 @@ type yowza576 {
   where46e: String
 }
 
-type reign19a @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type reign19a
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -685,7 +781,11 @@ type abase102 {
   where46e: String
 }
 
-type yahoo4f8 @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type yahoo4f8
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int
@@ -1139,7 +1239,11 @@ type yahoof16 @key(fields: "sadlyb5f where374 { often286 }") {
   along6d8: [String]
 }
 
-type worth1a1 @key(fields: "madlybd2") @key(fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 boxer271 plonk194 fooeyc5f until877 round05b gussy4f6 { where46e fully04a } wedge7f4 { where46e fully04a } windy599 { where46e fully04a } royal067 { never10e { badlyc3a kitty5fb } } fooey36b { zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 } } where5b0 { where46e fully04a } truly811 { where46e fully04a } sadly185 { where46e fully04a } sadlybc2 { fully04a } never2c7 { rigid037 often7b6 badly305 stand735 } trainefc") {
+type worth1a1
+  @key(fields: "madlybd2")
+  @key(
+    fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 boxer271 plonk194 fooeyc5f until877 round05b gussy4f6 { where46e fully04a } wedge7f4 { where46e fully04a } windy599 { where46e fully04a } royal067 { never10e { badlyc3a kitty5fb } } fooey36b { zowief17 { where374 { often286 } sadlyb5f } trickcaf { seize765 } } where5b0 { where46e fully04a } truly811 { where46e fully04a } sadly185 { where46e fully04a } sadlybc2 { fully04a } never2c7 { rigid037 often7b6 badly305 stand735 } trainefc"
+  ) {
   slimy8ee: since8b6!
   wetly4a7: String!
   zowie2b2: String
@@ -1171,7 +1275,15 @@ type worth1a1 @key(fields: "madlybd2") @key(fields: "slimy8ee { where46e underbb
   below011: sliceefd
   oddlya58: whosefe1
   bunch447: where230
-  worrye40(creek166: String, yahoo609: String, fooeyc5f: Int, sally487: String, until877: Int, chief6ff: String, messy877: drown56b): cacaod75
+  worrye40(
+    creek166: String
+    yahoo609: String
+    fooeyc5f: Int
+    sally487: String
+    until877: Int
+    chief6ff: String
+    messy877: drown56b
+  ): cacaod75
   madlybd2: String
 }
 
@@ -1619,7 +1731,13 @@ type coverd95 {
 type yowza37f {
   clump720(creek166: String): [hedge33b!]
   click084(creek166: String!): [until82b!]
-  metal6ef(creek166: String!, yahoocc1: String!, until877: Int!, truly39b: Int!, untilb37: urbanc52): [fooey861!]
+  metal6ef(
+    creek166: String!
+    yahoocc1: String!
+    until877: Int!
+    truly39b: Int!
+    untilb37: urbanc52
+  ): [fooey861!]
 }
 
 type until82b {
@@ -1753,7 +1871,10 @@ type shade783 {
   zowie8ed: Boolean
 }
 
-type stark083 @key(fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 sadly2d3 madly3bc royal067 { never10e { badlyc3a kitty5fb } }") {
+type stark083
+  @key(
+    fields: "slimy8ee { where46e underbbc { until877 oftend70 about6e9 } oddlye7e { where46e often286 } } wetly4a7 sadly2d3 madly3bc royal067 { never10e { badlyc3a kitty5fb } }"
+  ) {
   slimy8ee: since8b6!
   wetly4a7: String!
   aforee26: String!
@@ -1878,7 +1999,11 @@ type belowc43 {
   where46e: String
 }
 
-type daily61c @key(fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }") @key(fields: "where46e") {
+type daily61c
+  @key(
+    fields: "where46e fully04a chilib72 fooeyc5f zowie2b2 until877 yahoo572 sport35d { where46e fully04a }"
+  )
+  @key(fields: "where46e") {
   where46e: String
   chilib72: String
   fooeyc5f: Int

@@ -501,4 +501,37 @@ testVersions((api, version) => {
       ]),
     );
   });
+
+  test('interface field -> object field subtype', () => {
+    const result = api.composeServices([
+      {
+        typeDefs: graphql`
+          extend schema @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+
+          type Query {
+            a: Admin
+          }
+
+          type Admin implements Node {
+            id: ID
+          }
+
+          interface Node {
+            id: ID!
+          }
+        `,
+        name: 'a',
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message:
+          '[a] Interface field Node.id expects type ID! but Admin.id of type ID is not a proper subtype.',
+        extensions: expect.objectContaining({ code: 'INVALID_GRAPHQL' }),
+      }),
+    );
+  });
 });

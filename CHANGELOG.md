@@ -4,29 +4,43 @@
 
 ### Patch Changes
 
-- [#62](https://github.com/the-guild-org/federation/pull/62) [`e50bc90`](https://github.com/the-guild-org/federation/commit/e50bc90d4dc65769dbe44fa01994148d968755dc) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix: do not expose `federation__Scope` and `federation__Policy` scalar definitions to a supergraph
+- [#62](https://github.com/the-guild-org/federation/pull/62)
+  [`e50bc90`](https://github.com/the-guild-org/federation/commit/e50bc90d4dc65769dbe44fa01994148d968755dc)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix: do not expose `federation__Scope`
+  and `federation__Policy` scalar definitions to a supergraph
 
 ## 0.11.2
 
 ### Patch Changes
 
-- [#60](https://github.com/the-guild-org/federation/pull/60) [`2f7fef1`](https://github.com/the-guild-org/federation/commit/2f7fef10409a25f8366182448a48e72d5451abf9) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Normalize enum values to be printed as enum values in Supergraph SDL, even if the user's subgraph schema has them as strings
+- [#60](https://github.com/the-guild-org/federation/pull/60)
+  [`2f7fef1`](https://github.com/the-guild-org/federation/commit/2f7fef10409a25f8366182448a48e72d5451abf9)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Normalize enum values to be printed as
+  enum values in Supergraph SDL, even if the user's subgraph schema has them as strings
 
 ## 0.11.1
 
 ### Patch Changes
 
-- [#58](https://github.com/the-guild-org/federation/pull/58) [`ab707b9`](https://github.com/the-guild-org/federation/commit/ab707b9517c141377ab10d46ec6ce2efa1401450) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support directives on Input Object types
+- [#58](https://github.com/the-guild-org/federation/pull/58)
+  [`ab707b9`](https://github.com/the-guild-org/federation/commit/ab707b9517c141377ab10d46ec6ce2efa1401450)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support directives on Input Object
+  types
 
 ## 0.11.0
 
 ### Minor Changes
 
-- [#52](https://github.com/the-guild-org/federation/pull/52) [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support @interfaceObject directive
+- [#52](https://github.com/the-guild-org/federation/pull/52)
+  [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support @interfaceObject directive
 
 ### Patch Changes
 
-- [#52](https://github.com/the-guild-org/federation/pull/52) [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Improve INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE
+- [#52](https://github.com/the-guild-org/federation/pull/52)
+  [`589effd`](https://github.com/the-guild-org/federation/commit/589effd5b82286704db2a4678bf47ffe33e01c0d)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Improve
+  INTERFACE_KEY_MISSING_IMPLEMENTATION_TYPE
 
 ## 0.10.1
 

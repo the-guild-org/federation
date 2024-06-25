@@ -570,7 +570,7 @@ function validateTypeImplementsInterface(
     if (!isTypeSubTypeOf(state, implementationsMap, typeField.type, ifaceField.type)) {
       reportError(
         `Interface field ${interfaceType.name}.${fieldName} expects type ` +
-          `${ifaceField.type} but ${type.name}.${fieldName} is type ${typeField.type}.`,
+          `${ifaceField.type} but ${type.name}.${fieldName} of type ${typeField.type} is not a proper subtype.`,
       );
     }
 
