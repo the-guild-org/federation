@@ -87,7 +87,7 @@ export function InterfaceSubtypeRule(
  * Provided a type and a super type, return true if the first type is either
  * equal or a subset of the second super type (covariant).
  */
-export function isTypeSubTypeOf(
+function isTypeSubTypeOf(
   state: SupergraphState,
   implementationsMap: Map<string, Set<string>>,
   maybeSubTypeName: string,
@@ -167,7 +167,6 @@ function isSubType(
   maybeSubType: ObjectTypeState | InterfaceTypeState,
 ): boolean {
   if (isUnionType(abstractType)) {
-    // set = new Set<GraphQLObjectType>(abstractType.getTypes());
     return abstractType.members.has(maybeSubType.name);
   }
 
