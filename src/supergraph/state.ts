@@ -10,7 +10,6 @@ import { Link, mergeLinks } from '../specifications/link.js';
 import { parseFields } from '../subgraph/helpers.js';
 import { SubgraphState } from '../subgraph/state.js';
 import { createJoinGraphEnumTypeNode } from './composition/ast.js';
-import { Graph } from './composition/common.js';
 import { directiveBuilder, DirectiveState } from './composition/directive.js';
 import { enumTypeBuilder, EnumTypeState } from './composition/enum-type.js';
 import { inputObjectTypeBuilder, InputObjectTypeState } from './composition/input-object-type.js';

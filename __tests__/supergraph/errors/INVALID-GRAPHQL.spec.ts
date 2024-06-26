@@ -22,6 +22,10 @@ testVersions((api, version) => {
             id: ID! @shareable
           }
 
+          type User implements Node {
+            id: ID!
+          }
+
           interface Node {
             id: ID!
           }
@@ -53,6 +57,37 @@ testVersions((api, version) => {
           'Interface field Node.id expects type ID! but Admin.id of type ID is not a proper subtype.',
         extensions: expect.objectContaining({ code: 'INVALID_GRAPHQL' }),
       }),
+    );
+
+    assertCompositionSuccess(
+      api.composeServices([
+        {
+          typeDefs: graphql`
+            extend schema
+              @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
+
+            type Query {
+              a: Admin
+            }
+
+            type Admin implements Node {
+              id: ID! @shareable
+              parent: Node
+            }
+
+            type User implements Node {
+              id: ID!
+              parent: User
+            }
+
+            interface Node {
+              id: ID!
+              parent: Node
+            }
+          `,
+          name: 'a',
+        },
+      ]),
     );
   });
 });
