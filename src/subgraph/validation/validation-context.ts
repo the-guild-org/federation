@@ -71,8 +71,8 @@ export function createSimpleValidationContext(typeDefs: DocumentNode, typeNodeIn
             ancestor.kind === Kind.SCHEMA_DEFINITION || ancestor.kind === Kind.SCHEMA_EXTENSION
               ? 'schema'
               : 'name' in ancestor && ancestor.name
-              ? ancestor.name.value
-              : '';
+                ? ancestor.name.value
+                : '';
           if (coordinate.length > 0) {
             coordinate = coordinate + '.' + name;
           } else {

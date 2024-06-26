@@ -150,7 +150,7 @@ export function interfaceTypeBuilder(): TypeBuilder<InterfaceType, InterfaceType
             argState.ast.directives.push(directive);
           });
 
-          argState.kind = arg.kind
+          argState.kind = arg.kind;
 
           argState.byGraph.set(graph.id, {
             type: arg.type,
@@ -430,7 +430,12 @@ function getOrCreateInterfaceField(
   return def;
 }
 
-function getOrCreateArg(fieldState: InterfaceTypeFieldState, argName: string, argType: string, argKind: ArgumentKind) {
+function getOrCreateArg(
+  fieldState: InterfaceTypeFieldState,
+  argName: string,
+  argType: string,
+  argKind: ArgumentKind,
+) {
   const existing = fieldState.args.get(argName);
 
   if (existing) {

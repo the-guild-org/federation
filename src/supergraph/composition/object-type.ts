@@ -222,7 +222,7 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
             argState.defaultValue = arg.defaultValue;
           }
 
-          argState.kind = arg.kind
+          argState.kind = arg.kind;
 
           argState.byGraph.set(graph.id, {
             type: arg.type,
@@ -917,7 +917,12 @@ function getOrCreateField(objectTypeState: ObjectTypeState, fieldName: string, f
   return def;
 }
 
-function getOrCreateArg(fieldState: ObjectTypeFieldState, argName: string, argType: string, argKind: ArgumentKind) {
+function getOrCreateArg(
+  fieldState: ObjectTypeFieldState,
+  argName: string,
+  argType: string,
+  argKind: ArgumentKind,
+) {
   const existing = fieldState.args.get(argName);
 
   if (existing) {

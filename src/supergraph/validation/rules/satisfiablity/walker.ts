@@ -96,8 +96,8 @@ export class Walker {
       operationType === OperationTypeNode.QUERY
         ? 'Query'
         : operationType === OperationTypeNode.MUTATION
-        ? 'Mutation'
-        : 'Subscription',
+          ? 'Mutation'
+          : 'Subscription',
       false,
     );
 

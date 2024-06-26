@@ -1,4 +1,19 @@
-schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible", "@override"]) {
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: [
+      "@key"
+      "@external"
+      "@provides"
+      "@requires"
+      "@extends"
+      "@shareable"
+      "@tag"
+      "@inaccessible"
+      "@override"
+    ]
+  ) {
   query: Query
   mutation: Mutation
 }
@@ -7,9 +22,17 @@ directive @extends on INTERFACE | OBJECT
 
 directive @external(reason: String) on FIELD_DEFINITION | OBJECT
 
-directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+directive @key(
+  fields: federation__FieldSet!
+  resolvable: Boolean = true
+) repeatable on INTERFACE | OBJECT
 
-directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+directive @link(
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+  url: String
+) repeatable on SCHEMA
 
 directive @override(from: String!) on FIELD_DEFINITION
 
@@ -19,9 +42,14 @@ directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
 
 directive @shareable on FIELD_DEFINITION | OBJECT
 
-directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+directive @tag(
+  name: String!
+) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
 
-type untilba2 @key(fields: "metal6ef { fooey29e trail84e adornea4 } until877 oftend70 where5b0 truly811 sadly185 fooeyc5f") {
+type untilba2
+  @key(
+    fields: "metal6ef { fooey29e trail84e adornea4 } until877 oftend70 where5b0 truly811 sadly185 fooeyc5f"
+  ) {
   oftend70: String
   round159: [oftena26!]!
   given11b: [oftena26!]!
@@ -88,7 +116,8 @@ type badly696 {
 type eager01f @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): flaky271 @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): flaky271
+    @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   prune878: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   truly8c7: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   waist526: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
@@ -101,7 +130,8 @@ type eager01f @key(fields: "where46e") {
 type barge0fe @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "powerf43 madlybd2 trail84e")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "powerf43 madlybd2 trail84e")
   where46e: String
   trail84e: String @external
 }
@@ -110,7 +140,8 @@ type fooey861 @key(fields: "fooey29e") {
   powerf43: String @external
   madlybd2: String @external
   fooey29e: String!
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "powerf43 madlybd2 trail84e")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "powerf43 madlybd2 trail84e")
   trail84e: String! @external
 }
 
@@ -132,7 +163,10 @@ type madly346 {
   bunch75f: String
 }
 
-type plate86e @key(fields: "adornea4") @key(fields: "adornea4 whose18d") @key(fields: "adornea4 creek166 ready859") {
+type plate86e
+  @key(fields: "adornea4")
+  @key(fields: "adornea4 whose18d")
+  @key(fields: "adornea4 creek166 ready859") {
   badlyd13: [yowza245!]!
   yowzae8f: badly696
   hinge935(yahoocc1: String!): diver2db
@@ -227,7 +261,9 @@ type badlya1f @key(fields: "fooey29e trail84e adornea4") {
 type curvecc9 @key(fields: "adornea4 ready859 sincead5") {
   itchy8a4: [yowza033!]! @external
   adornea4: smalld4d
-  metal6ef(saint721: Boolean, trail84e: yowza5b1, cheep759: [yowza5b1!]): [yowza033!]! @override(from: "yowza9a2") @requires(fields: "itchy8a4 { adornea4 until4b4 fooey29e trail84e ready859 sincead5 midstc23 }")
+  metal6ef(saint721: Boolean, trail84e: yowza5b1, cheep759: [yowza5b1!]): [yowza033!]!
+    @override(from: "yowza9a2")
+    @requires(fields: "itchy8a4 { adornea4 until4b4 fooey29e trail84e ready859 sincead5 midstc23 }")
   sincead5: chinoaa2
   ready859: chinoaa2
 }
@@ -272,7 +308,9 @@ input pilotdb4 {
   aforedf5: String
 }
 
-type madly4e3 @key(fields: "since9b7 { adornea4 whose18d } thick5ed { adornea4 }") @key(fields: "since9b7 { adornea4 creek166 ready859 }") {
+type madly4e3
+  @key(fields: "since9b7 { adornea4 whose18d } thick5ed { adornea4 }")
+  @key(fields: "since9b7 { adornea4 creek166 ready859 }") {
   since9b7: [plate86e!]!
   glass900: plate86e @shareable
   troopc57(untilb37: String, hence9d2: Boolean, shyly5db: spike788, trail84e: String): [whose2eb!]!
@@ -480,7 +518,8 @@ type madlycb0 {
 type cellof6e @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "powerf43 madlybd2 trail84e")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "powerf43 madlybd2 trail84e")
   where46e: String
   trail84e: String @external
 }
@@ -603,7 +642,8 @@ type since829 {
 type judgeb10 @key(fields: "where46e fully04a") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "madlybd2 powerf43")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "madlybd2 powerf43")
   fully04a: String
   prune878: String @requires(fields: "madlybd2")
   truly8c7: String @requires(fields: "madlybd2")
@@ -700,7 +740,9 @@ type minusd5e {
   bunch75f: String
 }
 
-type whose2eb @key(fields: "wriste37 shyly5db since9b7 { adornea4 whose18d } aside50a { adornea4 }") @key(fields: "wriste37 shyly5db since9b7 { adornea4 creek166 ready859 } aside50a { adornea4 }") {
+type whose2eb
+  @key(fields: "wriste37 shyly5db since9b7 { adornea4 whose18d } aside50a { adornea4 }")
+  @key(fields: "wriste37 shyly5db since9b7 { adornea4 creek166 ready859 } aside50a { adornea4 }") {
   aside50a: [plate86e!]!
   since9b7: [plate86e!]!
   glass900: plate86e @shareable
@@ -786,7 +828,8 @@ type board4dc {
 type which640 @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): fooeya48 @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): fooeya48
+    @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   prune878: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   truly8c7: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   waist526: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
@@ -880,7 +923,8 @@ enum mustye8e {
 type fooey2eb @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): aside4fb @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): aside4fb
+    @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   prune878: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   truly8c7: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   waist526: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
@@ -893,7 +937,8 @@ type fooey2eb @key(fields: "where46e") {
 type yowzacca @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "powerf43 madlybd2 trail84e")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "powerf43 madlybd2 trail84e")
   where46e: String
   trail84e: String @external
 }
@@ -1015,7 +1060,8 @@ type peskya84 @key(fields: "madlybd2") {
 type daily61c @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5 @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): chick5a5
+    @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   prune878: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   truly8c7: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   waist526: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
@@ -1117,7 +1163,8 @@ type about448 {
 type these524 @key(fields: "where46e") {
   powerf43: String @external
   madlybd2: String @external
-  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): moundc50 @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
+  chops471(yahoocc1: String, until22e: String, scalp0ef: Boolean): moundc50
+    @requires(fields: "powerf43 madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   prune878: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   truly8c7: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")
   waist526: String @requires(fields: "madlybd2 trail84e thick5ed perky28f { madlybd2 }")

@@ -134,7 +134,12 @@ function getOrCreateDirective(state: Map<string, DirectiveState>, directiveName:
   return def;
 }
 
-function getOrCreateArg(directiveState: DirectiveState, argName: string, argType: string, argKind: ArgumentKind) {
+function getOrCreateArg(
+  directiveState: DirectiveState,
+  argName: string,
+  argType: string,
+  argKind: ArgumentKind,
+) {
   const existing = directiveState.args.get(argName);
 
   if (existing) {

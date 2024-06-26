@@ -46,7 +46,6 @@ testImplementations(api => {
 
     assertCompositionSuccess(result);
 
-
     expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
       type Query @join__type(graph: A) {
         users(type: UserType! = Regular): [User!]!
@@ -1245,7 +1244,7 @@ testImplementations(api => {
           @join__unionMember(graph: A, member: "Book")
           @join__unionMember(graph: B, member: "Movie")
           @join__unionMember(graph: B, member: "Book") =
-            Movie
+          | Movie
           | Book
       `);
     });
@@ -1303,7 +1302,7 @@ testImplementations(api => {
           @join__type(graph: B)
           @join__unionMember(graph: A, member: "Book")
           @join__unionMember(graph: B, member: "Movie") =
-            Book
+          | Book
           | Movie
       `);
     });
@@ -5426,7 +5425,7 @@ testImplementations(api => {
             @join__unionMember(graph: A, member: "Movie")
             @join__unionMember(graph: B, member: "Book")
             @join__unionMember(graph: C, member: "Song") =
-              Movie
+            | Movie
             | Book
             | Song
         `);

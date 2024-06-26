@@ -1,4 +1,19 @@
-schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides", "@requires", "@extends", "@shareable", "@tag", "@inaccessible", "@override"]) {
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(
+    url: "https://specs.apollo.dev/federation/v2.0"
+    import: [
+      "@key"
+      "@external"
+      "@provides"
+      "@requires"
+      "@extends"
+      "@shareable"
+      "@tag"
+      "@inaccessible"
+      "@override"
+    ]
+  ) {
   query: Query
   mutation: Mutation
 }
@@ -7,9 +22,17 @@ directive @extends on INTERFACE | OBJECT
 
 directive @external(reason: String) on FIELD_DEFINITION | OBJECT
 
-directive @key(fields: federation__FieldSet!, resolvable: Boolean = true) repeatable on INTERFACE | OBJECT
+directive @key(
+  fields: federation__FieldSet!
+  resolvable: Boolean = true
+) repeatable on INTERFACE | OBJECT
 
-directive @link(as: String, for: link__Purpose, import: [link__Import], url: String) repeatable on SCHEMA
+directive @link(
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+  url: String
+) repeatable on SCHEMA
 
 directive @override(from: String!) on FIELD_DEFINITION
 
@@ -19,9 +42,15 @@ directive @requires(fields: federation__FieldSet!) on FIELD_DEFINITION
 
 directive @shareable on FIELD_DEFINITION | OBJECT
 
-directive @tag(name: String!) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+directive @tag(
+  name: String!
+) repeatable on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
 
-type untilba2 @extends @key(fields: "metal6ef { fooey29e trail84e adornea4 } until877 oftend70 where5b0 truly811 sadly185 fooeyc5f") {
+type untilba2
+  @extends
+  @key(
+    fields: "metal6ef { fooey29e trail84e adornea4 } until877 oftend70 where5b0 truly811 sadly185 fooeyc5f"
+  ) {
   oftend70: String @external
   metal6ef: [badlya1f!]! @external
   where5b0: String @external
@@ -47,7 +76,18 @@ type plate86e @key(fields: "adornea4 creek166 ready859") {
   adornea4: smalld4d!
   dwarf084: madly4e3
   rigida5f(whose5d3: tastyc47): curvecc9
-  along2c9(which541: Boolean!, sally487: String, whose5d3: tastyc47, chief6ff: String, sadly930: Boolean, until877: Int, yahoo609: String, creek166: String!, messy877: madlyd8f, fooeyc5f: Int): curvecc9
+  along2c9(
+    which541: Boolean!
+    sally487: String
+    whose5d3: tastyc47
+    chief6ff: String
+    sadly930: Boolean
+    until877: Int
+    yahoo609: String
+    creek166: String!
+    messy877: madlyd8f
+    fooeyc5f: Int
+  ): curvecc9
   bruite6b(whose5d3: tastyc47, fooeyc5f: Int, forgeced: madly963!, fullyb31: String!): curvecc9!
   repay45b: dimlyf57
   oftenec4(organ346: String!, until22e: String!): click2e7
@@ -219,7 +259,9 @@ type Mutation {
   yowzac84: query60d!
 }
 
-type dimlyf57 @key(fields: "yahoo45c untilb37 { organ346 until22e often162 }") @key(fields: "whose18d") {
+type dimlyf57
+  @key(fields: "yahoo45c untilb37 { organ346 until22e often162 }")
+  @key(fields: "whose18d") {
   awake90c: shyly29e!
   churn085: madly4e3!
   rigida5f: afterbba!
@@ -287,7 +329,9 @@ type among79f @key(fields: "seize765 whose18d") {
   sadlya5e: [abovefd8!]!
 }
 
-type beach049 @key(fields: "seize765 trail84e yahoo45c") @key(fields: "seize765 trail84e whose18d") {
+type beach049
+  @key(fields: "seize765 trail84e yahoo45c")
+  @key(fields: "seize765 trail84e whose18d") {
   wetlyc96: String!
   spoola62: until845!
   seize765: String!
@@ -333,11 +377,30 @@ type whereee4 {
 }
 
 type Query {
-  hence908(oftend70: String, organ346: String, whose5d3: tastyc47, where5b0: String, truly811: String, until877: Float!, creek166: String!, sadly185: String, fooeyc5f: Float): untilba2!
+  hence908(
+    oftend70: String
+    organ346: String
+    whose5d3: tastyc47
+    where5b0: String
+    truly811: String
+    until877: Float!
+    creek166: String!
+    sadly185: String
+    fooeyc5f: Float
+  ): untilba2!
   whose8f8(whose5d3: tastyc47, fullyb31: String): plate86e!
   shyly130(sally487: String, creek166: String!, messy877: madlyd8f, trulyc40: unban11a!): curvecc9!
   where3c7(often162: String!, organ346: String!, until22e: String!): madly4e3!
-  dwarf084(organ346: String, creek166: String, until7aa: pilotdb4, ditch5b8: String, fooeyc5f: Int, fully85e: Boolean, while7c7: Int, alert274: Int): madly4e3!
+  dwarf084(
+    organ346: String
+    creek166: String
+    until7aa: pilotdb4
+    ditch5b8: String
+    fooeyc5f: Int
+    fully85e: Boolean
+    while7c7: Int
+    alert274: Int
+  ): madly4e3!
   freshb8f(fullyb31: String!): dimlyf57
   cadgea1b(often162: String!, organ346: String!, until22e: String!): click2e7
   dailycb0(creek166: String!): madly4e3!

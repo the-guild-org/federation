@@ -1,6 +1,12 @@
 import { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
-import { Argument, ArgumentKind, Deprecated, Description, InputObjectType } from '../../subgraph/state.js';
+import {
+  Argument,
+  ArgumentKind,
+  Deprecated,
+  Description,
+  InputObjectType,
+} from '../../subgraph/state.js';
 import { createInputObjectTypeNode } from './ast.js';
 import { convertToConst, type MapByGraph, type TypeBuilder } from './common.js';
 
@@ -35,7 +41,12 @@ export function inputObjectTypeBuilder(): TypeBuilder<InputObjectType, InputObje
       });
 
       for (const field of type.fields.values()) {
-        const fieldState = getOrCreateField(inputObjectTypeState, field.name, field.type, field.kind);
+        const fieldState = getOrCreateField(
+          inputObjectTypeState,
+          field.name,
+          field.type,
+          field.kind,
+        );
 
         field.tags.forEach(tag => fieldState.tags.add(tag));
 
