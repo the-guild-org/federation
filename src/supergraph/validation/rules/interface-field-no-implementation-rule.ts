@@ -66,7 +66,8 @@ export function InterfaceFieldNoImplementationRule(
             const objectFieldState = objectTypeState.fields.get(fieldName);
 
             // if not, make sure it implements the field
-            if (!objectFieldState?.byGraph.has(graph)) {
+            // if (!objectFieldState?.byGraph.has(graph)) {
+            if (!objectFieldState) {
               const interfaceFieldDefinedInGraphs = Array.from(
                 interfaceFieldState.byGraph.keys(),
               ).map(context.graphIdToName);
