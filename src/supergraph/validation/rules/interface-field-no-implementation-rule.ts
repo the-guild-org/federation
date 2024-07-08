@@ -24,7 +24,38 @@ export function InterfaceFieldNoImplementationRule(
           throw new Error('Expected interface, got ' + interfaceTypeState.kind);
         }
 
+        const nonRequiredFields: string[] = [];
+
+        for (const [graph, interfaceStateInGraph] of interfaceTypeState.byGraph) {
+          if (!interfaceStateInGraph.isInterfaceObject) {
+            continue;
+          }
+
+          for (const [fieldName, interfaceFieldState] of interfaceTypeState.fields) {
+            const interfaceFieldStateInGraph = interfaceFieldState.byGraph.get(graph);
+            if (!interfaceFieldStateInGraph) {
+              continue;
+            }
+
+            if (interfaceFieldStateInGraph.external) {
+              continue;
+            }
+
+            nonRequiredFields.push(fieldName);
+          }
+        }
+
         for (const [fieldName, interfaceFieldState] of interfaceTypeState.fields) {
+          // skip fields that are defined in interface objects or in interface entities
+          if (nonRequiredFields.includes(fieldName)) {
+            continue;
+          }
+
+          // TODO: detect if a field is missing in a non-entity object type definition
+          if (objectTypeState.fields.has(fieldName) && objectTypeState.isEntity) {
+            continue;
+          }
+
           for (const [graph, objectTypeInGraph] of objectTypeState.byGraph) {
             // check if object in the graph, implements an interface of the same name
             if (!objectTypeInGraph.interfaces.has(interfaceName)) {
@@ -35,14 +66,14 @@ export function InterfaceFieldNoImplementationRule(
             const objectFieldState = objectTypeState.fields.get(fieldName);
 
             // if not, make sure it implements the field
-            if (!objectFieldState || !objectFieldState.byGraph.has(graph)) {
+            if (!objectFieldState?.byGraph.has(graph)) {
               const interfaceFieldDefinedInGraphs = Array.from(
                 interfaceFieldState.byGraph.keys(),
               ).map(context.graphIdToName);
               const declaredIn =
                 interfaceFieldDefinedInGraphs.length === 1
                   ? `subgraph "${interfaceFieldDefinedInGraphs[0]}"`
-                  : `subgraphs "${interfaceFieldDefinedInGraphs.map(g => `"${g}"`).join(', ')}"`;
+                  : `subgraphs ${interfaceFieldDefinedInGraphs.map(g => `"${g}"`).join(', ')}`;
 
               context.reportError(
                 new GraphQLError(
