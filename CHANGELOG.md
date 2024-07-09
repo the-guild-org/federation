@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.12.0
+
+### Minor Changes
+
+- [#66](https://github.com/the-guild-org/federation/pull/66) [`7603a4e`](https://github.com/the-guild-org/federation/commit/7603a4e1d439038816b43773617d756f1cb8a0f9) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support INTERFACE_FIELD_NO_IMPLEM
+
 ## 0.11.4
 
 ### Patch Changes
