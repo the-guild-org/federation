@@ -4,7 +4,10 @@
 
 ### Patch Changes
 
-- [#64](https://github.com/the-guild-org/federation/pull/64) [`9ec8078`](https://github.com/the-guild-org/federation/commit/9ec80789a8e4926c04dc77d5f5b85347d5934c76) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - fix: detect incorrect subtypes of interface fields across subgraphs
+- [#64](https://github.com/the-guild-org/federation/pull/64)
+  [`9ec8078`](https://github.com/the-guild-org/federation/commit/9ec80789a8e4926c04dc77d5f5b85347d5934c76)
+  Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - fix: detect incorrect subtypes of
+  interface fields across subgraphs
 
 ## 0.11.3
 

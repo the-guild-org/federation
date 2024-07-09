@@ -26,6 +26,7 @@ import { RequiredInputFieldMissingInSomeSubgraphRule } from './rules/required-in
 import { RequiredQueryRule } from './rules/required-query-rule.js';
 import { SatisfiabilityRule } from './rules/satisfiablity-rule.js';
 import { SubgraphNameRule } from './rules/subgraph-name-rule.js';
+import { InterfaceFieldNoImplementationRule } from './rules/interface-field-no-implementation-rule.js';
 import { TypesOfTheSameKindRule } from './rules/types-of-the-same-kind-rule.js';
 import { createSupergraphValidationContext } from './validation-context.js';
 
@@ -56,6 +57,7 @@ export function validateSupergraph(
   }
 
   const postSupergraphRules = [
+    InterfaceFieldNoImplementationRule,
     ExtensionWithBaseRule,
     FieldsOfTheSameTypeRule,
     FieldArgumentsOfTheSameTypeRule,
