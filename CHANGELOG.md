@@ -1,5 +1,12 @@
 # @theguild/federation-composition
 
+## 0.12.1
+
+### Patch Changes
+
+- [#68](https://github.com/the-guild-org/federation/pull/68) [`51dd57a`](https://github.com/the-guild-org/federation/commit/51dd57a1710564f436a346b3bada7b921fc73f05) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Unknown types are now always reported as GraphQLError (previously in some logic paths, it was an
+  exception).
+
 ## 0.12.0
 
 ### Minor Changes
