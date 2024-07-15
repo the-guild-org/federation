@@ -34,6 +34,8 @@ const specifiedScalars = new Set(specifiedScalarTypes.map(t => t.name));
 
 type ReportErrorFn = (message: string) => void;
 
+const SKIP = Symbol('skip');
+
 export function validateSubgraphState(state: SubgraphState, context: SubgraphValidationContext) {
   const errors: GraphQLError[] = [];
 
@@ -130,7 +132,13 @@ function validateDirectives(
           continue;
         }
 
-        if (!isInputType(state, argInputTypeName)) {
+        const isInput = isInputType(state, argInputTypeName);
+
+        if (isInput === SKIP) {
+          continue;
+        }
+
+        if (!isInput) {
           reportError(
             `The type of @${directive.name}(${arg.name}:) must be Input Type ` +
               `but got: ${arg.type}.`,
@@ -255,7 +263,13 @@ function validateFields(
     }
 
     // Ensure the type is an output type
-    if (!isOutputType(state, fieldTypeName)) {
+    const isOutput = isOutputType(state, fieldTypeName);
+
+    if (isOutput === SKIP) {
+      continue;
+    }
+
+    if (!isOutput) {
       reportError(
         `The type of "${type.name}.${field.name}" must be Output Type but got: "${field.type}".`,
       );
@@ -278,7 +292,13 @@ function validateFields(
       }
 
       // Ensure the type is an input type
-      if (!isInputType(state, argTypeName)) {
+      const isInput = isInputType(state, argTypeName);
+
+      if (isInput === SKIP) {
+        continue;
+      }
+
+      if (!isInput) {
         const isList = arg.type.endsWith(']');
         const isNonNull = arg.type.endsWith('!');
         const extra = isList ? ', a ListType' : isNonNull ? ', a NonNullType' : '';
@@ -459,7 +479,13 @@ function validateInputFields(
     }
 
     // Ensure the type is an input type
-    if (!isInputType(state, fieldTypeName)) {
+    const isInput = isInputType(state, fieldTypeName);
+
+    if (isInput === SKIP) {
+      continue;
+    }
+
+    if (!isInput) {
       const isList = field.type.endsWith(']');
       const isNonNull = field.type.endsWith('!');
       const extra = isList ? ', a ListType' : isNonNull ? ', a NonNullType' : '';
@@ -766,7 +792,7 @@ function isRequiredInputField(arg: InputField): boolean {
   return isNonNull(arg.type) && arg.defaultValue === undefined;
 }
 
-function isOutputType(state: SubgraphState, typeName: string): boolean {
+function isOutputType(state: SubgraphState, typeName: string) {
   const type = state.types.get(typeName);
 
   if (!type) {
@@ -776,7 +802,8 @@ function isOutputType(state: SubgraphState, typeName: string): boolean {
 
     // The existence of the type was already validated.
     // See: KnownTypeNamesRule
-    throw new Error(`Expected to find ${typeName} type`);
+    // No need to throw an exception here, because it affects the rest of the validation logic.
+    return SKIP;
   }
 
   // Only input types are not output types (scalars and enums are in both).
@@ -784,7 +811,7 @@ function isOutputType(state: SubgraphState, typeName: string): boolean {
   return !isInputObjectType(type);
 }
 
-export function isInputType(state: SubgraphState, typeName: string): boolean {
+export function isInputType(state: SubgraphState, typeName: string) {
   const type = state.types.get(typeName);
 
   if (!type) {
@@ -794,7 +821,8 @@ export function isInputType(state: SubgraphState, typeName: string): boolean {
 
     // The existence of the type was already validated.
     // See: KnownTypeNamesRule
-    throw new Error(`Expected to find ${typeName} type`);
+    // No need to throw an exception here, because it affects the rest of the validation logic.
+    return SKIP;
   }
 
   return isScalarType(type) || isEnumType(type) || isInputObjectType(type);

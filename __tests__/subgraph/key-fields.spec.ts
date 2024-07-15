@@ -187,4 +187,37 @@ testVersions((api, version) => {
       ]),
     );
   });
+
+  test('missing _FieldSet definition', () => {
+    expect(
+      api.composeServices([
+        {
+          name: 'foo',
+          typeDefs: graphql`
+            directive @key(fields: _FieldSet!) repeatable on OBJECT | INTERFACE
+
+            type Query {
+              users: [User]
+            }
+
+            type User @key(fields: "id") {
+              id: ID!
+              name: String!
+            }
+          `,
+        },
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(`[foo] Unknown type _FieldSet`),
+            extensions: expect.objectContaining({
+              code: 'INVALID_GRAPHQL',
+            }),
+          }),
+        ]),
+      }),
+    );
+  });
 });
