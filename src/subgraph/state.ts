@@ -159,6 +159,9 @@ export interface EnumType {
   referencedByOutputType: boolean;
   inputTypeReferences: Set<string>;
   outputTypeReferences: Set<string>;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface Field {
@@ -788,6 +791,11 @@ export function createSubgraphStateBuilder(
                 } else {
                   inputObjectTypeBuilder.setDirective(typeDef.name.value, node);
                 }
+                break;
+              }
+              case Kind.ENUM_TYPE_DEFINITION:
+              case Kind.ENUM_TYPE_EXTENSION: {
+                enumTypeBuilder.setDirective(typeDef.name.value, node);
                 break;
               }
               default:
@@ -1812,6 +1820,9 @@ function enumTypeFactory(state: SubgraphState) {
       getOrCreateEnumType(state, typeName).referencedByOutputType = true;
       getOrCreateEnumType(state, typeName).outputTypeReferences.add(schemaCoordinate);
     },
+    setDirective(typeName: string, directive: DirectiveNode) {
+      getOrCreateEnumType(state, typeName).ast.directives.push(directive);
+    },
     value: {
       setValue(typeName: string, valueName: string) {
         getOrCreateEnumValue(state, typeName, valueName);
@@ -2050,6 +2061,9 @@ function getOrCreateEnumType(state: SubgraphState, typeName: string): EnumType {
     referencedByOutputType: false,
     inputTypeReferences: new Set(),
     outputTypeReferences: new Set(),
+    ast: {
+      directives: [],
+    },
   };
 
   state.types.set(typeName, enumType);

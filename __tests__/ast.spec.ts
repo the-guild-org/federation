@@ -988,6 +988,30 @@ describe('enum object type', () => {
       }
     `);
   });
+
+  test('directives', () => {
+    expect(
+      createEnumTypeNode({
+        name: 'Media',
+        values: [
+          {
+            name: 'BOOK',
+          },
+          {
+            name: 'MOVIE',
+          },
+        ],
+        ast: {
+          directives: [createDirective('custom')],
+        },
+      }),
+    ).toEqualGraphQL(/* GraphQL */ `
+      enum Media @custom {
+        BOOK
+        MOVIE
+      }
+    `);
+  });
 });
 
 describe('schema', () => {
