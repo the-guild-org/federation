@@ -1,7 +1,8 @@
+import type { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
 import { Description, UnionType } from '../../subgraph/state.js';
 import { createUnionTypeNode } from './ast.js';
-import type { MapByGraph, TypeBuilder } from './common.js';
+import { convertToConst, type MapByGraph, type TypeBuilder } from './common.js';
 
 export function unionTypeBuilder(): TypeBuilder<UnionType, UnionTypeState> {
   return {
@@ -22,6 +23,10 @@ export function unionTypeBuilder(): TypeBuilder<UnionType, UnionTypeState> {
       if (type.description && !unionTypeState.description) {
         unionTypeState.description = type.description;
       }
+
+      type.ast.directives.forEach(directive => {
+        unionTypeState.ast.directives.push(directive);
+      });
 
       unionTypeState.byGraph.set(graph.id, {
         members: type.members,
@@ -50,6 +55,9 @@ export function unionTypeBuilder(): TypeBuilder<UnionType, UnionTypeState> {
             })
             .flat(1),
         },
+        ast: {
+          directives: convertToConst(unionType.ast.directives),
+        },
       });
     },
   };
@@ -64,6 +72,9 @@ export type UnionTypeState = {
   inaccessible: boolean;
   byGraph: MapByGraph<UnionTypeInGraph>;
   members: Set<string>;
+  ast: {
+    directives: DirectiveNode[];
+  };
 };
 
 type UnionTypeInGraph = {
@@ -86,6 +97,9 @@ function getOrCreateUnionType(state: Map<string, UnionTypeState>, typeName: stri
     inaccessible: false,
     hasDefinition: false,
     byGraph: new Map(),
+    ast: {
+      directives: [],
+    },
   };
 
   state.set(typeName, def);

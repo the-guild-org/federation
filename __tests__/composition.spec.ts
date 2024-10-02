@@ -2378,6 +2378,114 @@ testImplementations(api => {
       `);
     });
 
+    test('preserve directive on enum values if included in @composeDirective', () => {
+      const result = composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@composeDirective"]
+                )
+                @link(url: "https://myspecs.dev/whatever/v1.0", import: ["@whatever"])
+                @composeDirective(name: "@whatever")
+
+              directive @whatever on ENUM_VALUE
+
+              enum UserType {
+                ADMIN @whatever
+                REGULAR
+              }
+
+              type User @key(fields: "id") {
+                id: ID!
+                name: String!
+                type: UserType!
+              }
+
+              type Query {
+                users: [User]
+              }
+            `),
+        },
+      ]);
+
+      if (version === 'v2.0') {
+        assertCompositionFailure(result);
+        return;
+      }
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        directive @whatever on ENUM_VALUE
+      `);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        enum UserType @join__type(graph: A) {
+          ADMIN @join__enumValue(graph: A) @whatever
+          REGULAR @join__enumValue(graph: A)
+        }
+      `);
+    });
+
+    test('preserve directive on union types if included in @composeDirective', () => {
+      const result = composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@composeDirective"]
+                )
+                @link(url: "https://myspecs.dev/whatever/v1.0", import: ["@whatever"])
+                @composeDirective(name: "@whatever")
+
+              directive @whatever on UNION
+
+              type User @key(fields: "id") {
+                id: ID!
+                name: String!
+              }
+
+              type Admin @key(fields: "id") {
+                id: ID!
+                name: String!
+              }
+
+              union Whoever @whatever = User | Admin
+
+              type Query {
+                whoever: [Whoever]
+              }
+            `),
+        },
+      ]);
+
+      if (version === 'v2.0') {
+        assertCompositionFailure(result);
+        return;
+      }
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        directive @whatever on UNION
+      `);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        union Whoever
+          @join__type(graph: A)
+          @join__unionMember(graph: A, member: "Admin")
+          @join__unionMember(graph: A, member: "User")
+          @whatever =
+          | Admin
+          | User
+      `);
+    });
+
     test('preserve directive on interface its field and argument if included in @composeDirective', () => {
       const result = composeServices([
         {

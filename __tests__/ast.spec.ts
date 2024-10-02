@@ -786,6 +786,20 @@ describe('union type', () => {
       union Media @inaccessible = Movie | Book
     `);
   });
+
+  test('directives', () => {
+    expect(
+      createUnionTypeNode({
+        name: 'Media',
+        members: ['Book', 'Movie'],
+        ast: {
+          directives: [createDirective('custom')],
+        },
+      }),
+    ).toEqualGraphQL(/* GraphQL */ `
+      union Media @custom = Movie | Book
+    `);
+  });
 });
 
 describe('input object type', () => {
@@ -996,6 +1010,9 @@ describe('enum object type', () => {
         values: [
           {
             name: 'BOOK',
+            ast: {
+              directives: [createDirective('any')],
+            },
           },
           {
             name: 'MOVIE',
@@ -1007,7 +1024,7 @@ describe('enum object type', () => {
       }),
     ).toEqualGraphQL(/* GraphQL */ `
       enum Media @custom {
-        BOOK
+        BOOK @any
         MOVIE
       }
     `);
