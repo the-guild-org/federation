@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.13.0
+
+### Minor Changes
+
+- [#70](https://github.com/the-guild-org/federation/pull/70) [`627dea9`](https://github.com/the-guild-org/federation/commit/627dea925bfb6826c485c0b5c8053cb0faffa43c) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support directives on enum type definitions and extensions
+
 ## 0.12.1
 
 ### Patch Changes
