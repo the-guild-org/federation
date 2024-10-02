@@ -2326,6 +2326,58 @@ testImplementations(api => {
       `);
     });
 
+    test('preserve directive on enums if included in @composeDirective', () => {
+      const result = composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/${version}"
+                  import: ["@key", "@composeDirective"]
+                )
+                @link(url: "https://myspecs.dev/whatever/v1.0", import: ["@whatever"])
+                @composeDirective(name: "@whatever")
+
+              directive @whatever on ENUM
+
+              enum UserType @whatever {
+                ADMIN
+                REGULAR
+              }
+
+              type User @key(fields: "id") {
+                id: ID!
+                name: String!
+                type: UserType!
+              }
+
+              type Query {
+                users: [User]
+              }
+            `),
+        },
+      ]);
+
+      if (version === 'v2.0') {
+        assertCompositionFailure(result);
+        return;
+      }
+
+      assertCompositionSuccess(result);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        directive @whatever on ENUM
+      `);
+
+      expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+        enum UserType @whatever @join__type(graph: A) {
+          ADMIN @join__enumValue(graph: A)
+          REGULAR @join__enumValue(graph: A)
+        }
+      `);
+    });
+
     test('preserve directive on interface its field and argument if included in @composeDirective', () => {
       const result = composeServices([
         {
@@ -6916,16 +6968,22 @@ testImplementations(api => {
           extend schema
             @link(
               url: "https://specs.apollo.dev/federation/v2.3"
-              import: ["@key", "@composeDirective"]
+              import: ["@key", "@shareable", "@composeDirective"]
             )
             @link(url: "https://myspecs.dev/lowercase/v1.0", import: ["@lowercase"])
             @composeDirective(name: "@lowercase")
 
-          directive @lowercase on FIELD_DEFINITION
+          directive @lowercase on FIELD_DEFINITION | ENUM
 
           type User @key(fields: "id") {
             id: ID! @lowercase
             age: Int!
+            type: UserType! @shareable
+          }
+
+          enum UserType @lowercase {
+            REGULAR
+            ADMIN
           }
 
           type Query {
@@ -6939,17 +6997,23 @@ testImplementations(api => {
           extend schema
             @link(
               url: "https://specs.apollo.dev/federation/v2.3"
-              import: ["@key", "@external", "@requires", "@composeDirective"]
+              import: ["@key", "@external", "@requires", "@shareable", "@composeDirective"]
             )
             @link(url: "https://myspecs.dev/lowercase/v1.0", import: ["@lowercase"])
             @composeDirective(name: "@lowercase")
 
-          directive @lowercase on FIELD_DEFINITION
+          directive @lowercase on FIELD_DEFINITION | ENUM
 
           type User @key(fields: "id") {
             id: ID! @lowercase
             age: Int! @external
             birthday: String @requires(fields: "age")
+            type: UserType! @lowercase @shareable
+          }
+
+          enum UserType @lowercase {
+            REGULAR
+            ADMIN
           }
 
           type Query {
@@ -6967,6 +7031,14 @@ testImplementations(api => {
         id: ID! @lowercase
         age: Int! @join__field(external: true, graph: B) @join__field(graph: A)
         birthday: String @join__field(graph: B, requires: "age")
+        type: UserType! @lowercase
+      }
+    `);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      enum UserType @join__type(graph: A) @join__type(graph: B) @lowercase {
+        ADMIN @join__enumValue(graph: A) @join__enumValue(graph: B)
+        REGULAR @join__enumValue(graph: A) @join__enumValue(graph: B)
       }
     `);
   });

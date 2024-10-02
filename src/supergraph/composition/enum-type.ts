@@ -1,7 +1,8 @@
+import type { DirectiveNode } from 'graphql';
 import { FederationVersion } from '../../specifications/federation.js';
 import { Deprecated, Description, EnumType } from '../../subgraph/state.js';
 import { createEnumTypeNode } from './ast.js';
-import type { MapByGraph, TypeBuilder } from './common.js';
+import { convertToConst, type MapByGraph, type TypeBuilder } from './common.js';
 
 export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
   return {
@@ -50,6 +51,10 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
           enumTypeState.outputTypeReferences.add(ref);
         });
       }
+
+      type.ast.directives.forEach(directive => {
+        enumTypeState.ast.directives.push(directive);
+      });
 
       enumTypeState.byGraph.set(graph.id, {
         inaccessible: type.inaccessible,
@@ -121,6 +126,9 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
             graph: graphName.toUpperCase(),
           })),
         },
+        ast: {
+          directives: convertToConst(enumType.ast.directives),
+        },
       });
     },
   };
@@ -166,6 +174,9 @@ export type EnumTypeState = {
   inputTypeReferences: Set<string>;
   outputTypeReferences: Set<string>;
   values: Map<string, EnumValueState>;
+  ast: {
+    directives: DirectiveNode[];
+  };
 };
 
 type EnumValueState = {
@@ -209,6 +220,9 @@ function getOrCreateEnumType(state: Map<string, EnumTypeState>, typeName: string
     inputTypeReferences: new Set(),
     outputTypeReferences: new Set(),
     byGraph: new Map(),
+    ast: {
+      directives: [],
+    },
   };
 
   state.set(typeName, def);
