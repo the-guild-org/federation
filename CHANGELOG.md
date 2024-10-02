@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.14.0
+
+### Minor Changes
+
+- [#72](https://github.com/the-guild-org/federation/pull/72) [`780892d`](https://github.com/the-guild-org/federation/commit/780892d4a00a296daab5bee895c39cc031cf2061) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Support directives on enum values and unions
+
 ## 0.13.0
 
 ### Minor Changes
