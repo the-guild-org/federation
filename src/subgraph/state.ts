@@ -142,6 +142,9 @@ export interface UnionType {
   inaccessible: boolean;
   isDefinition: boolean;
   description?: Description;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface EnumType {
@@ -211,6 +214,9 @@ export interface EnumValue {
   tags: Set<string>;
   description?: Description;
   deprecated?: Deprecated;
+  ast: {
+    directives: DirectiveNode[];
+  };
 }
 
 export interface Argument {
@@ -724,6 +730,7 @@ export function createSubgraphStateBuilder(
           if (composedDirectives.has(node.name.value)) {
             const typeDef = typeNodeInfo.getTypeDef();
             const fieldDef = typeNodeInfo.getFieldDef();
+            const enumValueDef = typeNodeInfo.getValueDef();
             const argDef = typeNodeInfo.getArgumentDef();
 
             if (!typeDef) {
@@ -795,12 +802,27 @@ export function createSubgraphStateBuilder(
               }
               case Kind.ENUM_TYPE_DEFINITION:
               case Kind.ENUM_TYPE_EXTENSION: {
-                enumTypeBuilder.setDirective(typeDef.name.value, node);
+                if (enumValueDef) {
+                  enumTypeBuilder.value.setDirective(
+                    typeDef.name.value,
+                    enumValueDef.name.value,
+                    node,
+                  );
+                } else {
+                  enumTypeBuilder.setDirective(typeDef.name.value, node);
+                }
                 break;
               }
+              case Kind.UNION_TYPE_DEFINITION:
+              case Kind.UNION_TYPE_EXTENSION: {
+                unionTypeBuilder.setDirective(typeDef.name.value, node);
+                break;
+              }
+
               default:
-                // TODO: T07 support directives on other locations than OBJECT, FIELD_DEFINITION, ARGUMENT_DEFINITION
-                throw new Error(`Directives on "${typeDef.kind}" types are not supported yet`);
+                throw new Error(
+                  `Directives on "${typeof typeDef === 'object' && typeDef !== null && 'kind' in typeDef ? (typeDef as any).kind : typeDef}" types are not supported yet`,
+                );
             }
           } else if (node.name.value === 'specifiedBy') {
             const typeDef = typeNodeInfo.getTypeDef();
@@ -1786,6 +1808,9 @@ function unionTypeFactory(state: SubgraphState) {
     setMember(typeName: string, member: string) {
       getOrCreateUnionType(state, typeName).members.add(member);
     },
+    setDirective(typeName: string, directive: DirectiveNode) {
+      getOrCreateUnionType(state, typeName).ast.directives.push(directive);
+    },
   };
 }
 
@@ -1829,6 +1854,9 @@ function enumTypeFactory(state: SubgraphState) {
       },
       setDescription(typeName: string, valueName: string, description: Description) {
         getOrCreateEnumValue(state, typeName, valueName).description = description;
+      },
+      setDirective(typeName: string, valueName: string, directive: DirectiveNode) {
+        getOrCreateEnumValue(state, typeName, valueName).ast.directives.push(directive);
       },
       setInaccessible(typeName: string, valueName: string) {
         getOrCreateEnumValue(state, typeName, valueName).inaccessible = true;
@@ -2089,6 +2117,9 @@ function getOrCreateUnionType(state: SubgraphState, typeName: string): UnionType
     inaccessible: false,
     tags: new Set(),
     isDefinition: false,
+    ast: {
+      directives: [],
+    },
   };
 
   state.types.set(typeName, unionType);
@@ -2230,6 +2261,9 @@ function getOrCreateEnumValue(
     name: enumValueName,
     inaccessible: false,
     tags: new Set(),
+    ast: {
+      directives: [],
+    },
   };
 
   enumType.values.set(enumValueName, enumValue);

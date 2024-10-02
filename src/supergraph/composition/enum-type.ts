@@ -80,6 +80,10 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
           valueState.description = value.description;
         }
 
+        value.ast.directives.forEach(directive => {
+          valueState.ast.directives.push(directive);
+        });
+
         valueState.byGraph.set(graph.id, {
           inaccessible: value.inaccessible,
           version: graph.version,
@@ -114,6 +118,9 @@ export function enumTypeBuilder(): TypeBuilder<EnumType, EnumTypeState> {
           inaccessible: value.inaccessible,
           description: value.description,
           deprecated: value.deprecated,
+          ast: {
+            directives: convertToConst(value.ast.directives),
+          },
         })),
         tags: Array.from(enumType.tags),
         inaccessible: enumType.inaccessible,
@@ -185,6 +192,9 @@ type EnumValueState = {
   inaccessible: boolean;
   deprecated?: Deprecated;
   description?: Description;
+  ast: {
+    directives: DirectiveNode[];
+  };
   byGraph: MapByGraph<EnumValueStateInGraph>;
 };
 
@@ -242,6 +252,9 @@ function getOrCreateEnumValue(enumTypeState: EnumTypeState, enumValueName: strin
     tags: new Set(),
     inaccessible: false,
     byGraph: new Map(),
+    ast: {
+      directives: [],
+    },
   };
 
   enumTypeState.values.set(enumValueName, def);
