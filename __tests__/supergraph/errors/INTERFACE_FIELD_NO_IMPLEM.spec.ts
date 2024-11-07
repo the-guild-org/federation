@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { graphql, testVersions } from '../../shared/testkit.js';
+import { assertCompositionFailure, graphql, testVersions } from '../../shared/testkit.js';
 
 testVersions((api, version) => {
   test('INTERFACE_FIELD_NO_IMPLEM (entity)', () => {
@@ -110,6 +110,47 @@ testVersions((api, version) => {
             }),
           }),
         ]),
+      }),
+    );
+  });
+
+  test('Ignoring INTERFACE_FIELD_NO_IMPLEM when TYPE_KIND_MISMATCH detected', () => {
+    const result = api.composeServices([
+      {
+        name: 'cars',
+        typeDefs: graphql`
+          type Query {
+            foo(id: ID!): String
+          }
+
+          interface Vehicle {
+            id: ID!
+          }
+
+          type Car implements Vehicle {
+            id: ID!
+          }
+        `,
+      },
+      {
+        name: 'vehicles',
+        typeDefs: graphql`
+          type Vehicle {
+            id: ID!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionFailure(result);
+
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        message:
+          'Type "Vehicle" has mismatched kind: it is defined as Interface Type in subgraph "cars" but Object Type in subgraph "vehicles"',
+        extensions: expect.objectContaining({
+          code: 'TYPE_KIND_MISMATCH',
+        }),
       }),
     );
   });

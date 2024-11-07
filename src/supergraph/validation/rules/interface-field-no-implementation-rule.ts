@@ -21,7 +21,8 @@ export function InterfaceFieldNoImplementationRule(
         }
 
         if (interfaceTypeState.kind !== 'interface') {
-          throw new Error('Expected interface, got ' + interfaceTypeState.kind);
+          // Covered by TYPE_KIND_MISMATCH rule
+          return;
         }
 
         const nonRequiredFields: string[] = [];
