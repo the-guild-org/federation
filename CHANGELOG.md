@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.14.1
+
+### Patch Changes
+
+- [#74](https://github.com/the-guild-org/federation/pull/74) [`7456d14`](https://github.com/the-guild-org/federation/commit/7456d146720f22b48ea883c4b9790ff222efe9e1) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Show TYPE_KIND_MISMATCH and ignore INTERFACE_FIELD_NO_IMPLEM when there is a type kind mismatch
+
 ## 0.14.0
 
 ### Minor Changes
