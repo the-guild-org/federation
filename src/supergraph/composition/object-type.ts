@@ -467,20 +467,18 @@ export function objectTypeBuilder(): TypeBuilder<ObjectType, ObjectTypeState> {
               // If it's a Query type, we don't need to emit `@join__field` directives when there's only one graph
               // We do not have to emit `@join__field` if the field is shareable in every graph as well.
 
-              if (differencesBetweenGraphs.override) {
-                const graphsWithOverride = fieldInGraphs.filter(
-                  ([_, meta]) =>
-                    meta.override !== null &&
-                    (objectType.byGraph.size > 1
-                      ? // if there's more than one graph
-                        // we want to emit `@join__field` with override even when it's pointing to a non-existing subgraph
-                        true
-                      : // but if there's only one graph,
-                        // we don't want to emit `@join__field` if the override is pointing to a non-existing subgraph
-                        typeof graphNameToId(meta.override) === 'string'),
+              if (differencesBetweenGraphs.override && graphs.size > 1) {
+                const overriddenGraphs = fieldInGraphs
+                  .map(([_, meta]) => (meta.override ? graphNameToId(meta.override) : null))
+                  .filter((graphId): graphId is string => typeof graphId === 'string');
+
+                const graphsToPrintJoinField = fieldInGraphs.filter(
+                  ([graphId, meta]) =>
+                    meta.override !== null ||
+                    (meta.shareable && !overriddenGraphs.includes(graphId)),
                 );
 
-                joinFields = graphsWithOverride.map(([graphId, meta]) => ({
+                joinFields = graphsToPrintJoinField.map(([graphId, meta]) => ({
                   graph: graphId,
                   override: meta.override ?? undefined,
                   usedOverridden: provideUsedOverriddenValue(
