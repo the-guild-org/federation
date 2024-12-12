@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.14.2
+
+### Patch Changes
+
+- [#76](https://github.com/the-guild-org/federation/pull/76) [`a3cb724`](https://github.com/the-guild-org/federation/commit/a3cb7241dc1e07e8f8c0f2e0c2908a68c55f66d9) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix a missing `@join__field` on a query field where `@override` is used, but not in all subgraphs.
+
 ## 0.14.1
 
 ### Patch Changes
