@@ -769,4 +769,245 @@ testImplementations(api => {
     expect(result.supergraphSdl).not.toMatch('federation__Policy');
     expect(result.supergraphSdl).not.toMatch('federation__Scope');
   });
+
+  test('@override with @shareable in different conditions', () => {
+    let result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@shareable", "@override"]
+            )
+
+          type Query {
+            bar: String! @shareable @override(from: "a")
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) @join__type(graph: B) @join__type(graph: C) {
+        bar: String! @join__field(graph: B) @join__field(graph: C, override: "a")
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@shareable", "@override"]
+            )
+
+          type Query {
+            bar: String! @shareable @override(from: "a")
+          }
+        `,
+      },
+      {
+        name: 'd',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            foo: String!
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query
+        @join__type(graph: A)
+        @join__type(graph: B)
+        @join__type(graph: C)
+        @join__type(graph: D) {
+        foo: String! @join__field(graph: D)
+        bar: String! @join__field(graph: B) @join__field(graph: C, override: "a")
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) @join__type(graph: B) @join__type(graph: C) {
+        bar: String!
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'b',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'c',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            bar: String! @shareable
+          }
+        `,
+      },
+      {
+        name: 'd',
+        typeDefs: graphql`
+          extend schema
+            @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@shareable"])
+
+          type Query {
+            foo: String! @shareable
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query
+        @join__type(graph: A)
+        @join__type(graph: B)
+        @join__type(graph: C)
+        @join__type(graph: D) {
+        foo: String! @join__field(graph: D)
+        bar: String! @join__field(graph: A) @join__field(graph: B) @join__field(graph: C)
+      }
+    `);
+
+    result = api.composeServices([
+      {
+        name: 'a',
+        typeDefs: graphql`
+          extend schema
+            @link(
+              url: "https://specs.apollo.dev/federation/v2.3"
+              import: ["@shareable", "@override"]
+            )
+
+          type Query {
+            bar: String! @shareable @override(from: "non-existent")
+          }
+        `,
+      },
+    ]);
+
+    assertCompositionSuccess(result);
+
+    expect(result.supergraphSdl).toContainGraphQL(/* GraphQL */ `
+      type Query @join__type(graph: A) {
+        bar: String!
+      }
+    `);
+  });
 });
