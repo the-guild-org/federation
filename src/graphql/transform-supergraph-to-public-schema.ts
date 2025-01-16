@@ -31,6 +31,8 @@ export const federationDirectives = new Set([
   'join__enumValue',
   'join__field',
   'inaccessible',
+  'policy',
+  'requiresScopes',
 ]);
 const specifiedDirectives = new Set(specifiedDirectivesArray.map(d => d.name));
 
