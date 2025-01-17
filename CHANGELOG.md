@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.14.3
+
+### Patch Changes
+
+- [#78](https://github.com/the-guild-org/federation/pull/78) [`4e25e6d`](https://github.com/the-guild-org/federation/commit/4e25e6d4f3a3aac9a1cfaae78d2775e9d050ce7a) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - `transformSupergraphToPublicSchema` removes now `@policy`, `@requiresScopes` and `@authenticated`
+
 ## 0.14.2
 
 ### Patch Changes
