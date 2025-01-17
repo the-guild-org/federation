@@ -31,6 +31,7 @@ export const federationDirectives = new Set([
   'join__enumValue',
   'join__field',
   'inaccessible',
+  'authenticated',
   'policy',
   'requiresScopes',
 ]);
