@@ -31,6 +31,20 @@ describe('transformSupergraphToPublicSchema', () => {
         }"
       `);
     });
+    test('enum value removal', () => {
+      const sdl = parse(/* GraphQL */ `
+        enum Enum {
+          VALUE1 @inaccessible
+          VALUE2
+        }
+      `);
+      const resultSdl = transformSupergraphToPublicSchema(sdl);
+      expect(print(resultSdl)).toMatchInlineSnapshot(`
+        "enum Enum {
+          VALUE2
+        }"
+      `);
+    })
     test('object type removal', () => {
       const sdl = parse(/* GraphQL */ `
         type Object1 @inaccessible {

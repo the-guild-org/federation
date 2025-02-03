@@ -131,6 +131,7 @@ export function transformSupergraphToPublicSchema(documentNode: DocumentNode): D
         return null;
       }
     },
+    [Kind.ENUM_VALUE_DEFINITION]: removeInaccessibleNode,
     [Kind.OBJECT_TYPE_DEFINITION]: removeInaccessibleNode,
     [Kind.FIELD_DEFINITION]: removeInaccessibleNode,
     [Kind.INTERFACE_TYPE_DEFINITION]: removeInaccessibleNode,
