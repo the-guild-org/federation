@@ -226,54 +226,50 @@ testImplementations(api => {
     });
 
     test(`target interface must have @key directive on subgraph where it's defined`, () => {
-      const result = api.composeServices(
-        [
-          {
-            name: 'a',
-            typeDefs: parse(/* GraphQL */ `
-              extend schema
-                @link(
-                  url: "https://specs.apollo.dev/federation/v2.3"
-                  import: ["@key", "@interfaceObject"]
-                )
+      const result = api.composeServices([
+        {
+          name: 'a',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
 
-              type Query {
-                hello: MyInterface
-              }
+            type Query {
+              hello: MyInterface
+            }
 
-              interface MyInterface @key(fields: "id") {
-                id: ID!
-                field: String
-              }
+            interface MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
 
-              type MyType implements MyInterface @key(fields: "id") {
-                id: ID!
-                field: String
-              }
-            `),
-          },
-          {
-            name: 'b',
-            typeDefs: parse(/* GraphQL */ `
-              extend schema
-                @link(
-                  url: "https://specs.apollo.dev/federation/v2.3"
-                  import: ["@key", "@interfaceObject"]
-                )
-              type Query {
-                otherField: MyInterface
-              }
+            type MyType implements MyInterface @key(fields: "id") {
+              id: ID!
+              field: String
+            }
+          `),
+        },
+        {
+          name: 'b',
+          typeDefs: parse(/* GraphQL */ `
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/v2.3"
+                import: ["@key", "@interfaceObject"]
+              )
+            type Query {
+              otherField: MyInterface
+            }
 
-              type MyInterface @key(fields: "id") @interfaceObject {
-                id: ID!
-                newField: String
-              }
-            `),
-          },
-        ],
-        {},
-        true,
-      );
+            type MyInterface @key(fields: "id") @interfaceObject {
+              id: ID!
+              newField: String
+            }
+          `),
+        },
+      ]);
 
       assertCompositionSuccess(result);
     });
