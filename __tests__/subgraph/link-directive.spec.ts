@@ -246,7 +246,7 @@ testVersions((api, version) => {
         errors: expect.arrayContaining([
           expect.objectContaining({
             message: expect.stringContaining(
-              `[users] Invalid version v6.9 for the federation feature in @link direction on schema`,
+              '[users] Invalid version v6.9 for the federation feature in @link directive on schema',
             ),
             extensions: expect.objectContaining({
               code: 'UNKNOWN_FEDERATION_LINK_VERSION',
