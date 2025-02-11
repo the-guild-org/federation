@@ -29,7 +29,7 @@ export function createSpecSchema<T extends FederationVersion & string>(
 ) {
   if (!isFederationVersion(version)) {
     throw new GraphQLError(
-      `Invalid version ${version} for the federation feature in @link direction on schema`,
+      `Invalid version ${version} for the federation feature in @link directive on schema`,
       {
         extensions: {
           code: 'UNKNOWN_FEDERATION_LINK_VERSION',

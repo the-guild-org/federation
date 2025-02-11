@@ -226,7 +226,7 @@ export class PathFinder {
       // prevent a situation where we are doing a second abstract move
       const tailEdge = path.edge();
 
-      if (tailEdge && isAbstractEdge(tailEdge) && !tailEdge.move.keyFields) {
+      if (tailEdge && isAbstractEdge(tailEdge) && !edge.move.keyFields) {
         this.logger.groupEnd(() => 'Ignore: cannot do two abstract moves in a row');
         return;
       }

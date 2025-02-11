@@ -67,7 +67,7 @@ testImplementations(api => {
               )
 
             type Query {
-              hello: String
+              hello: MyInterface
             }
 
             interface MyInterface @key(fields: "id") {
@@ -90,7 +90,7 @@ testImplementations(api => {
                 import: ["@key", "@interfaceObject"]
               )
             type Query {
-              otherField: String
+              otherField: MyInterface
             }
 
             type MyInterface @key(fields: "id") @interfaceObject {
@@ -120,7 +120,7 @@ testImplementations(api => {
               )
 
             type Query {
-              hello: String
+              hello: MyInterface
             }
 
             interface MyInterface @key(fields: "id") {
@@ -189,7 +189,7 @@ testImplementations(api => {
             extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
 
             type Query {
-              hello: String
+              hello: MyInterface
             }
 
             interface MyInterface @key(fields: "id") {
@@ -212,7 +212,7 @@ testImplementations(api => {
                 import: ["@key", "@interfaceObject"]
               )
             type Query {
-              otherField: String
+              otherField: MyInterface
             }
 
             type MyInterface @key(fields: "id") @interfaceObject {
@@ -226,50 +226,54 @@ testImplementations(api => {
     });
 
     test(`target interface must have @key directive on subgraph where it's defined`, () => {
-      const result = api.composeServices([
-        {
-          name: 'a',
-          typeDefs: parse(/* GraphQL */ `
-            extend schema
-              @link(
-                url: "https://specs.apollo.dev/federation/v2.3"
-                import: ["@key", "@interfaceObject"]
-              )
+      const result = api.composeServices(
+        [
+          {
+            name: 'a',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/v2.3"
+                  import: ["@key", "@interfaceObject"]
+                )
 
-            type Query {
-              hello: String
-            }
+              type Query {
+                hello: MyInterface
+              }
 
-            interface MyInterface {
-              id: ID!
-              field: String
-            }
+              interface MyInterface @key(fields: "id") {
+                id: ID!
+                field: String
+              }
 
-            type MyType implements MyInterface @key(fields: "id") {
-              id: ID!
-              field: String
-            }
-          `),
-        },
-        {
-          name: 'b',
-          typeDefs: parse(/* GraphQL */ `
-            extend schema
-              @link(
-                url: "https://specs.apollo.dev/federation/v2.3"
-                import: ["@key", "@interfaceObject"]
-              )
-            type Query {
-              otherField: String
-            }
+              type MyType implements MyInterface @key(fields: "id") {
+                id: ID!
+                field: String
+              }
+            `),
+          },
+          {
+            name: 'b',
+            typeDefs: parse(/* GraphQL */ `
+              extend schema
+                @link(
+                  url: "https://specs.apollo.dev/federation/v2.3"
+                  import: ["@key", "@interfaceObject"]
+                )
+              type Query {
+                otherField: MyInterface
+              }
 
-            type MyInterface @key(fields: "id") @interfaceObject {
-              id: ID!
-              newField: String
-            }
-          `),
-        },
-      ]);
+              type MyInterface @key(fields: "id") @interfaceObject {
+                id: ID!
+                newField: String
+              }
+            `),
+          },
+        ],
+        {},
+        true,
+      );
 
       assertCompositionSuccess(result);
     });
@@ -291,7 +295,7 @@ testImplementations(api => {
               )
 
             type Query {
-              hello: String
+              hello: MyInterface
             }
 
             interface MyInterface @key(fields: "id") {
@@ -309,7 +313,7 @@ testImplementations(api => {
                 import: ["@key", "@interfaceObject"]
               )
             type Query {
-              otherField: String
+              otherField: MyInterface
             }
 
             type MyInterface @key(fields: "id") @interfaceObject {
@@ -364,7 +368,7 @@ testImplementations(api => {
                     import: ["@key", "@interfaceObject"]
                   )
                 type Query {
-                  otherField: String
+                  otherField: MyInterface
                 }
 
                 type MyInterface @key(fields: "id") @interfaceObject {
@@ -402,7 +406,7 @@ testImplementations(api => {
                   )
 
                 type Query {
-                  hello: String
+                  hello: MyInterface
                 }
 
                 interface MyInterface {
@@ -425,7 +429,7 @@ testImplementations(api => {
                     import: ["@key", "@interfaceObject"]
                   )
                 type Query {
-                  otherField: String
+                  otherField: MyInterface
                 }
 
                 type MyInterface @interfaceObject {
@@ -460,7 +464,7 @@ testImplementations(api => {
                   )
 
                 type Query {
-                  hello: String
+                  hello: MyInterface
                 }
 
                 interface MyInterface @key(fields: "id") {
@@ -483,7 +487,7 @@ testImplementations(api => {
                     import: ["@key", "@interfaceObject"]
                   )
                 type Query {
-                  otherField: String
+                  otherField: MyInterface
                 }
 
                 type MyInterface @key(fields: "id") @interfaceObject {
@@ -515,6 +519,56 @@ testImplementations(api => {
             }
           `);
         });
+
+        test('interface type is present on other subgraph with @key directive. Should succeed and add fields from a child of an interfaceObject', () => {
+          const result = api.composeServices([
+            {
+              name: 'a',
+              typeDefs: parse(/* GraphQL */ `
+                extend schema
+                  @link(
+                    url: "https://specs.apollo.dev/federation/v2.6"
+                    import: ["@key", "@interfaceObject"]
+                  )
+
+                interface Media @key(fields: "id") {
+                  id: ID!
+                  title: String!
+                }
+
+                type Book implements Media @key(fields: "id") {
+                  id: ID!
+                  title: String!
+                }
+              `),
+            },
+            {
+              name: 'b',
+              typeDefs: parse(/* GraphQL */ `
+                extend schema
+                  @link(
+                    url: "https://specs.apollo.dev/federation/v2.6"
+                    import: ["@key", "@interfaceObject"]
+                  )
+
+                type Media @key(fields: "id") @interfaceObject {
+                  id: ID!
+                  reviews: [Review!]!
+                }
+
+                type Review {
+                  score: Int!
+                }
+
+                type Query {
+                  topRatedMedia: [Media!]!
+                }
+              `),
+            },
+          ]);
+
+          assertCompositionSuccess(result);
+        });
       });
 
       describe(`fields contribution`, () => {
@@ -530,7 +584,7 @@ testImplementations(api => {
                   )
 
                 type Query {
-                  hello: String
+                  hello: MyInterface
                 }
 
                 interface MyInterface @key(fields: "id") {
@@ -553,7 +607,7 @@ testImplementations(api => {
                     import: ["@key", "@interfaceObject"]
                   )
                 type Query {
-                  otherField: String
+                  otherField: MyInterface
                 }
 
                 type MyInterface @key(fields: "id") @interfaceObject {
@@ -571,7 +625,7 @@ testImplementations(api => {
                     import: ["@key", "@interfaceObject"]
                   )
                 type Query {
-                  someNewField: String
+                  someNewField: MyInterface
                 }
 
                 type MyInterface @key(fields: "id") @interfaceObject {
