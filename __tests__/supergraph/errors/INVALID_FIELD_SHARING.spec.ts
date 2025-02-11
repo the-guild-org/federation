@@ -19,16 +19,16 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable"]
                 )
-  
+
               type Query {
                 users: [User]
               }
-  
+
               type User @key(fields: "id") {
                 id: ID
                 profile: Profile
               }
-  
+
               type Profile @shareable {
                 name: String
               }
@@ -42,12 +42,12 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable"]
                 )
-  
+
               type User @key(fields: "id") {
                 id: ID
                 profile: Profile
               }
-  
+
               type Profile @shareable {
                 name: String
               }
@@ -79,11 +79,11 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key"]
                 )
-  
+
               type Query {
                 user: User
               }
-  
+
               type User {
                 id: ID!
                 name: String
@@ -98,12 +98,12 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable"]
                 )
-  
+
                 type User @key(fields: "id") {
                   id: ID!
                   comments: [String]
                 }
-  
+
                 type Query {
                   users: [User]
                 }
@@ -135,11 +135,11 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable"]
                 )
-  
+
                 extend type Query {
                   foo: Foo
                 }
-  
+
                 type Foo @shareable @key(fields: "id") {
                   id: ID!
                   name: String
@@ -154,11 +154,11 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable", "@override"]
                 )
-  
+
                 extend type Query {
                   foo: Foo @override(from: "noop")
                 }
-  
+
                 type Foo @shareable @key(fields: "id") {
                   id: ID!
                   name: String
@@ -173,7 +173,7 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@key", "@shareable"]
                 )
-  
+
                 type Query {
                   noop: String
                 }
@@ -205,7 +205,7 @@ testVersions((api, version) => {
                   url: "https://specs.apollo.dev/federation/${version}"
                   import: ["@shareable"]
                 )
-              
+
               extend type Note {
                 url: String!
               }
@@ -382,7 +382,9 @@ testVersions((api, version) => {
           errors: expect.arrayContaining([
             expect.objectContaining({
               message: expect.stringContaining(
-                `Fields on root level subscription object cannot be marked as shareable`,
+                api.library === 'guild'
+                  ? `Fields on root level subscription object cannot be marked as shareable`
+                  : 'Non-shareable field "Subscription.event" is resolved from multiple subgraphs: it is resolved from subgraphs "bar" and "foo" and defined as non-shareable in all of them',
               ),
               extensions: expect.objectContaining({
                 code: 'INVALID_FIELD_SHARING',
