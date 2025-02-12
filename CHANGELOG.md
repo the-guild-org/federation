@@ -1,5 +1,13 @@
 # @theguild/federation-composition
 
+## 0.14.4
+
+### Patch Changes
+
+- [#82](https://github.com/the-guild-org/federation/pull/82) [`7d640bf`](https://github.com/the-guild-org/federation/commit/7d640bf468b17d97179cf6c76362cbf0f7b4587f) Thanks [@kamilkisiela](https://github.com/kamilkisiela)! - Fix a child data type field not being accessible via interfaceObject
+
+- [#81](https://github.com/the-guild-org/federation/pull/81) [`ded4b47`](https://github.com/the-guild-org/federation/commit/ded4b4786c74e1172a2aa3ace781303b08618536) Thanks [@ardatan](https://github.com/ardatan)! - Respect inaccessible enum values while creating the public schema from the supergraph AST
+
 ## 0.14.3
 
 ### Patch Changes
