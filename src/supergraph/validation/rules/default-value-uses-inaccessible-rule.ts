@@ -9,7 +9,11 @@ export function DefaultValueUsesInaccessibleRule(
 ): SupergraphVisitorMap {
   return {
     InputObjectTypeField(inputObjectState, fieldState) {
-      if (typeof fieldState.defaultValue !== 'string') {
+      if (
+        typeof fieldState.defaultValue !== 'string' ||
+        // If the field or type is already inaccessible, we do not need to assert whether the default value would be accessible or not.
+        fieldState.inaccessible
+      ) {
         return;
       }
 
@@ -56,6 +60,8 @@ function detectInaccessibleDefaultValue(
     // Only enum value can be used as a default value and be marked as inaccessible
     return;
   }
+
+  console.log(enumType.inaccessible);
 
   if (enumType.inaccessible === true || enumType.values.get(defaultValue)?.inaccessible === true) {
     context.reportError(

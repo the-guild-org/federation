@@ -101,5 +101,33 @@ testVersions((api, version) => {
         },
       ]),
     ).toEqual(expect.objectContaining({ supergraphSdl: expect.any(String) }));
+
+    expect(
+      api.composeServices([
+        {
+          name: 'users',
+          typeDefs: graphql`
+            extend schema
+              @link(
+                url: "https://specs.apollo.dev/federation/${version}"
+                import: ["@inaccessible"]
+              )
+
+            enum FooEnum @inaccessible {
+              a
+            }
+
+            input FooInput @inaccessible {
+              foo: FooEnum! = a @inaccessible
+            }
+
+            type Query {
+              a: String!
+              b(foo: FooInput @inaccessible): String! @inaccessible
+            }
+          `,
+        },
+      ]),
+    ).toEqual(expect.objectContaining({ supergraphSdl: expect.any(String) }));
   });
 });
