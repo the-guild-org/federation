@@ -9,7 +9,11 @@ export function DefaultValueUsesInaccessibleRule(
 ): SupergraphVisitorMap {
   return {
     InputObjectTypeField(inputObjectState, fieldState) {
-      if (typeof fieldState.defaultValue !== 'string') {
+      if (
+        typeof fieldState.defaultValue !== 'string' ||
+        // If the field or type is already inaccessible, we do not need to assert whether the default value would be accessible or not.
+        fieldState.inaccessible
+      ) {
         return;
       }
 
