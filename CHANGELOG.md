@@ -1,5 +1,11 @@
 # @theguild/federation-composition
 
+## 0.14.5
+
+### Patch Changes
+
+- [#87](https://github.com/the-guild-org/federation/pull/87) [`9c26af9`](https://github.com/the-guild-org/federation/commit/9c26af9ff1181bf566ea45fd9b74023a16ddf410) Thanks [@n1ru4l](https://github.com/n1ru4l)! - Do not raise `DEFAULT_VALUE_USES_INACCESSIBLE` for inaccessible default value on inaccessible field.
+
 ## 0.14.4
 
 ### Patch Changes
