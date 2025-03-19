@@ -61,8 +61,6 @@ function detectInaccessibleDefaultValue(
     return;
   }
 
-  console.log(enumType.inaccessible);
-
   if (enumType.inaccessible === true || enumType.values.get(defaultValue)?.inaccessible === true) {
     context.reportError(
       new GraphQLError(
