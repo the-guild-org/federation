@@ -15,7 +15,7 @@ export function InterfaceObjectRules(context: SubgraphValidationContext): ASTVis
       if (context.satisfiesVersionRange('< v2.3')) {
         context.reportError(
           new GraphQLError(
-            `@interfaceObject is not yet supported. See https://github.com/the-guild-org/federation/issues/7`,
+            `@interfaceObject is not yet supported. See https://github.com/graphql-hive/federation-composition/issues/7`,
             {
               extensions: { code: 'UNSUPPORTED_FEATURE' },
             },
