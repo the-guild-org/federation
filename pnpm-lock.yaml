@@ -53,8 +53,8 @@ devDependencies:
     specifier: 16.8.1
     version: 16.8.1
   mitata:
-    specifier: 0.1.14
-    version: 0.1.14
+    specifier: 1.0.34
+    version: 1.0.34
   prettier:
     specifier: 3.2.5
     version: 3.2.5
@@ -2101,8 +2101,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dev: true
 
-  /mitata@0.1.14:
-    resolution: {integrity: sha512-8kRs0l636eT4jj68PFXOR2D5xl4m56T478g16SzUPOYgkzQU+xaw62guAQxzBPm+SXb15GQi1cCpDxJfkr4CSA==}
+  /mitata@1.0.34:
+    resolution: {integrity: sha512-Mc3zrtNBKIMeHSCQ0XqRLo1vbdIx1wvFV9c8NJAiyho6AjNfMY8bVhbS12bwciUdd1t4rj8099CH3N3NFahaUA==}
     dev: true
 
   /mri@1.2.0:
